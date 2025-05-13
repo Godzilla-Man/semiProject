@@ -9,6 +9,7 @@
 <body>
 	<div class="wrap">
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
+		
 	</div>
 </body>
 </html>
