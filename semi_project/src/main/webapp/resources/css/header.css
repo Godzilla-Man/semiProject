@@ -12,24 +12,32 @@ a:hover,
 
 .header {
     margin: 0 auto; /*가운데 정렬*/
-    width: 1200px; /*header 전체적인 넓이 설정*/
     position: fixed;
+    width: 100%;
     left: 50%;
     transform: translateX(-50%);
-    background-color: white;
     z-index: 9999;
 }
+.header>div:first-child {
+    background-color: #0064FF;
+}
 .header-wrap {
-    margin-bottom: 20px;
-    background-color: white;
+    background-color: #0064FF;
+    width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 20px;
 }
 .header-menu {
     display: flex; /*자식 요소 가로 정렬*/
     justify-content: flex-end; /*우측 정렬*/
-    margin: 10px 0;
+    padding: 10px 0;
 }
 .header-menu>li {
     margin: 0 10px;
+    color: white;
+}
+.header-menu>li>a {
+    color: white;
 }
 .logo {
     display: flex;
@@ -39,17 +47,16 @@ a:hover,
     display: block;
     width: 200px;
     height: 100px;
-    line-height: 100px;
-    text-align: center;
-    background-color: #0064FF;
-    color: white;
-    font-size: 40px;
+}
+.logo>a>img {
+    width: 100%;
+    height: 100%;
     border-radius: 10px;
-    text-decoration: none;
 }
 
 .header-list {
     display: flex;
+    width: 1200px;
     margin: 0 auto; /*가운데 정렬*/
     border-top: 1px solid black;
     border-bottom: 1px solid black;
@@ -73,11 +80,15 @@ a:hover,
     height: 30px;
 }
 .search>input {
-    height: 26px;
+    height: 28px;
 }
 .search>button {
     height: 30px;
     width: 60px;
+}
+#search-option, input[name=search] {
+    border: 1px solid black;
+    border-radius: 5px;
 }
 
 .large-category {
@@ -105,6 +116,12 @@ a:hover,
 .medium-category>table {
     width: 100%;
 }
+.tbl-category tr:first-child td {
+    border-bottom: 1px dashed black;
+}
+.medium-category>table>tr:first-child>td {
+    border-bottom: 1px solid black;
+}
 .main-menu>li:hover>.large-category,
 .large-category>li:hover>.medium-category {
     display: block; /*마우스 올리면 보이게 하기*/
@@ -123,18 +140,50 @@ a:hover,
 }
 
 .fixed {
-  position: fixed;        /* 화면에 고정 */
-  width: 60px;
-  height: 60px;
-  bottom: 20px;           /* 아래에서 20px */
-  right: 350px;            /* 오른쪽에서 350px */
-  line-height: 60px;
-  text-align: center;
+  position: fixed; /* 화면에 고정 */
+  bottom: 20px; /* 아래에서 20px */
+  right: 350px; /* 오른쪽에서 350px */
   padding: 0 auto;
-  font-size: 16px;
-  background-color: #0064FF;
-  color: white;
-  border-radius: 30px;
-  cursor: pointer;
   z-index: 9999; /* 항상 위에 표시 */
+}
+.fixed>div {
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+.post {
+    border: 1px solid #0064FF;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.top {
+    background-color: #0064FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.post>.material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 1 ,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+    color: #0064FF;
+    font-size: 45px;
+}
+.top>.material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 1 ,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+    color: white;
+    font-size: 40px;
 }
