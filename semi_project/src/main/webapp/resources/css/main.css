@@ -1,0 +1,114 @@
+.main-wrap {
+    width: 1200px;
+    margin: 0 auto;
+}
+
+.main-image {
+    width: 100%;
+    height: 400px;
+}
+
+.sub-image {
+    display: flex; /*자식 요소 가로 정렬*/
+    justify-content: space-around; /*자식 요소 일정한 간격으로 띄우기*/
+    width: 1000px;
+    margin: 20px auto;
+}
+.sub-image>div {
+	cursor: pointer;
+}
+.image {
+    width: 195px;
+    height: 260px;
+    position: relative;
+    display: inline-block;
+}
+.image>img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.image>div {
+    width: 30px;
+    height: 30px;
+    margin: 10px 10px;
+    background-color: red;
+    position: absolute; /*우측 하단 정렬*/
+}
+.image-info {
+    box-sizing: border-box;
+    width: 195px;
+    height: 60px;
+    border: 1px solid lightgray;
+}
+.image-prod {
+    display: block;
+    box-sizing: border-box;
+    height: 60%;
+    max-width: 100%;
+    padding: 0 5px;
+}
+.image-price {
+    float: right;
+    padding-right: 5px;
+}
+.image-style {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 0 5px;
+}
+
+hr {
+    margin: 0 auto;
+    width: 95%;
+}
+
+.main-wrap>span {
+    display: block;
+    margin-left: 130px;
+    margin-top: 20px;
+}
+.main-wrap>button {
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    width: 80px;
+    height: 30px;
+    background-color: #0064FF;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.image>.material-symbols-outlined { /* 찜하기 버튼 */
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+    position: absolute;
+    font-size:32px;
+    color: red;
+    z-index: 10;
+    right: 2%;
+    bottom: 2%;
+    cursor: pointer;
+}
+.image>.material-symbols-outlined.fill { /* 찜하기 버튼 클릭 시 변경 */
+    font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+    position: absolute;
+    font-size:32px;
+    color: red;
+    z-index: 10;
+    right: 2%;
+    bottom: 2%;
+    cursor: pointer;
+}
