@@ -139,7 +139,7 @@ a:hover,
 .fixed {
   position: fixed; /* 화면에 고정 */
   bottom: 20px; /* 아래에서 20px */
-  right: 350px; /* 오른쪽에서 350px */
+  right: 280px; /* 오른쪽에서 350px */
   padding: 0 auto;
   z-index: 9999; /* 항상 위에 표시 */
 }
