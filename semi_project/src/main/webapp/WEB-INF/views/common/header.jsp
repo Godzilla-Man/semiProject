@@ -163,7 +163,7 @@
             </li>
             <li><a href="#">스타일 후기</a></li>
             <li><a href="#">이벤트</a></li>
-            <li><a href="#">공지사항</a></li>
+            <li><a href="/notice/list">공지사항</a></li>
             <li><a href="#">판매하기</a></li>
         </ul>
         <form class="search" action="#" method="get">
