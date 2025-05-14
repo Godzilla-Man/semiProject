@@ -8,27 +8,25 @@
 <script src="/resources/js/sweetalert.min.js"></script>
 
 <header class="header">
-    <div>
-        <div class="header-wrap">
-            <ul class="header-menu">
-                <%-- 세선에 로그인 회원 정보 등록 여부에 따라 다른 메뉴 출력 --%>
-            	<c:choose>
-               		<c:when test="${empty sessionScope.loginMember}">
-                      <li><a href="#">회원가입</a></li>
-                      <li><a href="#">로그인</a></li>
-                   </c:when>
-                   <c:otherwise>
-                      <li>'닉네임'님</li>
-                      <li><a href="#">마이페이지</a></li>
-                      <li><a href="#">로그아웃</a></li>
-                   </c:otherwise>
-             	</c:choose>
-            </ul>
-            <div class="logo">
-                <a href="/">
-                    <img src="/resources/images/KakaoTalk_20250514_101220497.png">
-                </a>
-            </div>
+    <div class="header-wrap">
+        <ul class="header-menu">
+            <%-- 세선에 로그인 회원 정보 등록 여부에 따라 다른 메뉴 출력 --%>
+        	<c:choose>
+           		<c:when test="${empty sessionScope.loginMember}">
+                  <li><a href="#">회원가입</a></li>
+                  <li><a href="#">로그인</a></li>
+               </c:when>
+               <c:otherwise>
+                  <li>'닉네임'님</li>
+                  <li><a href="#">마이페이지</a></li>
+                  <li><a href="#">로그아웃</a></li>
+               </c:otherwise>
+         	</c:choose>
+        </ul>
+        <div class="logo">
+            <a href="/">
+                <img src="/resources/images/KakaoTalk_20250514_101220497.png">
+            </a>
         </div>
     </div>
     <div class="header-list">
