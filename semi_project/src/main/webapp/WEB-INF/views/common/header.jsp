@@ -179,9 +179,11 @@
 <div class="padding"></div>
 
 <div class="fixed" style="right: 280px;">
+	<c:if test="${!empty sessionScope.loginMember}">
     <div class="post">
         <span class="material-symbols-outlined">add</span>
     </div>
+    </c:if>
     <div class="top" onclick="scrollToTop()">
         <span class="material-symbols-outlined">arrow_upward</span>
     </div>
