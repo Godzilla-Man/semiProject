@@ -1,0 +1,668 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 등록</title>
+  <link rel="stylesheet" href="/resources/css/default.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+ <style>
+ 
+/* 전체 콘텐츠 중앙 정렬 */
+  main.container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 30px 20px;
+  }
+
+  h2.section-title {
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+    text-align : center;
+  }
+
+  .form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .form-label {
+    width: 100px;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .product-name-input {
+    width: 300px;
+    height: 35px;
+    font-size: 14px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  .char-counter {
+    margin-left: 10px;
+    font-size: 12px;
+    color: #666;
+  }
+
+  .form-input-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .image-upload-box {
+    width: 300px;
+    height: 200px;
+    border: 1px dashed #aaa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ccc;
+    font-size: 14px;
+  }
+
+  .image-tools-outside {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    height: 200px;
+    gap: 6px;
+  }
+
+  .image-count {
+    font-size: 13px;
+    color: #333;
+  }
+
+  .upload-btn {
+    padding: 6px 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #888;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .upload-btn input {
+    display: none;
+  }
+
+  .upload-hint {
+    font-size: 11px;
+    color: #999;
+    max-width: 180px;
+    text-align: left;
+}
+
+/* 전체 form-row 중에서 category-row만 위쪽 정렬 */
+.form-row.category-row {
+  align-items: flex-start;
+}
+
+/* 카테고리 3개 칼럼을 가로로 정렬하는 wrapper */
+.form-row.category-row .category-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* 각 카테고리 칼럼 박스 */
+.form-row.category-row .category-col {
+  width: 150px;
+  height: 200px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+/* 리스트 항목 기본 스타일 제거 */
+.form-row.category-row .category-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* 각 항목 텍스트 스타일 */
+.form-row.category-row .category-col li {
+  cursor: pointer;
+  padding: 6px 0;
+  font-size: 14px;
+  color: #000;
+}
+
+/* 마우스 오버 효과 */
+.form-row.category-row .category-col li:hover {
+  text-decoration: underline;
+  color: #007acc;
+}
+
+/* 선택된 항목 강조 */
+.form-row.category-row .category-col li.active {
+  font-weight: bold;
+  color: #d60000;
+}
+
+/* 선택 결과 표시 라벨 */
+#selectedCategory {
+  font-size: 14px;
+  color: #d60000;
+  font-weight: bold;
+  margin-top: 5px;
+}
+/* 상품 설명 textarea + 글자 수 카운터 */
+.description-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+}
+
+.description-box textarea {
+  width: 100%;
+  height: 180px;
+  padding: 12px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  line-height: 1.5;
+  color: #444;
+  resize: none;
+  font-family: 'inherit';
+}
+
+.description-box textarea::placeholder {
+  color: #bbb;
+  font-size: 13px;
+  white-space: pre-line; /* 줄바꿈 유지 */
+}
+
+.description-count {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #888;
+  text-align: right;
+}
+/* 가격 영역 전체 정렬 */
+.form-row.price-row {
+  align-items: flex-start;
+}
+
+/* 입력란 및 체크박스 등 포함할 전체 wrapper */
+.price-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 가격 입력 박스 + '원' 단위 */
+.price-input-group {
+  display: flex;
+  align-items: center;
+}
+
+.price-input {
+  width: 250px;
+  height: 35px;
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.price-unit {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* 체크박스 + 설명 문구 */
+.price-option {
+  font-size: 14px;
+  color: #333;
+}
+
+/* 가격 안내 설명 */
+.price-hint {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #999;
+  line-height: 1.4;
+}
+/* 배송비 영역 전체 정렬 */
+.form-row.delivery-row {
+  align-items: flex-start;
+}
+
+/* 배송비 전체 wrapper (라디오 + 안내문 포함) */
+.delivery-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 각 라디오 버튼 항목 */
+.delivery-option {
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 안내 문구 */
+.delivery-hint {
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
+  line-height: 1.4;
+}
+/* 등록 버튼 행 전체 배경 및 레이아웃 */
+.form-row.submit-row {
+  position: relative;
+  background-color: rgba(255, 192, 192, 0.2);
+  padding: 40px 20px 40px 20px;
+  min-height: 40px; /* 충분한 높이 확보 */
+}
+
+/* 버튼 wrapper: 위치 고정을 위해 flex 제거 + absolute 지정 */
+.submit-box {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+/* 등록 버튼 스타일 */
+#submitBtn {
+  padding: 15px 25px;
+  font-size: 14px;
+  color: white;
+  background-color: #f8aaaa;
+  border: 1px solid #f08888;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 경고 메시지: 버튼 기준 좌하단에 고정 */
+.submit-warning {
+  position: absolute;
+  right: 120px; /* 버튼에서 왼쪽으로 떨어뜨리기 */
+  bottom: 10px;
+  font-size: 12px;
+  color: #d66;
+  display: none;
+}
+
+
+
+</style>
+
+</head>
+<body>
+
+<jsp:include page="/WEB-INF/views/common/header.jsp" />
+
+<main class="container">
+
+  <form action="/product/enroll" method="post" enctype="multipart/form-data">
+
+    <!-- 상품정보 제목 + 구분선 -->
+    <h2 class="section-title">상품정보</h2>
+
+    <!-- 상품명 -->
+    <div class="form-row">
+      <div class="form-label">상품명</div>
+      <input type="text" name="productName" maxlength="30" placeholder="상품명을 입력하세요." class="product-name-input" />
+      <span class="char-counter" id="nameCounter">0 / 30</span>
+    </div>
+
+    <!-- 상품 이미지 -->
+    <div class="form-row">
+      <div class="form-label">상품 이미지</div>
+      <div class="form-input-box">
+        <div class="image-upload-box">상품 이미지 등록</div>
+        <div class="image-tools-outside">
+          <div class="image-count">0 / 10</div>
+          <label class="upload-btn">
+            사진 첨부하기
+            <input type="file" name="productImages" multiple accept="image/*" />
+          </label>
+          <div class="upload-hint">가장 먼저 등록한 이미지가<br>게시글 썸네일이 됩니다.</div>
+        </div>
+      </div>
+    </div>
+
+
+
+<!-- 카테고리 선택 영역 -->
+<div class="form-row category-row">
+  <div class="form-label">카테고리</div>
+  <div>
+    <div class="category-container">
+      <!-- 1단계 (대분류) -->
+      <div class="category-col" id="category-level1">
+        <ul>
+          <li data-value="남성">1. 남성</li>
+          <li data-value="여성">2. 여성</li>
+          <li data-value="공용">3. 공용</li>
+        </ul>
+      </div>
+
+      <!-- 2단계 (중분류) -->
+      <div class="category-col" id="category-level2">
+        <ul id="midCategoryList"></ul>
+      </div>
+
+      <!-- 3단계 (소분류: 동적 생성 영역) -->
+      <div class="category-col" id="category-level3">
+        <ul id="subCategoryList">
+          <!-- JavaScript로 소분류 항목이 들어올 자리 -->
+        </ul>
+      </div>
+    </div>
+
+    <!--  현재 선택한 카테고리 출력 -->
+    <div class="selected-category" id="selectedCategory">
+      현재 설정한 카테고리:
+    </div>
+  </div>
+</div>
+
+
+
+<!-- 상품 설명 -->
+<div class="form-row">
+  <div class="form-label">상품 설명</div>
+  <div class="description-box">
+    <textarea id="productDescription" name="productIntrod" maxlength="2000"
+      placeholder="상품의 상태, 사용 기간, 구성품, 하자 유무 등을 구체적으로 기재해 주시기 바랍니다.
+구매에 도움이 될 수 있는 상세 정보(사이즈, 사용감 등)를 성실히 작성해 주세요.
+개인정보 입력(전화번호, 계좌번호, SNS 등)은 제한될 수 있으니 유의해 주세요.
+
+특히 상품이 얼룩/오염/찢어짐/변형 등 하자 있을 경우 반드시 표기해 주세요.
+일반적인 사용 정보 외에 판매자가 꼭 언급하고 싶은 특이사항이 있다면 함께 작성해 주세요.
+구매 후 분쟁 예방에 도움이 될 수 있습니다."></textarea>
+    <div class="description-count">
+      <span id="descCharCount">0</span> / 2000
+    </div>
+  </div>
+</div>
+
+    <!-- 가격정보 제목 + 구분선 -->
+    <h2 class="section-title">가격</h2>
+
+<!-- 가격 영역 -->
+<div class="form-row price-row">
+  <div class="form-label">가격</div>
+
+  <div class="price-box">
+    <!-- 가격 입력 -->
+    <div class="price-input-group">
+      <input type="number" name="productPrice" placeholder="가격을 입력하세요." class="price-input" />
+      <span class="price-unit">원</span>
+    </div>
+
+    <!-- 가격 제안 받기 -->
+    <div class="price-option">
+      <label>
+        <input type="checkbox" name="priceOffer" />
+        가격제안 받기
+      </label>
+
+      <!-- 안내 문구 -->
+      <p class="price-hint">
+        가격제안은 댓글의 형태로 받을 수 있습니다.<br>
+        제시받은 제안을 수락할 경우, 제시가로 판매가격이 수정됩니다.
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<!-- 배송비 영역 -->
+<div class="form-row delivery-row">
+  <div class="form-label">배송비</div>
+
+  <div class="delivery-box">
+    <!-- 배송비 라디오 버튼 -->
+    <label class="delivery-option">
+      <input type="radio" name="tradeMethodCode" value="M1" required />
+      배송비 포함
+    </label>
+
+    <label class="delivery-option">
+      <input type="radio" name="tradeMethodCode" value="M2" />
+      배송비 미포함
+    </label>
+
+    <label class="delivery-option">
+      <input type="radio" name="tradeMethodCode" value="M3" />
+      배송비 착불 (구매자 부담)
+    </label>
+
+    <!-- 안내 문구 -->
+    <p class="delivery-hint">
+      배송비는 5,000원으로 고정입니다.<br>
+      직거래는 플랫폼 운영정책 상 금지하고 있습니다.
+    </p>
+  </div>
+</div>
+
+    <h2 class="section-title"></h2>
+
+<!--  등록 버튼 -->
+<div class="form-row submit-row">
+  <!-- 경고 메시지 (초기 비활성화 상태) -->
+  <div class="submit-warning" id="submitWarning">
+    ※ 모든 필수 항목을 입력해야 등록할 수 있습니다.
+  </div>
+
+  <!-- 등록 버튼 -->
+  <div class="submit-box">
+    <button type="submit" id="submitBtn" disabled>등록하기</button>
+  </div>
+</div>
+    </form>
+  </main>
+  <jsp:include page="/WEB-INF/views/common/footer.jsp" />
+  
+<script>
+// 카테고리 선택 관련 스크립트 (대분류 - 중분류 - 소분류)
+document.addEventListener('DOMContentLoaded', () => {
+	
+	  // HTML 요소 선택
+	  const level1Items = document.querySelectorAll('#category-level1 li'); // 대분류 리스트
+	  const midCategoryList = document.getElementById('midCategoryList');   // 중분류 영역
+	  const subCategoryList = document.getElementById('subCategoryList');   // 소분류 영역
+	  const selectedCategory = document.getElementById('selectedCategory'); // 선택한 결과 표시 영역
+
+  // 중분류(B코드) 정의
+  const midCategories = {
+    '남성': [
+      { code: 'B1', name: '남성 아우터' },
+      { code: 'B2', name: '남성 상의' },
+      { code: 'B3', name: '남성 하의' },
+      { code: 'B4', name: '남성 악세사리' }
+    ],
+    '여성': [
+      { code: 'B5', name: '여성 아우터' },
+      { code: 'B6', name: '여성 상의' },
+      { code: 'B7', name: '여성 하의' },
+      { code: 'B8', name: '여성 악세사리' }
+    ],
+    '공용': [
+      { code: 'B9', name: '공용 아우터' },
+      { code: 'B10', name: '공용 상의' },
+      { code: 'B11', name: '공용 하의' },
+      { code: 'B12', name: '공용 악세사리' }
+    ]
+  };
+
+  //소분류(C코드) 정의
+  const subCategories = {
+    'B1': ['남성 점퍼', '남성 자켓', '남성 코트', '남성 패딩'],
+    'B2': ['남성 긴팔티', '남성 반팔티', '남성 니트', '남성 후드', '남성 셔츠'],
+    'B3': ['남성 데님팬츠', '남성 정장팬츠', '남성 반바지'],
+    'B4': ['남성 신발', '남성 목걸이', '남성 반지', '남성 모자'],
+    'B5': ['여성 점퍼', '여성 자켓', '여성 코트', '여성 패딩'],
+    'B6': ['여성 긴팔티', '여성 반팔티', '여성 니트', '여성 후드', '여성 셔츠'],
+    'B7': ['여성 데님팬츠', '여성 정장팬츠', '여성 반바지'],
+    'B8': ['여성 신발', '여성 목걸이', '여성 반지', '여성 모자'],
+    'B9': ['공용 점퍼', '공용 자켓', '공용 코트', '공용 패딩'],
+    'B10': ['공용 긴팔티', '공용 반팔티', '공용 니트', '공용 후드', '공용 셔츠'],
+    'B11': ['공용 데님팬츠', '공용 정장팬츠', '공용 반바지'],
+    'B12': ['공용 신발', '공용 목걸이', '공용 반지', '공용 모자']
+  };
+
+  //선택된 항목 저장 변수
+  let selectedMain = '';
+  let selectedMid = '';
+  let selectedSub = '';
+
+  // 선택된 항목들을 텍스트로 갱신하는 함수
+function updateCategoryText() {
+	  
+  // null이나 undefined 방지 + 값이 없을 땐 공백 처리
+  const main = selectedMain || '';
+  const mid = selectedMid || '';
+  const sub = selectedSub || '';
+
+  // 값이 존재하는 항목만 필터링해서 /로 조인
+  const categoryParts = [main, mid, sub].filter(part => part !== '');
+  selectedCategory.textContent = "현재 설정한 카테고리: " + categoryParts.join(" / ");
+}
+
+
+  // 1단계: 대분류 클릭
+  level1Items.forEach(item => {
+    item.addEventListener('click', () => {
+    	
+    	// 기존 선택 해제 후 현재 항목 강조
+      level1Items.forEach(li => li.classList.remove('active'));
+      item.classList.add('active');
+
+      // 선택값 초기화
+      selectedMain = item.dataset.value;
+      selectedMid = '';
+      selectedSub = ''; 
+      midCategoryList.innerHTML = '';
+      subCategoryList.innerHTML = '';
+
+      // 선택한 대분류에 해당하는 중분류 항목 동적 생성
+      const mids = midCategories[selectedMain];
+      mids.forEach(mid => {
+        const li = document.createElement('li');
+        li.textContent = mid.name;
+        li.dataset.code = mid.code;
+        li.dataset.name = mid.name;
+        li.classList.add('mid-category-item');
+
+        // 2단계: 중분류 클릭
+        li.addEventListener('click', () => {
+          document.querySelectorAll('.mid-category-item').forEach(el => el.classList.remove('active'));
+          li.classList.add('active');
+
+          selectedMid = li.dataset.name;
+          selectedSub = '';
+          subCategoryList.innerHTML = '';
+
+       // 선택한 중분류에 해당하는 소분류 항목 동적 생성
+          const subs = subCategories[li.dataset.code];
+          subs.forEach(sub => {
+            const subLi = document.createElement('li');
+            subLi.textContent = sub;
+            subLi.dataset.name = sub;
+            subLi.classList.add('sub-category-item');
+
+            // 3단계: 소분류 클릭
+            subLi.addEventListener('click', () => {
+              document.querySelectorAll('.sub-category-item').forEach(el => el.classList.remove('active'));
+              subLi.classList.add('active');
+
+              selectedSub = subLi.dataset.name;
+              updateCategoryText(); // 대/중/소 최종 선택 상태 표시
+            });
+
+            subCategoryList.appendChild(subLi);
+          });
+
+          updateCategoryText(); // 중분류까지 선택 시 갱신
+        });
+
+        midCategoryList.appendChild(li);
+      });
+
+      updateCategoryText(); // 대분류만 선택 시 갱신
+    });
+  });
+});
+</script>
+
+<script>
+  //상품 설명 글자 수 카운트 함수
+  const descInput = document.getElementById('productDescription');
+  const countDisplay = document.getElementById('descCharCount');
+
+  descInput.addEventListener('input', () => {
+    countDisplay.textContent = descInput.value.length; // 입력된 글자 수 실시간 표시
+  });
+</script>
+
+<script>
+	//필수 항목 입력 여부에 따라 등록 버튼 활성화/비활성화 처리
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('form');
+  const submitBtn = document.getElementById('submitBtn');
+  const warningMsg = document.getElementById('submitWarning');
+
+	//필수 입력 항목들
+  const productNameInput = document.querySelector('input[name="productName"]');
+  const productDescTextarea = document.querySelector('textarea[name="productIntrod"]');
+  const priceInput = document.querySelector('input[name="productPrice"]');
+  const tradeMethodRadios = document.querySelectorAll('input[name="tradeMethodCode"]');
+  const imageInput = document.querySelector('input[name="productImages"]');
+
+	//입력값 유효성 검사 함수
+  function validateForm() {
+    const isName = productNameInput.value.trim() !== '';
+    const isDesc = productDescTextarea.value.trim() !== '';
+    const isPrice = priceInput.value.trim() !== '';
+    const isTrade = Array.from(tradeMethodRadios).some(r => r.checked);
+    const isImage = imageInput.files.length > 0;
+    return isName && isDesc && isPrice && isTrade && isImage;
+  }
+
+	//입력 이벤트 발생 시 버튼 상태 갱신
+  form.addEventListener('input', () => {
+    if (validateForm()) {
+        submitBtn.disabled = false;            // 모든 항목이 입력되면 버튼 활성화
+        warningMsg.style.display = 'none';     // 경고 메시지 숨김
+      } else {
+        submitBtn.disabled = true;             // 미입력 시 버튼 비활성화
+        warningMsg.style.display = 'block';    // 경고 메시지 표시
+    }
+  });
+});
+</script>
+
+
+
+
+
+
+</body>
+</html>
