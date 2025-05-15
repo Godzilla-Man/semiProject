@@ -7,6 +7,7 @@ import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.common.ListData;
 import kr.or.iei.event.model.dao.EventDao;
 import kr.or.iei.event.model.vo.Event;
+import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.notice.model.vo.Notice;
 
 public class EventService {
@@ -108,5 +109,58 @@ public class EventService {
 		JDBCTemplate.close(conn);
 		
 		return listData;
+	}
+
+	public int insertEvent(Event event, ArrayList<Files> fileList) {
+		Connection conn = JDBCTemplate.getConnection();
+		
+		/*
+		 * 현재 기능은 등록 == insert
+		 * 대상 테이블은 tbl_event(이벤트), tbl_file(파일)
+		 * 	- 부모 테이블 : tbl_event
+		 * 	- 자식 테이블 : tbl_file
+		 * 
+		 * 부모 테이블의 데이터가 존재해야 자식 테이블에 insert가 가능
+		 * 즉, tbl_event에 insert가 먼저 수행되어야 함
+		 * 
+		 * 1) 게시글 번호 조회 select Query
+		 * 
+		 * 2) tbl_event의 insert Query
+		 * insert into tbl_event values (?, ?, ?, ?, sysdate, default);
+		 * 
+		 * 3) tbl_file의 insert Query
+		 * insert into tbl_file values (seq_file.nextval, null, null, null, ?, ?, ?, sysdate);
+		 */
+		
+		//1) 게시글 번호 조회. 아래 2)와 3)에서 동일한 게시글 번호를 공유해야 하므로 선조회
+		String eventNo = dao.selectEventNo(conn);
+		
+		event.setEventNo(eventNo);
+		
+		//2) tbl_notice에 insert(게시글 정보 선등록)
+		int result = dao.insertEvent(conn, event);
+		
+		if(result > 0) {
+			for(Files file : fileList) {
+				file.setEventNo(eventNo); //1)에서 조회한 게시글 번호
+				
+				//3) tbl_file에 insert(게시글에 대한 파일 등록)
+				result = dao.insertEventFile(conn, file);
+				
+				//파일 정보 등록 중 정상 수행되지 않았을 경우 모두 롤백처리하고 메소드 종료
+				if(result < 1) {
+					JDBCTemplate.rollback(conn);
+					JDBCTemplate.close(conn);
+					return 0;
+				}
+			}
+			
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		JDBCTemplate.close(conn);
+		
+		return result;
 	}
 }

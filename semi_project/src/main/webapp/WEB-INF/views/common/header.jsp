@@ -13,14 +13,14 @@
             <%-- 세선에 로그인 회원 정보 등록 여부에 따라 다른 메뉴 출력 --%>
         	<c:choose>
            		<c:when test="${empty sessionScope.loginMember}">
-                  <li><a href="/member/joinFrm">회원가입</a></li>
-                  <li><a href="#">로그인</a></li>
-               </c:when>
-               <c:otherwise>
-                  <li>'닉네임'님</li>
-                  <li><a href="#">마이페이지</a></li>
-                  <li><a href="#">로그아웃</a></li>
-               </c:otherwise>
+                <li><a href="/member/joinFrm">회원가입</a></li>
+                <li><a href="#">로그인</a></li>
+               	</c:when>
+               	<c:otherwise>
+                <li>${loginMember.memberNickname}님</li>
+                <li><a href="#">마이페이지</a></li>
+                <li><a href="#">로그아웃</a></li>
+               	</c:otherwise>
          	</c:choose>
         </ul>
         <div class="logo">

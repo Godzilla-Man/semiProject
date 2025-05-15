@@ -21,7 +21,7 @@
 				<div class="page-title">이벤트</div>
 				<c:if test="${loginMember.memberId eq 'admin'}">
 				<div>
-					<a class="btn-point write-btn" href="#">글쓰기</a>
+					<a class="btn-point write-btn" href="/event/writeFrm">글쓰기</a>
 				</div>
 				</c:if>
 			</div>

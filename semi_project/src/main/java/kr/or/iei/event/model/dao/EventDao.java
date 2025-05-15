@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.event.model.vo.Event;
+import kr.or.iei.file.model.vo.Files;
 
 public class EventDao {
 
@@ -77,4 +78,84 @@ public class EventDao {
 		return totCnt;
 	}
 
+	public String selectEventNo(Connection conn) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String eventNo = "";
+		
+		String query = "select 'E' || to_char(sysdate, 'yymmdd') || lpad(seq_event.nextval, 4, '0') event_no from dual";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				eventNo = rset.getString("event_no");
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return eventNo;
+	}
+
+	public int insertEvent(Connection conn, Event event) {
+		PreparedStatement pstmt = null;
+		
+		int result = 0;
+		
+		String query = "insert into tbl_event values (?, ?, ?, ?, sysdate, default)";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, event.getEventNo());
+			pstmt.setString(2, event.getMemberNo());
+			pstmt.setString(3, event.getEventTitle());
+			pstmt.setString(4, event.getEventContent());
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	public int insertEventFile(Connection conn, Files file) {
+		PreparedStatement pstmt = null;
+		
+		int result = 0;
+		
+		String qeury = "insert into tbl_file values (seq_file.nextval, null, null, null, ?, ?, ?, sysdate)";
+		
+		try {
+			pstmt = conn.prepareStatement(qeury);
+			
+			pstmt.setString(1, file.getEventNo());
+			pstmt.setString(2, file.getFileName());
+			pstmt.setString(3, file.getFilePath());
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
 }

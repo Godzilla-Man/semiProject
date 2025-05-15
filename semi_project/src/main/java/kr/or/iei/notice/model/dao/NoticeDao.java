@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import kr.or.iei.common.JDBCTemplate;
+import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.notice.model.vo.Notice;
 
 public class NoticeDao {
@@ -75,5 +76,86 @@ public class NoticeDao {
 		}
 		
 		return totCnt;
+	}
+	
+	public String selectNoticeNo(Connection conn) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String noticeNo = "";
+		
+		String query = "select 'N' || to_char(sysdate, 'yymmdd') || lpad(seq_notice.nextval, 4, '0') notice_no from dual";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				noticeNo = rset.getString("notice_no");
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return noticeNo;
+	}
+	
+	public int insertNotice(Connection conn, Notice notice) {
+		PreparedStatement pstmt = null;
+		
+		int result = 0;
+		
+		String query = "insert into tbl_notice values (?, ?, ?, ?, sysdate, default)";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, notice.getNoticeNo());
+			pstmt.setString(2, notice.getMemberNo());
+			pstmt.setString(3, notice.getNoticeTitle());
+			pstmt.setString(4, notice.getNoticeContent());
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+	
+	public int insertNoticeFile(Connection conn, Files file) {
+		PreparedStatement pstmt = null;
+		
+		int result = 0;
+		
+		String qeury = "insert into tbl_file values (seq_file.nextval, null, null, ?, null, ?, ?, sysdate)";
+		
+		try {
+			pstmt = conn.prepareStatement(qeury);
+			
+			pstmt.setString(1, file.getNoticeNo());
+			pstmt.setString(2, file.getFileName());
+			pstmt.setString(3, file.getFilePath());
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
 	}
 }
