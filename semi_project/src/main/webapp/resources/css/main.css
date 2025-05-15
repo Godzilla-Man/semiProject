@@ -14,9 +14,6 @@
     width: 1000px;
     margin: 20px auto;
 }
-.sub-image>div {
-	cursor: pointer;
-}
 .image {
     width: 195px;
     height: 260px;
@@ -98,7 +95,7 @@ hr {
     bottom: 2%;
     cursor: pointer;
 }
-.image>.material-symbols-outlined.fill { /* 찜하기 버튼 클릭 시 변경 */
+.image>.material-symbols-outlined.fill { /* 찜하기 버튼 */
     font-variation-settings:
     'FILL' 1,
     'wght' 400,

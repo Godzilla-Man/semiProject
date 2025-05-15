@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<link rel="stylesheet" href="/resources/css/header.css"> 
+<link rel="stylesheet" href="/resources/css/header.css">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> <!-- 구글 아이콘 url -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> <!-- jquery 연결 url -->
@@ -163,7 +163,7 @@
             </li>
             <li><a href="#">스타일 후기</a></li>
             <li><a href="#">이벤트</a></li>
-            <li><a href="/notice/list">공지사항</a></li>
+            <li><a href="/notice/list?reqPage=1">공지사항</a></li>
             <li><a href="#">판매하기</a></li>
         </ul>
         <form class="search" action="#" method="get">
@@ -178,7 +178,7 @@
 </header>
 <div class="padding"></div>
 
-<div class="fixed">
+<div class="fixed" style="right: 280px;">
     <div class="post">
         <span class="material-symbols-outlined">add</span>
     </div>

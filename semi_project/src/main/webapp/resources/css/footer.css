@@ -21,7 +21,7 @@
 .footer>div>div>div {
     font-size: 10px;
     font-weight: normal;
-    margin-top: 8px;
+    margin-bottom: 8px;
 }
 .footer>div>div:first-child>div:first-child {
     margin-top: 20px;

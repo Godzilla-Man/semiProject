@@ -9,6 +9,9 @@ a:hover,
 .main-menu>li:hover {
     text-decoration: underline; /*마우스 올렸을 때 밑줄 스타일*/
 }
+.wrap {
+	min-height: 100vh;	
+}
 
 .header {
     margin: 0 auto; /*가운데 정렬*/
@@ -116,9 +119,6 @@ a:hover,
 .tbl-category tr:first-child td {
     border-bottom: 1px dashed black;
 }
-.medium-category>table>tr:first-child>td {
-    border-bottom: 1px solid black;
-}
 .main-menu>li:hover>.large-category,
 .large-category>li:hover>.medium-category {
     display: block; /*마우스 올리면 보이게 하기*/
@@ -139,7 +139,7 @@ a:hover,
 .fixed {
   position: fixed; /* 화면에 고정 */
   bottom: 20px; /* 아래에서 20px */
-  right: 280px; /* 오른쪽에서 350px */
+  right: 280px; /* 오른쪽에서 280px */
   padding: 0 auto;
   z-index: 9999; /* 항상 위에 표시 */
 }
