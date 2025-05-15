@@ -13,7 +13,7 @@
             <%-- 세선에 로그인 회원 정보 등록 여부에 따라 다른 메뉴 출력 --%>
         	<c:choose>
            		<c:when test="${empty sessionScope.loginMember}">
-                  <li><a href="#">회원가입</a></li>
+                  <li><a href="/member/joinFrm">회원가입</a></li>
                   <li><a href="#">로그인</a></li>
                </c:when>
                <c:otherwise>
