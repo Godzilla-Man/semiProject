@@ -4,7 +4,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/resources/css/noticeWrite.css">
 <title>공지사항</title>
 </head>
 <body>

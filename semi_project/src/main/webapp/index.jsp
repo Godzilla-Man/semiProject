@@ -4,7 +4,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/resources/css/main.css"> 
 <title>ZUP ZUP</title>
 </head>
 <body>

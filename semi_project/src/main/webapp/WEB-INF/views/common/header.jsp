@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<link rel="stylesheet" href="/resources/css/header.css">
+<link rel="stylesheet" href="/resources/css/default.css">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> <!-- 구글 아이콘 url -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> <!-- jquery 연결 url -->
@@ -179,8 +179,9 @@
 <div class="padding"></div>
 
 <div class="fixed" style="right: 280px;">
+	<%-- 로그인 시에만 판매 글을 올릴 수 있는 등록 버튼 표시 --%>
 	<c:if test="${!empty sessionScope.loginMember}">
-    <div class="post">
+    <div class="post" onclick="productEnroll()">
         <span class="material-symbols-outlined">add</span>
     </div>
     </c:if>
@@ -190,6 +191,12 @@
 </div>
 
  <script>
+ 	//로그인 후 우측 하단 + 버튼 클릭 시 상품 판매 페이지로 이동
+ 	function productEnroll() {
+ 		location.href = "/product/enroll";
+ 	}
+ 
+ 	//우측 하단 ↑ 버튼 클릭 시 상단으로 스크롤 이동
     function scrollToTop() {
         window.scrollTo({
         top: 0,
