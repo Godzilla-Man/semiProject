@@ -1,23 +1,24 @@
-package kr.or.iei.notice.model.service;
+package kr.or.iei.event.model.service;
 
 import java.sql.Connection;
 import java.util.ArrayList;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.common.ListData;
+import kr.or.iei.event.model.dao.EventDao;
+import kr.or.iei.event.model.vo.Event;
 import kr.or.iei.file.model.vo.Files;
-import kr.or.iei.notice.model.dao.NoticeDao;
 import kr.or.iei.notice.model.vo.Notice;
 
-public class NoticeService {
+public class EventService {
 	
-	private NoticeDao dao;
+	private EventDao dao;
 	
-	public NoticeService() {
-		dao = new NoticeDao();
+	public EventService() {
+		dao = new EventDao();
 	}
-	
-	public ListData<Notice> selectNoticeList(int reqPage) {
+
+	public ListData<Event> selectEventList(int reqPage) {
 		Connection conn = JDBCTemplate.getConnection();
 		
 		//한 페이지에 보여줄 게시글의 갯수
@@ -34,7 +35,7 @@ public class NoticeService {
 		int end = reqPage * viewNoticeCnt;
 		int start = end - viewNoticeCnt + 1;
 		
-		ArrayList<Notice> list = dao.selectNoticeList(conn, start, end);
+		ArrayList<Event> list = dao.selectNoticeList(conn, start, end);
 
 		//페이지네이션 작업 < 1 2 3 4 5 >
 		
@@ -61,7 +62,7 @@ public class NoticeService {
 		//이전 버튼
 		if(pageNo != 1) {
 			pageNavi += "<li>";
-			pageNavi += "<a class='page-item' href='/notice/list?reqPage=" + (pageNo - 1) + "'>";
+			pageNavi += "<a class='page-item' href='/event/list?reqPage=" + (pageNo - 1) + "'>";
 			pageNavi += "<span class='material-icons'>chevron_left</span>";
 			pageNavi += "</a></li>";
 		}
@@ -71,9 +72,9 @@ public class NoticeService {
 			
 			//페이지 번호 작성 중 사용자가 요청한 페이지일 때 클래스를 다르ㅔ 지정하여 시각적인 효과
 			if(pageNo == reqPage) {
-				pageNavi += "<a class='page-item active-page' href='/notice/list?reqPage=" + pageNo + "'>";
+				pageNavi += "<a class='page-item active-page' href='/event/list?reqPage=" + pageNo + "'>";
 			}else {
-				pageNavi += "<a class='page-item' href='/notice/list?reqPage=" + pageNo + "'>";
+				pageNavi += "<a class='page-item' href='/event/list?reqPage=" + pageNo + "'>";
 			}
 			
 			pageNavi += pageNo; //시작태그와 종료태그 사이에 작성되는 값
@@ -90,7 +91,7 @@ public class NoticeService {
 		//다음 버튼
 		if(pageNo <= totPage) {
 			pageNavi += "<li>";
-			pageNavi += "<a class='page-item' href='/notice/list?reqPage=" + pageNo + "'>";
+			pageNavi += "<a class='page-item' href='/event/list?reqPage=" + pageNo + "'>";
 			pageNavi += "<span class='material-icons'>chevron_right</span>";
 			pageNavi += "</a></li>";
 		}
@@ -101,7 +102,7 @@ public class NoticeService {
 		 * 서블릿으로 리턴해야되는 값 -> 게시글 리스트(list)와 페이지 하단에 보여줄 페이지네이션 (pageNavi)
 		 * 자바에서 메소드는 하나의 값만을 리턴할 수 있음 -> 두 개의 값을 저장할 수 있는 객체 ListData 생성
 		 */
-		ListData<Notice> listData = new ListData<Notice>();
+		ListData<Event> listData = new ListData<Event>();
 		listData.setList(list);
 		listData.setPageNavi(pageNavi);
 		
@@ -109,42 +110,42 @@ public class NoticeService {
 		
 		return listData;
 	}
-	
-	public int insertNotice(Notice notice, ArrayList<Files> fileList) {
+
+	public int insertEvent(Event event, ArrayList<Files> fileList) {
 		Connection conn = JDBCTemplate.getConnection();
 		
 		/*
 		 * 현재 기능은 등록 == insert
-		 * 대상 테이블은 tbl_notice(공지사항), tbl_file(파일)
-		 * 	- 부모 테이블 : tbl_notice
+		 * 대상 테이블은 tbl_event(이벤트), tbl_file(파일)
+		 * 	- 부모 테이블 : tbl_event
 		 * 	- 자식 테이블 : tbl_file
 		 * 
 		 * 부모 테이블의 데이터가 존재해야 자식 테이블에 insert가 가능
-		 * 즉, tbl_notice에 insert가 먼저 수행되어야 함
+		 * 즉, tbl_event에 insert가 먼저 수행되어야 함
 		 * 
 		 * 1) 게시글 번호 조회 select Query
 		 * 
-		 * 2) tbl_notice의 insert Query
-		 * insert into tbl_notice values (?, ?, ?, ?, sysdate, default);
+		 * 2) tbl_event의 insert Query
+		 * insert into tbl_event values (?, ?, ?, ?, sysdate, default);
 		 * 
 		 * 3) tbl_file의 insert Query
-		 * insert into tbl_file values (seq_file.nextval, null, null, ?, null, ?, ?, sysdate);
+		 * insert into tbl_file values (seq_file.nextval, null, null, null, ?, ?, ?, sysdate);
 		 */
 		
 		//1) 게시글 번호 조회. 아래 2)와 3)에서 동일한 게시글 번호를 공유해야 하므로 선조회
-		String noticeNo = dao.selectNoticeNo(conn);
+		String eventNo = dao.selectEventNo(conn);
 		
-		notice.setNoticeNo(noticeNo);
+		event.setEventNo(eventNo);
 		
 		//2) tbl_notice에 insert(게시글 정보 선등록)
-		int result = dao.insertNotice(conn, notice);
+		int result = dao.insertEvent(conn, event);
 		
 		if(result > 0) {
 			for(Files file : fileList) {
-				file.setNoticeNo(noticeNo); //1)에서 조회한 게시글 번호
+				file.setEventNo(eventNo); //1)에서 조회한 게시글 번호
 				
 				//3) tbl_file에 insert(게시글에 대한 파일 등록)
-				result = dao.insertNoticeFile(conn, file);
+				result = dao.insertEventFile(conn, file);
 				
 				//파일 정보 등록 중 정상 수행되지 않았을 경우 모두 롤백처리하고 메소드 종료
 				if(result < 1) {
