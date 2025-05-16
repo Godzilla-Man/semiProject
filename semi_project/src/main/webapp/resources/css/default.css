@@ -567,6 +567,11 @@ section.section.bg-section {
 .search>button {
   height: 30px;
   width: 60px;
+  background-color: #0064FF;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
 }
 #search-option, input[name=search] {
   border: 1px solid black;
@@ -721,6 +726,9 @@ section.section.bg-section {
   height: 400px;
 }
 
+.main-wrap>span>a:hover {
+	text-decoration: underline;
+}
 .sub-image {
   display: flex; /*자식 요소 가로 정렬*/
   justify-content: space-around; /*자식 요소 일정한 간격으로 띄우기*/
@@ -953,4 +961,39 @@ hr {
 }
 .write-tbl button:hover {
     cursor: pointer;
+}
+
+/* 전체 상품 화면 css */
+.filter {
+  width: 1000px;
+  margin: 0 auto;
+  display: flex;
+}
+#filter {
+  display: block;
+  height: 30px;
+  border-radius: 10px;
+}
+.price-range {
+  margin: 0 10px;
+}
+.price-range input {
+  width: 100px;
+  height: 25px;
+}
+#priceFilter {
+  width: 50px;
+  height: 29px;
+  background-color: #0064FF;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* 카테고리별 상품 화면 css */
+.category {
+	width: 1000px;
+	margin: 0 auto;
+	margin-bottom: 10px;
 }
