@@ -1,0 +1,582 @@
+/* --- 공통 스타일 (order_style.css) --- */
+
+/* 1. 기본 설정 및 레이아웃 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #FFFFFF;
+    color: #333333; /* 기본 텍스트 색상 */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    font-size: 14px; /* 바디 기본 폰트 크기 설정 (필요 시) */
+    line-height: 1.6; /* 기본 줄 간격 */
+}
+
+.container {
+    width: 100%;
+    max-width: 480px;
+    background-color: #FFFFFF;
+    padding: 20px;
+    padding-bottom: 100px; /* 하단 고정 요소 여백 */
+    box-sizing: border-box;
+    flex-grow: 1;
+}
+
+/* 2. 헤더 */
+.header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    margin-bottom: 20px;
+}
+
+.header .page-title-centered {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000000;
+    margin-right: 30px; /* 뒤로가기 버튼 공간 */
+}
+
+.back-button {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    font-size: 28px;
+    font-weight: bold;
+    color: #333333;
+    text-decoration: none;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+/* 3. 결제 흐름 표시 */
+.payment-flow-indicator {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    margin-bottom: 25px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.payment-flow-indicator .step {
+    flex: 1;
+    position: relative;
+    color: #AAAAAA; /* 비활성 */
+    padding: 0 5px;
+}
+
+.payment-flow-indicator .step:not(:last-child)::after {
+    content: ">";
+    position: absolute;
+    right: -10px; /* 아이콘 위치 조정 */
+    color: #AAAAAA;
+}
+
+.payment-flow-indicator .current {
+    color: #0064FF; /* 활성 */
+    font-weight: bold;
+}
+
+/* 4. 공통 섹션 스타일 */
+.section {
+    background-color: #FFFFFF;
+    border: 1px solid #F0F0F0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* 5. 텍스트 계층 및 유형별 스타일 */
+
+/* 페이지의 주요 제목 (H1 역할, 헤더 내 사용) */
+/* .header .page-title-centered 참고 (18px, bold) */
+
+/* 섹션의 주 제목 (H2 역할) */
+.section-main-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #000000;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+/* order_pay.html simplified-payment-summary 내부 제목에도 적용 */
+body.page-index2 .simplified-payment-summary > .section-main-title {
+    /* 공통 .section-main-title 스타일 상속 또는 여기에 추가 정의 */
+}
+/* FAQ 섹션 제목에도 적용 */
+.faq-section .section-main-title {
+    /* margin-bottom은 FAQ 섹션에 맞게 15px로 아래에서 재조정 */
+}
+
+/* 그룹 제목 (order_start.html, order_pay.html 주문 정보 내) */
+.section-title, .summary-group-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333333;
+    margin-bottom: 10px;
+    margin-top: 0px;
+}
+
+/* 일반 본문 텍스트 (p 태그 등) */
+p, .summary-group p { /* .summary-group p는 좀 더 구체적인 스타일 가짐 */
+    font-size: 14px;
+    font-weight: 300; /* 얇은 두께 */
+    color: #555555;
+    line-height: 1.6;
+    margin-top: 0;
+    margin-bottom: 6px; /* 문단 간격 기본값 */
+}
+.summary-group p { /* 좀 더 구체적인 스타일이므로 유지 */
+    margin-bottom: 6px;
+}
+
+
+/* 라벨 텍스트 */
+.label, /* order_finish.html 주문 요약 */
+.summary-label, /* order_pay/finish.html 결제 요약 */
+.term-item-label { /* order_pay.html 약관 */
+    font-size: 15px; /* 통일된 크기 */
+    font-weight: 300; /* 얇은 두께로 값과 대비 */
+    color: #555555;
+}
+.term-item-label { /* 약관은 약간 다른 톤 유지 */
+    font-size: 14px;
+    color: #4B5563;
+    /* flex, margin 등 레이아웃 속성은 각 섹션에서 별도 정의 */
+}
+
+
+/* 값 텍스트 */
+.value, /* order_finish.html 주문 요약 */
+.summary-value, /* order_pay/finish.html 결제 요약 */
+.option-text, /* order_start.html 배송 옵션 */
+.option-price { /* order_start.html 배송 옵션 가격 */
+    font-size: 15px; /* 통일된 크기 */
+    font-weight: 500; /* 라벨보다 두껍게 */
+    color: #333333;
+}
+.option-text, .option-price { /* 배송옵션은 16px 유지 */
+    font-size: 16px;
+}
+.option-price {
+    font-weight: 500; /* 가격 강조 */
+}
+.summary-item.discount .summary-value { /* 할인 값은 다른 스타일 유지 */
+    font-weight: 300;
+    color: #333333; /* 이전 #0064FF에서 변경된 것으로 보임 */
+}
+
+
+/* 강조 텍스트 (상품명, 총액 등) */
+.product-name {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333333;
+    margin-bottom: 5px;
+}
+.product-price {
+    font-size: 18px;
+    color: #555555;
+    font-weight: 500;
+}
+.payment-summary .summary-label { /* order_start.html 결제예상금액 라벨 */
+    font-size: 18px;
+    font-weight: bold;
+    color: #333333;
+}
+.payment-summary .summary-amount { /* order_start.html 결제예상금액 */
+    font-size: 24px;
+    font-weight: 500;
+    color: #333333;
+}
+.summary-label.total-label { /* 결제 요약 총계 라벨 */
+    font-size: 18px;
+    font-weight: bold;
+    color: #000000;
+}
+.summary-amount.total-amount { /* 결제 요약 총계 금액 */
+    font-size: 22px;
+    font-weight: 500;
+    color: #0064FF;
+}
+
+
+/* 부가 설명 및 링크 */
+.option-description { /* order_start.html 배송 옵션 설명 */
+    font-size: 13px;
+    color: #888888;
+    margin-left: 10px;
+}
+.view-term-link { /* order_pay.html 약관 보기 */
+    font-size: 13px;
+    font-weight: 300;
+    color: #6B7280;
+    text-decoration: underline;
+}
+.view-term-link:hover {
+    color: #0064FF;
+}
+body .payment-notice-text { /* 법적 고지 */
+    font-size: 12px;
+    font-weight: 300;
+    color: #777777;
+    line-height: 1.6;
+    padding-top: 20px;
+    margin-bottom: 20px; /* container의 padding-bottom으로 관리 */
+    
+}
+body .payment-notice-text p {
+    margin-bottom: 0; /* 추가 문단이 생길 경우를 대비 */
+}
+
+/* --- 6. 컴포넌트별 상세 스타일 --- */
+
+/* 상품 정보 (공통) */
+.product-details {
+    display: flex;
+    align-items: center;
+}
+.product-image-placeholder {
+    width: 80px;
+    height: 80px;
+    background-color: #F7F7F7;
+    border: 1px dashed #DDDDDD;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+    color: #AAAAAA;
+    font-size: 12px; /* 이미지 대체 텍스트 크기 */
+    flex-shrink: 0;
+}
+.product-text-details {
+    flex-grow: 1;
+}
+
+/* 배송 방법 선택 (order_start.html) */
+.transaction-method-section .method-options {
+    display: flex;
+    flex-direction: column;
+}
+.transaction-method-section .method-option {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    cursor: pointer;
+    border-bottom: 1px solid #F0F0F0;
+}
+.transaction-method-section .method-option:last-child {
+    border-bottom: none;
+}
+.transaction-method-section .method-option input[type="radio"] {
+    margin-right: 12px;
+    transform: scale(1.2);
+    accent-color: #0064FF;
+}
+.transaction-method-section .method-option .option-text { /* 스타일은 상단 .option-text 규칙 따름 */
+    flex-grow: 1;
+}
+
+/* 결제 예상 금액 (order_start.html) */
+.payment-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5px; /* 좌우패딩 최소화 */
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/* 주문 정보 요약 그룹 (order_pay.html) */
+body.page-index2 .order-summary-section .summary-group {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #F0F0F0;
+}
+body.page-index2 .order-summary-section .summary-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* 결제 수단 선택 (order_pay.html) */
+body.page-index2 .payment-method-selection .method-options {
+    display: flex;
+    flex-direction: column;
+}
+body.page-index2 .payment-method-selection .method-option {
+    display: flex;
+    align-items: center;
+    padding: 15px 10px;
+    cursor: pointer;
+    border: 1.5px solid #E0E0E0;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s ease;
+}
+body.page-index2 .payment-method-selection .method-option.selected {
+    border-color: #0064FF;
+}
+body.page-index2 .payment-method-selection .method-option input[type="radio"] {
+    display: none;
+}
+body.page-index2 .payment-method-selection .payment-logo {
+    height: 24px;
+    margin-right: 10px;
+}
+body.page-index2 .payment-method-selection .option-text { /* 스타일은 상단 .option-text 규칙 따름 */
+    flex-grow: 1;
+}
+
+/* 결제금액 요약 (order_pay.html simplified-payment-summary, order_finish.html payment-info-completed) */
+body.page-index2 .simplified-payment-summary,
+body.page-index3 .section.payment-info-completed { /* payment-info-completed는 section이지만, 내부 simplified-payment-summary와 유사하게 처리 */
+    padding: 20px 0; /* 상하 패딩만, 좌우는 container 패딩 활용 */
+    margin-bottom: 20px;
+    background-color: #FFFFFF; /* payment-info-completed는 section의 배경색 상속 */
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+.simplified-payment-summary .summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    /* font-size는 상단 .label, .value 등에서 구체적으로 정의 */
+}
+.simplified-payment-summary .summary-divider {
+    border: none;
+    border-top: 1px solid #E5E7EB;
+    margin: 20px 0;
+}
+.simplified-payment-summary .summary-item.total {
+    margin-top: 15px;
+}
+
+
+/* 약관 동의 (order_pay.html) */
+body.page-index2 .terms-header-inner {
+    margin-bottom: 10px; /* 약관 목록과의 간격 */
+    padding-bottom: 10px; /* 하단 구분선과의 간격 */
+    border-bottom: 1px solid #f0f0f0;
+    margin-top: 20px; /* 이전 섹션과의 간격 */
+}
+body.page-index2 .terms-header-inner .agree-all-label {
+    font-size: 17px; /* 강조 */
+    font-weight: 600;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+body.page-index2 .terms-header-inner input[type="checkbox"],
+body.page-index2 .terms-list li .term-item-label input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+    accent-color: #0064FF;
+    cursor: pointer;
+}
+body.page-index2 .terms-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 0;
+    margin-bottom: 20px; /* 법적 고지 문구와의 간격 */
+}
+body.page-index2 .terms-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0; /* 항목 간 상하 간격 */
+}
+body.page-index2 .terms-list li .term-item-label { /* 스타일은 상단 .term-item-label 규칙 따름 */
+    flex-grow: 1;
+    margin-right: 10px;
+    text-decoration: none !important;
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+
+/* 주문 완료 감사 메시지 (order_finish.html) */
+body.page-index3 .order-thank-you-message {
+    text-align: center;
+}
+body.page-index3 .order-thank-you-message h2 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #0064FF; /* 포인트 컬러 */
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+body.page-index3 .order-thank-you-message p {
+    font-size: 14px; /* 본문보다 약간 작거나 동일하게 */
+    font-weight: normal;
+    color: #333333;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+/* 주문 완료 상세 정보 (order_finish.html) */
+body.page-index3 .order-completed-summary .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px; /* 항목 간 간격 */
+}
+body.page-index3 .order-completed-summary .info-row .label { /* 스타일은 상단 .label 규칙 따름 */
+    /* 추가적인 레이아웃 조정이 필요하면 여기에 */
+}
+body.page-index3 .order-completed-summary .info-row .value { /* 스타일은 상단 .value 규칙 따름 */
+    text-align: right; /* 값 오른쪽 정렬 */
+}
+body.page-index3 .content-divider {
+    border: none;
+    border-top: 1px solid #F0F0F0;
+    margin: 15px 0;
+}
+body.page-index3 .order-completed-summary .product-details {
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+
+/* 버튼 스타일 */
+.next-button, /* order_start.html '다음' 버튼 */
+body.page-index2 .action-buttons-fixed > .payment-button { /* order_pay.html '결제하기' 버튼 */
+    display: block; /* button 기본 inline 해제 */
+    width: 100%;
+    background-color: #0064FF;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    padding: 18px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    box-sizing: border-box;
+    margin-top: 10px; /* next-button 용. payment-button은 fixed이므로 영향 없음 */
+}
+.next-button:hover,
+body.page-index2 .action-buttons-fixed > .payment-button:hover {
+    background-color: #0052CC;
+}
+
+.change-button-style { /* order_finish.html '거래 취소' 버튼 */
+    display: block;
+    width: 100%;
+    background-color: #FFFFFF;
+    color: #888888; /* 회색톤으로 변경 */
+    border: 1.5px solid #DDDDDD; /* 테두리 색상 변경 */
+    border-radius: 8px;
+    padding: 12px 20px; /* 패딩 조정 */
+    font-size: 16px; /* 크기 조정 */
+    font-weight: 500; /* 두께 조정 */
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    margin-top: 15px; /* product-details와의 간격 */
+}
+.change-button-style:hover {
+    background-color: #f8f8f8;
+}
+
+
+/* 하단 고정 버튼 영역 (order_pay.html) */
+body.page-index2 .action-buttons-fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #FFFFFF; /* 배경색 명시 */
+    padding: 15px 20px;
+    border-top: 1px solid #E0E0E0;
+    z-index: 1000;
+    display: flex; /* 내부 버튼 중앙 정렬 위해 */
+    justify-content: center;
+}
+
+
+/* 결제 완료 페이지 - 결제 정보 simplified-payment-summary (박스 없는 형태) */
+body.page-index3 .payment-info-completed .simplified-payment-summary.no-box-styling {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin-bottom: 0;
+}
+
+
+/* FAQ 섹션 (order_finish.html) */
+.faq-section {
+    margin-top: 30px;
+}
+.faq-section .section-main-title {
+    margin-bottom: 10px; /* 목록과의 간격 조정 */
+}
+
+.faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 15px 0; /* 상하 패딩 */
+    background-color: transparent;
+    border: none;
+    text-align: left;
+    font-size: 14px; /* 본문보다 약간 작거나 동일 */
+    font-weight: 500; /* 일반 본문보다 약간 두껍게 */
+    color: #333333;
+    cursor: pointer;
+    outline: none;
+}
+.faq-question span:first-child {
+    flex-grow: 1;
+    padding-right: 10px;
+}
+.faq-icon {
+    width: 12px;
+    height: 12px;
+    border-left: 2px solid #888888;
+    border-bottom: 2px solid #888888;
+    transform: rotate(-45deg);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+.faq-question.active .faq-icon,
+.faq-icon.open {
+    transform: rotate(135deg);
+}
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+    font-size: 14px;
+    font-weight: 300; /* 질문보다 얇게 */
+    color: #555555;
+    background-color: #f9f9f9; /* 답변 배경색 */
+    line-height: 1.6;
+}
+.faq-answer.open {
+    max-height: 500px; /* 내용에 따라 조절 */
+    padding: 15px 20px; /* 내부 패딩 */
+    transition: max-height 0.4s ease-in, padding 0.4s ease-in;
+}
+.faq-answer p {
+    margin: 0;
+}

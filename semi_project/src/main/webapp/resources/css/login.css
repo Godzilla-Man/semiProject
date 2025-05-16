@@ -1,0 +1,87 @@
+.login-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.login-wrap {
+	width: 500px; 
+}
+
+.input-wrap-id {
+	padding : 15px 30px 7px 30px;
+}
+.input-wrap-pw {
+	padding : 7px 30px 15px 30px;
+}
+
+.login-wrap {
+	padding : 15px 30px;
+}
+
+.login-wrap .login-button-box {
+	padding : 20px 30px;
+}
+
+.login-wrap .login-button-box>button {
+	width: 100%;
+}
+
+
+
+.page-title {
+	display: block;
+ 	font-size: 2em;
+	margin-top: 0.67em;
+	margin-bottom: 0.67em;
+	margin-left: 0;
+	margin-right: 0;
+	font-weight: bold;
+	text-align : center;
+}
+
+label {
+	display: none;
+}
+
+.input-item {
+		height : 44px;
+		padding-right : 13px;
+		padding-left : 13px;
+		border-bottom : 2px solid #d9d9d9;
+		display : flex;
+		align-items : center;
+}
+.input-item>input {
+		width : 100%;
+		border : none;
+		font-size : 14px;
+}
+.input-item>input:focus {
+		outline : none;
+}
+.input-item>input::placeholder {
+	font-weight: bold;
+}
+
+.member-link-box {
+	display: flex;
+	justify-content: center;
+	gap : 50px;
+	margin-bottom : 50px;
+}
+
+.member-link-box>a:hover {
+	text-decoration: underline;
+}
+
+button {
+	background-color: #0064FF;
+	border : none;
+	border-radius: 5px;
+	font-size : 16px;
+	font-weight : bold;
+	color : white;
+	width : 100%;
+	height : 50px;
+}

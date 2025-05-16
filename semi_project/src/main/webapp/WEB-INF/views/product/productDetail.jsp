@@ -372,7 +372,7 @@ textarea::placeholder {
 
 /* 프로필 영역 */
 .comment-box-profile {
-  display: flex;
+  display:  flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
