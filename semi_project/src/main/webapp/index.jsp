@@ -18,8 +18,8 @@
 	                    <img src="/" onclick="clickProd(this)"> <%-- 최신 상품 이미지 url --%>
 	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
 	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명이 길면은 어떻게 보일까나</span>
+	                <div class="image-info">
+	                    <span class="image-prod"><a href="/">상품명이 길면은 어떻게 보일까나</a></span>
 	                    <span class="image-price">10,000원</span>
 	                </div>
 	            </div>
@@ -28,8 +28,8 @@
 	                    <img src="/" onclick="clickProd(this)">
 	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
 	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
+	                <div class="image-info">
+	                    <span class="image-prod"><a href="/">상품명</a></span>
 	                    <span class="image-price">가격</span>
 	                </div>
 	            </div>
@@ -38,8 +38,8 @@
 	                    <img src="/" onclick="clickProd(this)">
 	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
 	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
+	                <div class="image-info">
+	                    <span class="image-prod"><a href="/">상품명</a></span>
 	                    <span class="image-price">가격</span>
 	                </div>
 	            </div>
@@ -48,8 +48,8 @@
 	                    <img src="/" onclick="clickProd(this)">
 	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
 	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
+	                <div class="image-info">
+	                    <span class="image-prod"><a href="/">상품명</a></span>
 	                    <span class="image-price">가격</span>
 	                </div>
 	            </div>
@@ -60,8 +60,8 @@
 	                    <img src="/" onclick="clickProd(this)">
 	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
 	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
+	                <div class="image-info">
+	                    <span class="image-prod"><a href="/">상품명</a></span>
 	                    <span class="image-price">가격</span>
 	                </div>
 	            </div>
@@ -70,8 +70,8 @@
 	                    <img src="/" onclick="clickProd(this)">
 	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
 	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
+	                <div class="image-info">
+	                    <span class="image-prod"><a href="/">상품명</a></span>
 	                    <span class="image-price">가격</span>
 	                </div>
 	            </div>
@@ -80,8 +80,8 @@
 	                    <img src="/" onclick="clickProd(this)">
 	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
 	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
+	                <div class="image-info">
+	                    <span class="image-prod"><a href="/">상품명</a></span>
 	                    <span class="image-price">가격</span>
 	                </div>
 	            </div>
@@ -90,8 +90,8 @@
 	                    <img src="/" onclick="clickProd(this)">
 	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
 	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
+	                <div class="image-info">
+	                    <span class="image-prod"><a href="/">상품명</a></span>
 	                    <span class="image-price">가격</span>
 	                </div>
 	            </div>
@@ -173,6 +173,14 @@
 	</div>
 	
 	<script>
+		//첫 번째 더보기 클릭 시 전체 판매 상품 페이지로 이동
+		function fullProduct() {
+			location.href="/product/allList";
+		}
+		//두 번째 더보기 클릭 시 스타일 후기 게시판으로 이동
+		function styleReview() {
+			location.href="/";
+		}
 		//클릭 시 해당 상품 상세 페이지로 이동
 		function clickProd(obj) {
 			location.href="http://www.naver.com";

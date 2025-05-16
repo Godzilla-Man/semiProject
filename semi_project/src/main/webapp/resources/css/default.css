@@ -745,6 +745,7 @@ section.section.bg-section {
   display: block;
   width: 100%;
   height: 100%;
+  cursor: pointer;
 }
 .image>div {
   width: 30px;
@@ -765,6 +766,9 @@ section.section.bg-section {
   height: 60%;
   max-width: 100%;
   padding: 0 5px;
+}
+.image-prod>a:hover {
+	text-decoration: underline;
 }
 .image-price {
   float: right;

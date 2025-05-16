@@ -34,7 +34,7 @@
 					</tr>
 					<c:forEach var="event" items="${eventList}">
 					<tr>
-						<td>${event.eventTitle}</td>
+						<td><a href="#">${event.eventTitle}</a></td>
 						<td>${event.memberNo}</td>
 						<td>${event.eventEnrollDate}</td>
 						<td>${event.readCount}</td>
