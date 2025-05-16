@@ -6,7 +6,6 @@
 <head>
 <meta charset="UTF-8">
 <title>공지사항</title>
-<link rel="stylesheet" href="/resources/css/notice.css">
 <style>
 .main-menu>li:nth-child(4) {
 	font-weight: bold;
@@ -17,11 +16,11 @@
 	<div class="wrap">
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 	    <div class="notice-wrap">
-			<div class="page-header">
-				<div class="page-title">공지사항</div>
+			<div class="notice-header">
+				<div class="notice-title">공지사항</div>
 				<c:if test="${loginMember.memberId eq 'admin'}">
 				<div>
-					<a class="btn-point write-btn" href="#">글쓰기</a>
+					<a class="write-btn" href="#">글쓰기</a>
 				</div>
 				</c:if>
 			</div>

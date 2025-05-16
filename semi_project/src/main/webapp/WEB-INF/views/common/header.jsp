@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<link rel="stylesheet" href="/resources/css/header.css">
+<link rel="stylesheet" href="/resources/css/default.css">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> <!-- 구글 아이콘 url -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> <!-- jquery 연결 url -->
@@ -43,32 +43,32 @@
                                     <td>악세사리</td>
                                 </tr>
                                 <tr class="small-category">
-                                    <td><a href="#">점퍼</a></td>
-                                    <td><a href="#">긴팔티</a></td>
-                                    <td><a href="#">데님팬츠</a></td>
-                                    <td><a href="#">신발</a></td>
+                                    <td><a href="/product/categoryList?ctg=C01">점퍼</a></td>
+                                    <td><a href="/product/categoryList?ctg=C05">긴팔티</a></td>
+                                    <td><a href="/product/categoryList?ctg=C10">데님팬츠</a></td>
+                                    <td><a href="/product/categoryList?ctg=C13">신발</a></td>
                                 </tr>
                                 <tr class="small-category">
-                                    <td><a href="#">자켓</a></td>
-                                    <td><a href="#">반팔티</a></td>
-                                    <td><a href="#">정장팬츠</a></td>
-                                    <td><a href="#">모자</a></td>
+                                    <td><a href="/product/categoryList?ctg=C02">자켓</a></td>
+                                    <td><a href="/product/categoryList?ctg=C06">반팔티</a></td>
+                                    <td><a href="/product/categoryList?ctg=C11">정장팬츠</a></td>
+                                    <td><a href="/product/categoryList?ctg=C14">모자</a></td>
                                 </tr>
                                 <tr class="small-category">
-                                    <td><a href="#">코트</a></td>
-                                    <td><a href="#">니트</a></td>
-                                    <td><a href="#">반바지</a></td>
-                                    <td><a href="#">목걸이</a></td>
+                                    <td><a href="/product/categoryList?ctg=C03">코트</a></td>
+                                    <td><a href="/product/categoryList?ctg=C07">니트</a></td>
+                                    <td><a href="/product/categoryList?ctg=C12">반바지</a></td>
+                                    <td><a href="/product/categoryList?ctg=C15">목걸이</a></td>
                                 </tr>
                                 <tr class="small-category">
-                                    <td><a href="#">패딩</a></td>
-                                    <td><a href="#">후드</a></td>
+                                    <td><a href="/product/categoryList?ctg=C04">패딩</a></td>
+                                    <td><a href="/product/categoryList?ctg=C08">후드</a></td>
                                     <td></td>
-                                    <td><a href="#">반지</a></td>
+                                    <td><a href="/product/categoryList?ctg=C16">반지</a></td>
                                 </tr>
                                  <tr class="small-category">
                                     <td></td>
-                                    <td><a href="#">셔츠</a></td>
+                                    <td><a href="/product/categoryList?ctg=C09">셔츠</a></td>
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -85,32 +85,32 @@
                                     <td>악세사리</td>
                                 </tr>
                                 <tr class="small-category">
-                                    <td><a href="#">점퍼</a></td>
-                                    <td><a href="#">긴팔티</a></td>
-                                    <td><a href="#">데님팬츠</a></td>
-                                    <td><a href="#">신발</a></td>
+                                    <td><a href="/product/categoryList?ctg=C17">점퍼</a></td>
+                                    <td><a href="/product/categoryList?ctg=C21">긴팔티</a></td>
+                                    <td><a href="/product/categoryList?ctg=C26">데님팬츠</a></td>
+                                    <td><a href="/product/categoryList?ctg=C29">신발</a></td>
                                 </tr>
                                 <tr class="small-category">
-                                    <td><a href="#">자켓</a></td>
-                                    <td><a href="#">반팔티</a></td>
-                                    <td><a href="#">정장팬츠</a></td>
-                                    <td><a href="#">모자</a></td>
+                                    <td><a href="/product/categoryList?ctg=C18">자켓</a></td>
+                                    <td><a href="/product/categoryList?ctg=C22">반팔티</a></td>
+                                    <td><a href="/product/categoryList?ctg=C27">정장팬츠</a></td>
+                                    <td><a href="/product/categoryList?ctg=C30">모자</a></td>
                                 </tr>
                                 <tr class="small-category">
-                                    <td><a href="#">코트</a></td>
-                                    <td><a href="#">니트</a></td>
-                                    <td><a href="#">반바지</a></td>
-                                    <td><a href="#">목걸이</a></td>
+                                    <td><a href="/product/categoryList?ctg=C19">코트</a></td>
+                                    <td><a href="/product/categoryList?ctg=C23">니트</a></td>
+                                    <td><a href="/product/categoryList?ctg=C28">반바지</a></td>
+                                    <td><a href="/product/categoryList?ctg=C31">목걸이</a></td>
                                 </tr>
                                 <tr class="small-category">
-                                    <td><a href="#">패딩</a></td>
-                                    <td><a href="#">후드</a></td>
+                                    <td><a href="/product/categoryList?ctg=C20">패딩</a></td>
+                                    <td><a href="/product/categoryList?ctg=C24">후드</a></td>
                                     <td></td>
-                                    <td><a href="#">반지</a></td>
+                                    <td><a href="/product/categoryList?ctg=C32">반지</a></td>
                                 </tr>
                                  <tr class="small-category">
                                     <td></td>
-                                    <td><a href="#">셔츠</a></td>
+                                    <td><a href="/product/categoryList?ctg=C25">셔츠</a></td>
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -127,32 +127,32 @@
                                     <td>악세사리</td>
                                 </tr>
                                 <tr class="small-category">
-                                    <td><a href="#">점퍼</a></td>
-                                    <td><a href="#">긴팔티</a></td>
-                                    <td><a href="#">데님팬츠</a></td>
-                                    <td><a href="#">신발</a></td>
+                                    <td><a href="/product/categoryList?ctg=C33">점퍼</a></td>
+                                    <td><a href="/product/categoryList?ctg=C37">긴팔티</a></td>
+                                    <td><a href="/product/categoryList?ctg=C42">데님팬츠</a></td>
+                                    <td><a href="/product/categoryList?ctg=C45">신발</a></td>
                                 </tr>
                                 <tr class="small-category">
-                                    <td><a href="#">자켓</a></td>
-                                    <td><a href="#">반팔티</a></td>
-                                    <td><a href="#">정장팬츠</a></td>
-                                    <td><a href="#">모자</a></td>
+                                    <td><a href="/product/categoryList?ctg=C34">자켓</a></td>
+                                    <td><a href="/product/categoryList?ctg=C38">반팔티</a></td>
+                                    <td><a href="/product/categoryList?ctg=C43">정장팬츠</a></td>
+                                    <td><a href="/product/categoryList?ctg=C46">모자</a></td>
                                 </tr>
                                 <tr class="small-category">
-                                    <td><a href="#">코트</a></td>
-                                    <td><a href="#">니트</a></td>
-                                    <td><a href="#">반바지</a></td>
-                                    <td><a href="#">목걸이</a></td>
+                                    <td><a href="/product/categoryList?ctg=C35">코트</a></td>
+                                    <td><a href="/product/categoryList?ctg=C39">니트</a></td>
+                                    <td><a href="/product/categoryList?ctg=C44">반바지</a></td>
+                                    <td><a href="/product/categoryList?ctg=C47">목걸이</a></td>
                                 </tr>
                                 <tr class="small-category">
-                                    <td><a href="#">패딩</a></td>
-                                    <td><a href="#">후드</a></td>
+                                    <td><a href="/product/categoryList?ctg=C36">패딩</a></td>
+                                    <td><a href="/product/categoryList?ctg=C40">후드</a></td>
                                     <td></td>
-                                    <td><a href="#">반지</a></td>
+                                    <td><a href="/product/categoryList?ctg=C48">반지</a></td>
                                 </tr>
                                  <tr class="small-category">
                                     <td></td>
-                                    <td><a href="#">셔츠</a></td>
+                                    <td><a href="/product/categoryList?ctg=C41">셔츠</a></td>
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -179,8 +179,9 @@
 <div class="padding"></div>
 
 <div class="fixed" style="right: 280px;">
+	<%-- 로그인 시에만 판매 글을 올릴 수 있는 등록 버튼 표시 --%>
 	<c:if test="${!empty sessionScope.loginMember}">
-    <div class="post">
+    <div class="post" onclick="productEnroll()">
         <span class="material-symbols-outlined">add</span>
     </div>
     </c:if>
@@ -190,6 +191,12 @@
 </div>
 
  <script>
+ 	//로그인 후 우측 하단 + 버튼 클릭 시 상품 판매 페이지로 이동
+ 	function productEnroll() {
+ 		location.href = "/product/enroll";
+ 	}
+ 
+ 	//우측 하단 ↑ 버튼 클릭 시 상단으로 스크롤 이동
     function scrollToTop() {
         window.scrollTo({
         top: 0,

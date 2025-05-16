@@ -5,7 +5,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/resources/css/notice.css">
 <title>이벤트</title>
 <style>
 .main-menu>li:nth-child(3) {
@@ -17,11 +16,11 @@
 	<div class="wrap">
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 	    <div class="notice-wrap">
-			<div class="page-header">
-				<div class="page-title">이벤트</div>
+			<div class="notice-header">
+				<div class="notice-title">이벤트</div>
 				<c:if test="${loginMember.memberId eq 'admin'}">
 				<div>
-					<a class="btn-point write-btn" href="/event/writeFrm">글쓰기</a>
+					<a class="write-btn" href="/event/writeFrm">글쓰기</a>
 				</div>
 				</c:if>
 			</div>

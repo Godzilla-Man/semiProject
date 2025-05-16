@@ -4,7 +4,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/resources/css/noticeWrite.css">
 <title>이벤트</title>
 </head>
 <body>
