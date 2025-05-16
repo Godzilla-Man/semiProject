@@ -19,10 +19,10 @@
 			<div class="notice-header">
 				<div class="notice-title"><a href="/notice/list?reqPage=1">공지사항</a></div>
 				<c:if test="${loginMember.memberId eq 'admin'}">
-				</c:if>
 				<div>
 					<a class="write-btn" href="/notice/writeFrm">글쓰기</a>
 				</div>
+				</c:if>
 			</div>
 			<div class="list-content">
 				<table class="tbl-list">

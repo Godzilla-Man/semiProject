@@ -164,7 +164,7 @@
             <li><a href="#">스타일 후기</a></li>
             <li><a href="/event/list?reqPage=1">이벤트</a></li>
             <li><a href="/notice/list?reqPage=1">공지사항</a></li>
-            <li><a href="#">판매하기</a></li>
+            <li><a href="/product/enroll">판매하기</a></li>
         </ul>
         <form class="search" action="#" method="get">
             <select name="search-option" id="search-option">

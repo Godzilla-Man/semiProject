@@ -5,14 +5,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>공지사항</title>
+<title>이벤트</title>
 </head>
 <body>
 	<div class="wrap">
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 	    <div class="view-wrap">
 	        <div class="notice-header">
-	            <div class="notice-title"><a href="/notice/list?reqPage=1">공지사항</a></div>
+	            <div class="notice-title"><a href="/event/list?reqPage=1">이벤트</a></div>
 	            <c:if test="${loginMember.memberId eq 'admin'}">
 	            <div class="div-btn">
 	                <a class="write-btn" href="#">수정</a>
@@ -24,15 +24,15 @@
 	            <table>
 	                <tr>
 	                    <th style="width: 10%; font-size: 20px; border-right: 1px solid black; border-top: 1px solid black;">제 목</th>
-	                    <td colspan="5" style="width: 80%; font-size: 20px; padding-left: 10px; border-top: 1px solid black;">${notice.noticeTitle}</td>
+	                    <td colspan="5" style="width: 80%; font-size: 20px; padding-left: 10px; border-top: 1px solid black;">${event.eventTitle}</td>
 	                </tr>
 	                <tr>
 	                    <th style="width: 10%; border-right: 1px solid black;">작성자</th>
-	                    <td style="width: 30%; border-right: 1px solid black; padding-left: 10px;">${notice.memberNo}</td>
+	                    <td style="width: 30%; border-right: 1px solid black; padding-left: 10px;">${event.memberNo}</td>
 	                    <th style="width: 10%; border-right: 1px solid black;">작성일</th>
-	                    <td style="width: 20%; border-right: 1px solid black; padding-left: 10px;">${notice.noticeEnrollDate}</td>
+	                    <td style="width: 20%; border-right: 1px solid black; padding-left: 10px;">${event.eventEnrollDate}</td>
 	                    <th style="width: 10%; border-right: 1px solid black;">조회수</th>
-	                    <td style="width: 20%; padding-left: 10px;">${notice.readCount}</td>
+	                    <td style="width: 20%; padding-left: 10px;">${event.readCount}</td>
 	                </tr>
 	                <tr>
 	                    <td colspan="6" style="border-bottom: none; text-align: center;">
@@ -41,7 +41,7 @@
 	                </tr>
 	                <tr>
 	                    <td colspan="6">
-	                        <div>${notice.noticeContent}</div>
+	                        <div>${event.eventContent}</div>
 	                    </td>
 	                </tr>
 	            </table>
