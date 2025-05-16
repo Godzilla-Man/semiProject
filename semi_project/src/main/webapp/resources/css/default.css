@@ -842,12 +842,16 @@ hr {
   display: flex;
   justify-content: space-between;
 }
-.notice-title {
+.notice-title>a {
+  display: block;
   height: 40px;
   line-height: 40px;
   font-weight: bold;
   font-size: 18px;
   padding-left: 10px;
+}
+.notice-title>a:hover {
+	text-decoration: underline;
 }
 .write-btn {
   display: block;
@@ -887,7 +891,6 @@ hr {
 }
 .tbl-list tr:hover {
   background-color: #8ab6f8;
-  cursor: pointer;
 }
 #pageNavi {
   margin: 15px 0;

@@ -17,10 +17,10 @@
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 	    <div class="notice-wrap">
 			<div class="notice-header">
-				<div class="notice-title">공지사항</div>
+				<div class="notice-title"><a href="/notice/list?reqPage=1">공지사항</a></div>
 				<c:if test="${loginMember.memberId eq 'admin'}">
 				<div>
-					<a class="write-btn" href="#">글쓰기</a>
+					<a class="write-btn" href="/notice/writeFrm">글쓰기</a>
 				</div>
 				</c:if>
 			</div>
@@ -34,7 +34,7 @@
 					</tr>
 					<c:forEach var="notice" items="${noticeList}">
 					<tr>
-						<td>${notice.noticeTitle}</td>
+						<td><a href="#">${notice.noticeTitle}</a></td>
 						<td>${notice.memberNo}</td>
 						<td>${notice.noticeEnrollDate}</td>
 						<td>${notice.readCount}</td>
