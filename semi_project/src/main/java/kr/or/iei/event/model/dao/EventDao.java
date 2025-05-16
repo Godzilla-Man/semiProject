@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.event.model.vo.Event;
 import kr.or.iei.file.model.vo.Files;
+import kr.or.iei.notice.model.vo.Notice;
 
 public class EventDao {
 
@@ -158,4 +159,100 @@ public class EventDao {
 		
 		return result;
 	}
+
+	public Event selectOneEvent(Connection conn, String eventNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		Event event = null;
+		
+		String query = "select event_title, event_content, (select member_nickname from tbl_member where member_no = member_no) as event_writer, event_enroll_date, read_count from tbl_event where event_no = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, eventNo);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				event = new Event();
+				event.setEventNo(eventNo);
+				event.setEventTitle(rset.getString("event_title"));
+				event.setEventContent(rset.getString("event_content"));
+				event.setMemberNo(rset.getString("event_writer"));
+				event.setEventEnrollDate(rset.getString("event_enroll_date"));
+				event.setReadCount(rset.getInt("read_count"));
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return event;
+	}
+
+	public int updateReadCount(Connection conn, String eventNo) {
+		PreparedStatement pstmt = null;
+		
+		int result = 0;
+		
+		String query = "update tbl_event set read_count = read_count + 1 where event_no = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, eventNo);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	public ArrayList<Files> selectEventFileList(Connection conn, String eventNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		ArrayList<Files> fileList = new ArrayList<Files>();
+		
+		String query = "select file_no, file_name, file_path from tbl_file where event_no = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, eventNo);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Files file = new Files();
+				file.setFileNo(rset.getInt("file_no"));
+				file.setEventNo(eventNo);
+				file.setFileName(rset.getString("file_name"));
+				file.setFilePath(rset.getString("file_path"));
+				
+				fileList.add(file);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return fileList;
+	}
+	
 }

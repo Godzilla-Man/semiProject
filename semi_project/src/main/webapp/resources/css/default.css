@@ -481,7 +481,7 @@ section.section.bg-section {
   line-height: 40px;
 }
 .pagination .page-item.active-page {
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   color: #fff;
 }
 
@@ -502,10 +502,10 @@ section.section.bg-section {
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
 }
 .header-wrap {
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   margin: 0 auto;
   padding-bottom: 20px;
 }
@@ -567,7 +567,7 @@ section.section.bg-section {
 .search>button {
   height: 30px;
   width: 60px;
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   color: white;
   border: none;
   border-radius: 10px;
@@ -641,14 +641,14 @@ section.section.bg-section {
   margin-bottom: 10px;
 }
 .post {
-  border: 1px solid #0064FF;
+  border: 1px solid rgb(41, 64, 246);
   background-color: white;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .top {
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -659,7 +659,7 @@ section.section.bg-section {
   'wght' 400,
   'GRAD' 0,
   'opsz' 24;
-  color: #0064FF;
+  color: rgb(41, 64, 246);
   font-size: 45px;
 }
 .top>.material-symbols-outlined {
@@ -745,6 +745,7 @@ section.section.bg-section {
   display: block;
   width: 100%;
   height: 100%;
+  cursor: pointer;
 }
 .image>div {
   width: 30px;
@@ -765,6 +766,9 @@ section.section.bg-section {
   height: 60%;
   max-width: 100%;
   padding: 0 5px;
+}
+.image-prod>a:hover {
+	text-decoration: underline;
 }
 .image-price {
   float: right;
@@ -794,7 +798,7 @@ hr {
   margin-bottom: 20px;
   width: 80px;
   height: 30px;
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   color: white;
   font-weight: bold;
   border: none;
@@ -842,12 +846,16 @@ hr {
   display: flex;
   justify-content: space-between;
 }
-.notice-title {
+.notice-title>a {
+  display: block;
   height: 40px;
   line-height: 40px;
   font-weight: bold;
   font-size: 18px;
   padding-left: 10px;
+}
+.notice-title>a:hover {
+	text-decoration: underline;
 }
 .write-btn {
   display: block;
@@ -855,9 +863,9 @@ hr {
   height: 40px;
   line-height: 40px;
   text-align: center;
-  border: 2px solid #0064FF;
+  border: 2px solid rgb(41, 64, 246);
   border-radius: 10px;
-  color: #0064FF;
+  color: rgb(41, 64, 246);
   font-weight: bold;
 }
 .write-btn:hover {
@@ -874,11 +882,12 @@ hr {
 }
 .tbl-list th {
   height: 50px;
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   border-left: 1px solid white;
   color: white;
+  cursor: default;
 }
 .tbl-list td {
   height: 50px;
@@ -886,7 +895,6 @@ hr {
 }
 .tbl-list tr:hover {
   background-color: #8ab6f8;
-  cursor: pointer;
 }
 #pageNavi {
   margin: 15px 0;
@@ -954,7 +962,7 @@ hr {
   margin: 5px;
   border: none;
   border-radius: 30px;
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   color: white;
   font-size: 20px;
   font-weight: bold;
@@ -984,7 +992,7 @@ hr {
 #priceFilter {
   width: 50px;
   height: 29px;
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   color: white;
   border: none;
   border-radius: 10px;
@@ -997,3 +1005,67 @@ hr {
 	margin: 0 auto;
 	margin-bottom: 10px;
 }
+
+/* 공지사항, 이벤트 상세 페이지 css */
+.view-wrap {
+  width: 1000px;
+  margin: 0 auto;
+}
+.div-btn {
+  display: flex;
+}
+.del-btn {
+  display: block;
+  width: 100px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border: 2px solid rgb(41, 64, 246);
+  border-radius: 10px;
+  background-color: rgb(41, 64, 246);
+  color: white;
+  font-weight: bold;
+  margin-left: 5px;
+}
+.notice-view {
+  margin: 20px 0;
+  border: 10px solid lightgray;
+  border-radius: 10px;
+}
+.notice-view>table {
+  width: 100%;
+  border-spacing: 0;
+}
+.notice-view>table th,
+.notice-view>table td {
+  padding: 10px 0;
+  border-bottom: 1px solid black;
+}
+.notice-view>table img {
+  width: 900px;
+  height: 300px;
+}
+.notice-view>table div {
+  width: 900px;
+  margin: 0 auto;
+}
+/* /notice/view.jsp 하단에 아직 구현 안 한 div와 관련된 css
+.view-wrap>div:last-child {
+  border-top: 1px solid rgb(41, 64, 246);
+  border-bottom: 1px solid rgb(41, 64, 246);
+  margin-bottom: 20px;
+}
+.next-notice {
+  border-top: 1px solid rgb(41, 64, 246);
+  border-bottom: 1px solid rgb(41, 64, 246);
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+}
+.next-notice:hover {
+  background-color: #8ab6f8;
+}
+.next-notice span {
+  margin: 0 15px;
+}
+*/

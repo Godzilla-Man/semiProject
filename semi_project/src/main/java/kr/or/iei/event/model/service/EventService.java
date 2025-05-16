@@ -163,4 +163,47 @@ public class EventService {
 		
 		return result;
 	}
+
+	public Event selectOneEvent(String eventNo, boolean updChk) {
+		Connection conn = JDBCTemplate.getConnection();
+		
+		/*
+		 * 게시글 상세 조회
+		 * 
+		 * 1) 게시글 정보 조회
+		 * 2) 게시글 조회수 업데이트
+		 * 3) 게시글에 대한 파일 정보 조회
+		 */
+		
+		//1) 게시글 정보 조회
+		Event event = dao.selectOneEvent(conn, eventNo);
+		
+		if(event != null) {
+			//2) 게시글 조회수 업데이트
+			int result = 0;
+			
+			/*
+			 * updChk == true : 상세보기 이동 시 호출
+			 * updChk == false : 수정하기로 이동 시 호출
+			 */
+			if(updChk) {
+				result = dao.updateReadCount(conn, eventNo);				
+			}
+			
+			if(result > 0 || !updChk) {
+				JDBCTemplate.commit(conn);
+				
+				//3) 게시글에 대한 파일 정보 조회
+				ArrayList<Files> fileList = dao.selectEventFileList(conn, eventNo);
+				event.setFileList(fileList);
+				
+			}else {
+				JDBCTemplate.rollback(conn);
+			}
+		}
+		
+		JDBCTemplate.close(conn);
+		
+		return event;
+	}
 }
