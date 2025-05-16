@@ -1,4 +1,4 @@
-package kr.or.iei.member.model.Dao;
+package kr.or.iei.member.model.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

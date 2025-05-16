@@ -3,7 +3,7 @@ package kr.or.iei.member.model.service;
 import java.sql.Connection;
 
 import kr.or.iei.common.JDBCTemplate;
-import kr.or.iei.member.model.Dao.MemberDao;
+import kr.or.iei.member.model.dao.MemberDao;
 import kr.or.iei.member.model.vo.Member;
 
 public class MemberService {

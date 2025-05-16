@@ -63,7 +63,9 @@ public class LoginServlet extends HttpServlet {
 			//4.2 화면 구현에 필요한 데이터 등록
 			HttpSession session = request.getSession();
 			session.setAttribute("loginMember", loginMember);
-			session.setMaxInactiveInterval(600);	//세션 만료시간(초) - 10분
+			//테스트용
+			session.setMaxInactiveInterval(7200);	//세션 만료시간(초) - 10분
+//			session.setMaxInactiveInterval(600);	//세션 만료시간(초) - 10분
 		}		
 			//4.3 페이지 이동
 		view.forward(request, response);
