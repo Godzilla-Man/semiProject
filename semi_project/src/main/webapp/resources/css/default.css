@@ -481,7 +481,7 @@ section.section.bg-section {
   line-height: 40px;
 }
 .pagination .page-item.active-page {
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   color: #fff;
 }
 
@@ -502,10 +502,10 @@ section.section.bg-section {
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
 }
 .header-wrap {
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   margin: 0 auto;
   padding-bottom: 20px;
 }
@@ -567,7 +567,7 @@ section.section.bg-section {
 .search>button {
   height: 30px;
   width: 60px;
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   color: white;
   border: none;
   border-radius: 10px;
@@ -641,14 +641,14 @@ section.section.bg-section {
   margin-bottom: 10px;
 }
 .post {
-  border: 1px solid #0064FF;
+  border: 1px solid rgb(41, 64, 246);
   background-color: white;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .top {
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -659,7 +659,7 @@ section.section.bg-section {
   'wght' 400,
   'GRAD' 0,
   'opsz' 24;
-  color: #0064FF;
+  color: rgb(41, 64, 246);
   font-size: 45px;
 }
 .top>.material-symbols-outlined {
@@ -794,7 +794,7 @@ hr {
   margin-bottom: 20px;
   width: 80px;
   height: 30px;
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   color: white;
   font-weight: bold;
   border: none;
@@ -855,9 +855,9 @@ hr {
   height: 40px;
   line-height: 40px;
   text-align: center;
-  border: 2px solid #0064FF;
+  border: 2px solid rgb(41, 64, 246);
   border-radius: 10px;
-  color: #0064FF;
+  color: rgb(41, 64, 246);
   font-weight: bold;
 }
 .write-btn:hover {
@@ -874,11 +874,12 @@ hr {
 }
 .tbl-list th {
   height: 50px;
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   border-left: 1px solid white;
   color: white;
+  cursor: default;
 }
 .tbl-list td {
   height: 50px;
@@ -954,7 +955,7 @@ hr {
   margin: 5px;
   border: none;
   border-radius: 30px;
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   color: white;
   font-size: 20px;
   font-weight: bold;
@@ -984,7 +985,7 @@ hr {
 #priceFilter {
   width: 50px;
   height: 29px;
-  background-color: #0064FF;
+  background-color: rgb(41, 64, 246);
   color: white;
   border: none;
   border-radius: 10px;
