@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>줍줍 - 주문 테스트 페이지(★구현 후 삭제 예정)</title>
+</head>
+<body>
+	<h1>상품 정보 입력 (테스트용)</h1>
+    <form action="<%= request.getContextPath() %>/order/start" method="GET"> 
+    	상품ID: <input type="text" name="productId" value="productId"><br>
+    	상품명: <input type="text" name="productName" value="productName"><br>
+    	상품가격: <input type="text" name="productPrice" value="productPrice"><br>
+    	배송방법: <br>
+    		선불택배 <input type="radio" id="deliveryPrepaid" name="deliveryMethod" value="prepaid" checked><br>
+    		후불택배 <input type="radio" id="deliveryPostpaid" name="deliveryMethod" value="postpaid"><br>
+        수량(무조건 1개): <input type="number" name="quantity" value="1"><br>  
+              
+        <input type="submit" value="/order/orderStart">
+    </form>
+
+</body>
+</html>
