@@ -381,6 +381,8 @@
     </div>
   </div>
 </div>
+<input type="hidden" name="categoryCode" id="categoryCode">
+
 
 
 
@@ -512,21 +514,83 @@ document.addEventListener('DOMContentLoaded', () => {
     ]
   };
 
-  //소분류(C코드) 정의
-  const subCategories = {
-    'B1': ['남성 점퍼', '남성 자켓', '남성 코트', '남성 패딩'],
-    'B2': ['남성 긴팔티', '남성 반팔티', '남성 니트', '남성 후드', '남성 셔츠'],
-    'B3': ['남성 데님팬츠', '남성 정장팬츠', '남성 반바지'],
-    'B4': ['남성 신발', '남성 목걸이', '남성 반지', '남성 모자'],
-    'B5': ['여성 점퍼', '여성 자켓', '여성 코트', '여성 패딩'],
-    'B6': ['여성 긴팔티', '여성 반팔티', '여성 니트', '여성 후드', '여성 셔츠'],
-    'B7': ['여성 데님팬츠', '여성 정장팬츠', '여성 반바지'],
-    'B8': ['여성 신발', '여성 목걸이', '여성 반지', '여성 모자'],
-    'B9': ['공용 점퍼', '공용 자켓', '공용 코트', '공용 패딩'],
-    'B10': ['공용 긴팔티', '공용 반팔티', '공용 니트', '공용 후드', '공용 셔츠'],
-    'B11': ['공용 데님팬츠', '공용 정장팬츠', '공용 반바지'],
-    'B12': ['공용 신발', '공용 목걸이', '공용 반지', '공용 모자']
-  };
+//소분류(C코드) 정의 (기존 문자열 배열 → 객체 배열 {code, name}로 변경)
+// 목적: 소분류 클릭 시 C코드를 함께 넘기기 위해 필요
+const subCategories = {
+ 'B1': [
+   { code: 'C01', name: '남성 점퍼' },
+   { code: 'C02', name: '남성 자켓' },
+   { code: 'C03', name: '남성 코트' },
+   { code: 'C04', name: '남성 패딩' }
+ ],
+ 'B2': [
+   { code: 'C05', name: '남성 긴팔티' },
+   { code: 'C06', name: '남성 반팔티' },
+   { code: 'C07', name: '남성 니트' },
+   { code: 'C08', name: '남성 후드' },
+   { code: 'C09', name: '남성 셔츠' }
+ ],
+ 'B3': [
+   { code: 'C10', name: '남성 데님팬츠' },
+   { code: 'C11', name: '남성 정장팬츠' },
+   { code: 'C12', name: '남성 반바지' }
+ ],
+ 'B4': [
+   { code: 'C13', name: '남성 신발' },
+   { code: 'C14', name: '남성 목걸이' },
+   { code: 'C15', name: '남성 반지' },
+   { code: 'C16', name: '남성 모자' }
+ ],
+ 'B5': [
+   { code: 'C17', name: '여성 점퍼' },
+   { code: 'C18', name: '여성 자켓' },
+   { code: 'C19', name: '여성 코트' },
+   { code: 'C20', name: '여성 패딩' }
+ ],
+ 'B6': [
+   { code: 'C21', name: '여성 긴팔티' },
+   { code: 'C22', name: '여성 반팔티' },
+   { code: 'C23', name: '여성 니트' },
+   { code: 'C24', name: '여성 후드' },
+   { code: 'C25', name: '여성 셔츠' }
+ ],
+ 'B7': [
+   { code: 'C26', name: '여성 데님팬츠' },
+   { code: 'C27', name: '여성 정장팬츠' },
+   { code: 'C28', name: '여성 반바지' }
+ ],
+ 'B8': [
+   { code: 'C29', name: '여성 신발' },
+   { code: 'C30', name: '여성 목걸이' },
+   { code: 'C31', name: '여성 반지' },
+   { code: 'C32', name: '여성 모자' }
+ ],
+ 'B9': [
+   { code: 'C33', name: '공용 점퍼' },
+   { code: 'C34', name: '공용 자켓' },
+   { code: 'C35', name: '공용 코트' },
+   { code: 'C36', name: '공용 패딩' }
+ ],
+ 'B10': [
+   { code: 'C37', name: '공용 긴팔티' },
+   { code: 'C38', name: '공용 반팔티' },
+   { code: 'C39', name: '공용 니트' },
+   { code: 'C40', name: '공용 후드' },
+   { code: 'C41', name: '공용 셔츠' }
+ ],
+ 'B11': [
+   { code: 'C42', name: '공용 데님팬츠' },
+   { code: 'C43', name: '공용 정장팬츠' },
+   { code: 'C44', name: '공용 반바지' }
+ ],
+ 'B12': [
+   { code: 'C45', name: '공용 신발' },
+   { code: 'C46', name: '공용 목걸이' },
+   { code: 'C47', name: '공용 반지' },
+   { code: 'C48', name: '공용 모자' }
+ ]
+};
+
 
   //선택된 항목 저장 변수
   let selectedMain = '';
@@ -562,7 +626,7 @@ function updateCategoryText() {
       midCategoryList.innerHTML = '';
       subCategoryList.innerHTML = '';
 
-      // 선택한 대분류에 해당하는 중분류 항목 동적 생성
+   // 선택한 대분류에 해당하는 중분류 항목 동적 생성
       const mids = midCategories[selectedMain];
       mids.forEach(mid => {
         const li = document.createElement('li');
@@ -580,12 +644,14 @@ function updateCategoryText() {
           selectedSub = '';
           subCategoryList.innerHTML = '';
 
-       // 선택한 중분류에 해당하는 소분류 항목 동적 생성
-          const subs = subCategories[li.dataset.code];
+          // 소분류 항목 정의를 객체로 리팩토링: { code, name } 구조
+          const subs = subCategories[li.dataset.code]; // li.dataset.code는 B코드
+
           subs.forEach(sub => {
             const subLi = document.createElement('li');
-            subLi.textContent = sub;
-            subLi.dataset.name = sub;
+            subLi.textContent = sub.name;
+            subLi.dataset.name = sub.name;
+            subLi.dataset.code = sub.code; // C코드를 dataset에 포함
             subLi.classList.add('sub-category-item');
 
             // 3단계: 소분류 클릭
@@ -594,17 +660,21 @@ function updateCategoryText() {
               subLi.classList.add('active');
 
               selectedSub = subLi.dataset.name;
-              updateCategoryText(); // 대/중/소 최종 선택 상태 표시
+              updateCategoryText(); // 텍스트 표시용
+
+              // 선택된 C코드를 숨겨진 input에 설정
+              document.getElementById("categoryCode").value = subLi.dataset.code;
             });
 
             subCategoryList.appendChild(subLi);
           });
 
-          updateCategoryText(); // 중분류까지 선택 시 갱신
+          updateCategoryText(); // 중분류까지 선택 시 텍스트 갱신
         });
 
         midCategoryList.appendChild(li);
       });
+
 
       updateCategoryText(); // 대분류만 선택 시 갱신
     });
