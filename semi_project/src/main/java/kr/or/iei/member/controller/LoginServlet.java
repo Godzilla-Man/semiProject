@@ -49,7 +49,7 @@ public class LoginServlet extends HttpServlet {
 		
 		if(loginMember == null) {
 			//4.1 이동할 JSP 페이지 경로 지정
-			view = request.getRequestDispatcher("/WEB-INF/view/common/msg.jsp");
+			view = request.getRequestDispatcher("/WEB-INF/views/common/msg.jsp");
 			
 			//4.2 화면 구현에 필요한 데이터 등록
 			request.setAttribute("title", "알림");
@@ -58,6 +58,7 @@ public class LoginServlet extends HttpServlet {
 			request.setAttribute("loc", "/member/loginFrm");
 		} else {
 			//4.1 이동할 JSP 페이지 경로 지정
+			//view = request.getRequestDispatcher("/index.jsp");
 			view = request.getRequestDispatcher("/index.jsp");
 			
 			//4.2 화면 구현에 필요한 데이터 등록

@@ -30,6 +30,8 @@ public class MemberDao {
 			pstmt.setString(7, member.getMemberAddr());
 			pstmt.setString(8, member.getMemberEmail());
 			
+			System.out.println(member.toString());
+			
 			result = pstmt.executeUpdate();
 			
 		} catch (SQLException e) {
@@ -40,6 +42,64 @@ public class MemberDao {
 		}
 		
 		return result;
+	}
+	
+	//ID 중복체크
+	public int idDuplChk(Connection conn, String memberId) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		int cnt = 0;
+		
+		String query = "select count(*) cnt from tbl_member where member_id = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberId);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				cnt = rset.getInt("cnt");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return cnt;
+	}
+	
+	//닉네임 중복체크
+	public int nicknameDuplChk(Connection conn, String memberNickname) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		int cnt = 0;
+		
+		String query = "select count(*) cnt from tbl_member where member_nickname = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNickname);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				cnt = rset.getInt("cnt");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return cnt;
 	}
 
 	//로그인

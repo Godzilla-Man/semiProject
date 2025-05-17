@@ -80,12 +80,12 @@ public class JoinServlet extends HttpServlet {
 			request.setAttribute("title", "성공");
 			request.setAttribute("msg", "회원가입이 완료되었습니다.");
 			request.setAttribute("icon", "success");
-			request.setAttribute("loc", "/member/login");	//로그인페이지 완성하면 수정!!
+			request.setAttribute("loc", "/member/loginFrm");
 		} else {
 			request.setAttribute("title", "실패");
 			request.setAttribute("msg", "회원가입 중, 오류가 발생하였습니다.");
 			request.setAttribute("icon", "error");
-			request.setAttribute("loc", "/");
+			request.setAttribute("loc", "/member/joinFrm");
 		}
 			//4.3 페이지 이동
 		view.forward(request, response);
