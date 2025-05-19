@@ -185,5 +185,71 @@ public class ProductDao {
 		
 		return productList;
 	}
+
+	public ArrayList<Product> selectAllList(Connection conn) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String qeury = "select * from tbl_prod";
+		
+		ArrayList<Product> productAllList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(qeury);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				
+				productAllList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productAllList;
+	}
+
+	public ArrayList<Product> selectCategoryList(Connection conn, String category) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select product_no, product_name, product_price from tbl_prod where category_code = ?";
+		
+		ArrayList<Product> productCtgList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, category);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				
+				productCtgList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productCtgList;
+	}
     
 }

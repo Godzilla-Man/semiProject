@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,174 +26,32 @@
 	        		<button id="priceFilter">적용</button>
 	        	</div>
         	</div>
-        	<div class="sub-image">
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)"> <%-- 최신 상품 이미지 url --%>
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명이 길면은 어떻게 보일까나</span>
-	                    <span class="image-price">10,000원</span>
-	                </div>
-	            </div>
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)">
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
-	                    <span class="image-price">가격</span>
-	                </div>
-	            </div>
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)">
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
-	                    <span class="image-price">가격</span>
-	                </div>
-	            </div>
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)">
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
-	                    <span class="image-price">가격</span>
-	                </div>
-	            </div>
-	        </div>
-	        <div class="sub-image">
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)"> <%-- 최신 상품 이미지 url --%>
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명이 길면은 어떻게 보일까나</span>
-	                    <span class="image-price">10,000원</span>
-	                </div>
-	            </div>
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)">
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
-	                    <span class="image-price">가격</span>
-	                </div>
-	            </div>
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)">
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
-	                    <span class="image-price">가격</span>
-	                </div>
-	            </div>
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)">
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
-	                    <span class="image-price">가격</span>
-	                </div>
-	            </div>
-	        </div>
-	        <div class="sub-image">
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)"> <%-- 최신 상품 이미지 url --%>
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명이 길면은 어떻게 보일까나</span>
-	                    <span class="image-price">10,000원</span>
-	                </div>
-	            </div>
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)">
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
-	                    <span class="image-price">가격</span>
-	                </div>
-	            </div>
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)">
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
-	                    <span class="image-price">가격</span>
-	                </div>
-	            </div>
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)">
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
-	                    <span class="image-price">가격</span>
-	                </div>
-	            </div>
-	        </div>
-	        <div class="sub-image">
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)"> <%-- 최신 상품 이미지 url --%>
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명이 길면은 어떻게 보일까나</span>
-	                    <span class="image-price">10,000원</span>
-	                </div>
-	            </div>
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)">
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
-	                    <span class="image-price">가격</span>
-	                </div>
-	            </div>
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)">
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
-	                    <span class="image-price">가격</span>
-	                </div>
-	            </div>
-	            <div>
-	                <div class="image">
-	                    <img src="/" onclick="clickProd(this)">
-	                    <span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
-	                </div>
-	                <div class="image-info" onclick="clickProd(this)">
-	                    <span class="image-prod">상품명</span>
-	                    <span class="image-price">가격</span>
-	                </div>
-	            </div>
-	        </div>
+    		<div class="style-review-board">
+				<div class="cards-container">
+					<!-- reviewList가 request scope에 있는 경우 반복문으로 카드 출력 -->
+					<c:choose>
+						<c:when test="${empty productList}">
+							<span style="display: block; width: 250px;">해당하는 상품이 존재하지 않습니다.</span>
+						</c:when>
+						<c:otherwise>
+							<c:forEach var="prod" items="${productList}">
+							<div style="color: inherit; text-decoration: none;">
+								<div class="card">
+									<div class="image">
+										<img src="/" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
+										<span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
+									</div>
+									<div class="image-info" onclick="clickProd(this)">
+										<span class="image-prod"><a href="/?=productNo=${prod.productNo}">${prod.productName}</a></span>
+										<span class="image-price">${prod.productPrice }</span>
+									</div>
+								</div>
+							</div>
+							</c:forEach>
+						</c:otherwise>
+					</c:choose>
+				</div>
+			</div>
 		</div>
 		<jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
 	</div>
@@ -210,7 +69,7 @@
 		});
 	
 		//클릭 시 해당 상품 상세 페이지로 이동
-		function clickProd(obj) {
+		function clickProd(productNo) {
 			location.href="http://www.naver.com";
 		}
 	

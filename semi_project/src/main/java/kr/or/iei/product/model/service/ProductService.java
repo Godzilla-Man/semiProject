@@ -81,4 +81,20 @@ public class ProductService {
 		return productList;
 	}
 
+	public ArrayList<Product> selectAllList() {
+		Connection conn = JDBCTemplate.getConnection();
+		ArrayList<Product> productAllList = dao.selectAllList(conn);
+		JDBCTemplate.close(conn);
+		
+		return productAllList;
+	}
+
+	public ArrayList<Product> selectCategoryList(String category) {
+		Connection conn = JDBCTemplate.getConnection();
+		ArrayList<Product> productCtgList = dao.selectCategoryList(conn, category);
+		JDBCTemplate.close(conn);
+		
+		return productCtgList;
+	}
+
 }

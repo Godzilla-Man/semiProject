@@ -1,6 +1,7 @@
 package kr.or.iei.product.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.product.model.service.ProductService;
+import kr.or.iei.product.model.vo.Product;
 
 /**
  * Servlet implementation class ProductCategoryListServlet
@@ -35,11 +37,12 @@ public class ProductCategoryListServlet extends HttpServlet {
 		
 		ProductService service = new ProductService();
 		Category ctg = service.selectCategory(category);
-		//ArrayList<Product> categoryList = service.selectCategoryList(category);
+		ArrayList<Product> productCtgList = service.selectCategoryList(category);
 		
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/productCategoryList.jsp");
 		
 		request.setAttribute("ctg", ctg);
+		request.setAttribute("productList", productCtgList);
 		
 		view.forward(request, response);
 		
