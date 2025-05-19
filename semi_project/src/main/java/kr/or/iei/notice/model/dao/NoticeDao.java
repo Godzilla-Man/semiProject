@@ -158,4 +158,99 @@ public class NoticeDao {
 		
 		return result;
 	}
+
+	public Notice selectOneNotice(Connection conn, String noticeNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		Notice notice = null;
+		
+		String query = "select notice_title, notice_content, (select member_nickname from tbl_member where member_no = member_no) as notice_writer, notice_enroll_date, read_count from tbl_notice where notice_no = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, noticeNo);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				notice = new Notice();
+				notice.setNoticeNo(noticeNo);
+				notice.setNoticeTitle(rset.getString("notice_title"));
+				notice.setNoticeContent(rset.getString("notice_content"));
+				notice.setMemberNo(rset.getString("notice_writer"));
+				notice.setNoticeEnrollDate(rset.getString("notice_enroll_date"));
+				notice.setReadCount(rset.getInt("read_count"));
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return notice;
+	}
+
+	public int updateReadCount(Connection conn, String noticeNo) {
+		PreparedStatement pstmt = null;
+		
+		int result = 0;
+		
+		String query = "update tbl_notice set read_count = read_count + 1 where notice_no = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, noticeNo);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	public ArrayList<Files> selectNoticeFileList(Connection conn, String noticeNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		ArrayList<Files> fileList = new ArrayList<Files>();
+		
+		String query = "select file_no, file_name, file_path from tbl_file where notice_no = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, noticeNo);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Files file = new Files();
+				file.setFileNo(rset.getInt("file_no"));
+				file.setNoticeNo(noticeNo);
+				file.setFileName(rset.getString("file_name"));
+				file.setFilePath(rset.getString("file_path"));
+				
+				fileList.add(file);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return fileList;
+	}
 }

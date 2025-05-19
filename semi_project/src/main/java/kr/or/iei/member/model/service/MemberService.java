@@ -29,6 +29,22 @@ public class MemberService {
 		
 		return result;
 	}
+	
+	//ID 중복체크
+	public int idDuplChk(String memberId) {
+		Connection conn = JDBCTemplate.getConnection();
+		int cnt = dao.idDuplChk(conn, memberId);
+		JDBCTemplate.close(conn);
+		return cnt;
+	}
+	
+	//닉네임 중복체크
+	public int nicknameDuplChk(String memberNickname) {
+		Connection conn = JDBCTemplate.getConnection();
+		int cnt = dao.nicknameDuplChk(conn, memberNickname);
+		JDBCTemplate.close(conn);
+		return cnt;
+	}
 
 	//로그인
 	public Member memberLogin(String loginId, String loginPw) {

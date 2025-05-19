@@ -6,16 +6,16 @@
 </head>
 <body>
 	<h1>상품 정보 입력 (테스트용)</h1>
-    <form action="<%= request.getContextPath() %>/order/start" method="GET"> 
-    	상품ID: <input type="text" name="productId" value="productId"><br>
-    	상품명: <input type="text" name="productName" value="productName"><br>
-    	상품가격: <input type="text" name="productPrice" value="productPrice"><br>
+    <form action="/order/orderStart" method="GET"> 
+    	상품ID: <input type="text" name="productId" value="P2505120001"><br>
+    	상품명: <input type="text" name="productName" value="나이키 신발"><br>
+    	상품가격: <input type="text" name="productPrice" value="50000"><br>
     	배송방법: <br>
-    		선불택배 <input type="radio" id="deliveryPrepaid" name="deliveryMethod" value="prepaid" checked><br>
-    		후불택배 <input type="radio" id="deliveryPostpaid" name="deliveryMethod" value="postpaid"><br>
+    		선불택배 <input type="radio" id="deliveryPrepaid" name="deliveryMethod" value="M1" checked><br>
+    		후불택배 <input type="radio" id="deliveryPostpaid" name="deliveryMethod" value="M3"><br>
         수량(무조건 1개): <input type="number" name="quantity" value="1"><br>  
               
-        <input type="submit" value="/order/orderStart">
+        <button type="submit">해당 주문건 테스트 시작</button>
     </form>
 
 </body>

@@ -17,7 +17,7 @@
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 	    <div class="notice-wrap">
 			<div class="notice-header">
-				<div class="notice-title">이벤트</div>
+				<div class="notice-title"><a href="/event/list?reqPage=1">이벤트</a></div>
 				<c:if test="${loginMember.memberId eq 'admin'}">
 				<div>
 					<a class="write-btn" href="/event/writeFrm">글쓰기</a>
@@ -34,7 +34,7 @@
 					</tr>
 					<c:forEach var="event" items="${eventList}">
 					<tr>
-						<td>${event.eventTitle}</td>
+						<td><a href="/event/view?eventNo=${event.eventNo}&updChk=true">${event.eventTitle}</a></td>
 						<td>${event.memberNo}</td>
 						<td>${event.eventEnrollDate}</td>
 						<td>${event.readCount}</td>

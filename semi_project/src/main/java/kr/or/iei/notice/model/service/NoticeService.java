@@ -162,4 +162,47 @@ public class NoticeService {
 		
 		return result;
 	}
+
+	public Notice selectOneNotice(String noticeNo, boolean updChk) {
+		Connection conn = JDBCTemplate.getConnection();
+		
+		/*
+		 * 게시글 상세 조회
+		 * 
+		 * 1) 게시글 정보 조회
+		 * 2) 게시글 조회수 업데이트
+		 * 3) 게시글에 대한 파일 정보 조회
+		 */
+		
+		//1) 게시글 정보 조회
+		Notice notice = dao.selectOneNotice(conn, noticeNo);
+		
+		if(notice != null) {
+			//2) 게시글 조회수 업데이트
+			int result = 0;
+			
+			/*
+			 * updChk == true : 상세보기 이동 시 호출
+			 * updChk == false : 수정하기로 이동 시 호출
+			 */
+			if(updChk) {
+				result = dao.updateReadCount(conn, noticeNo);				
+			}
+			
+			if(result > 0 || !updChk) {
+				JDBCTemplate.commit(conn);
+				
+				//3) 게시글에 대한 파일 정보 조회
+				ArrayList<Files> fileList = dao.selectNoticeFileList(conn, noticeNo);
+				notice.setFileList(fileList);
+				
+			}else {
+				JDBCTemplate.rollback(conn);
+			}
+		}
+		
+		JDBCTemplate.close(conn);
+		
+		return notice;
+	}
 }
