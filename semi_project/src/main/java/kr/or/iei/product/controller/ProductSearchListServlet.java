@@ -14,16 +14,16 @@ import kr.or.iei.product.model.service.ProductService;
 import kr.or.iei.product.model.vo.Product;
 
 /**
- * Servlet implementation class ProductAllList
+ * Servlet implementation class ProductSearchListServlet
  */
-@WebServlet("/product/allList")
-public class ProductAllListServlet extends HttpServlet {
+@WebServlet("/product/searchList")
+public class ProductSearchListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ProductAllListServlet() {
+    public ProductSearchListServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,12 +32,23 @@ public class ProductAllListServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//값 추출
+		String searchOption = request.getParameter("searchOption");
+		String search = request.getParameter("search");
+		
+		//로직 - 검색한 상품명 또는 작성자와 같은지
 		ProductService service = new ProductService();
-		ArrayList<Product> productAllList = service.selectAllList();
+		ArrayList<Product> productList = new ArrayList<Product>();
+		if(searchOption.equals("productName")) { //상품명으로 검색시
+			productList = service.searchProdcutName(search);
+		}else { //작성자로 검색 시
+			productList = service.searchMemberNickname(search);
+		}
 		
-		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/productAllList.jsp");
+		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/productSearchList.jsp");
 		
-		request.setAttribute("productList", productAllList);
+		request.setAttribute("productList", productList);
+		request.setAttribute("search", search);
 		
 		view.forward(request, response);
 	}

@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,9 +12,7 @@
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 		<div class="main-wrap">
 			<div class="category">
-				<span>${ctg.larCategoryName}</span> > 
-				<span>${ctg.midCategoryName}</span> >
-				<span>${ctg.categoryName}</span>
+				<span>'${search}'로 검색하신 결과입니다.</span>
 			</div>
 			<div class="filter">
 	            <select id="filter" onchange="filterChange()">
@@ -45,19 +42,10 @@
 								<div class="card">
 									<div class="image">
 										<img src="/" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
-										<c:if test="${not empty sessionScope.loginMember}">
-											<c:choose>
-												<c:when test="${memberWishList.productNo eq prod.productNo}">
-												<span class="material-symbols-outlined fill" onclick="delWishList(this, '${loginMember.memberNo}', '${prod.productNo}')">favorite</span>
-												</c:when>
-												<c:otherwise>
-												<span class="material-symbols-outlined" onclick="addWishList(this, '${loginMember.memberNo}', '${prod.productNo}')">favorite</span>
-												</c:otherwise>
-											</c:choose>
-										</c:if>
+										<span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
 									</div>
-									<div class="image-info">
-										<span class="image-prod"><a href="/?productNo=${prod.productNo}">${prod.productName}</a></span>
+									<div class="image-info" onclick="clickProd(this)">
+										<span class="image-prod"><a href="/?=productNo=${prod.productNo}">${prod.productName}</a></span>
 										<span class="image-price">${prod.productPrice }</span>
 									</div>
 								</div>
@@ -89,69 +77,18 @@
 		}
 	
 		//찜하기 추가
-		function addWishList(obj, memberNo, productNo) {
-			swal({
-				title : "알림",
-				text : "해당 상품을 찜하기 리스트에 추가하시겠습니까?",
-				icon : "warning",
-				buttons : {
-					cancel : {
-						text : "취소",
-						value : false,
-						visible : true,
-						closeModal : true
-					},
-					confirm : {
-						text : "추가",
-						value : true,
-						visible : true,
-						closeModal : true
-					}
-				}
-			}).then(function(val){
-				if(val){ //추가 버튼 클릭 시
-					$.ajax({
-						url : "/product/addWishList",
-						data : {"memberNo" : memberNo, "productNo" : productNo},
-						type : "get",
-						success : function(res){
-							if(res > 0){
-								swal({
-									title : "성공",
-									text : "찜하기 리스트에 추가되었습니다.",
-									icon : "success"
-								});
-							}else if(res == 0){
-								swal({
-									title : "실패",
-									text : "찜하기 리스트 추가 중 오류가 발생했습니다.",
-									icon : "error"
-								});
-							}else{
-								swal({
-									title : "실패",
-									text : "이미 찜한 상품입니다.",
-									icon : "error"
-								});
-							}
-						},
-						error : function(){
-							console.log("ajax 통신 오류");
-						}
-					})
-				}
-			})
-			
-			//클릭시 스타일 변경
+		function addWishList(obj) {
+			//1. 로그인이 안 되어 있는데 클릭 시 로그인하라는 알림창 띄워주기
+			//2. 로그인이 되어 있으면 클릭 시 스타일 변경 및 찜한 상품에 등록
 			$(obj).attr("class", "material-symbols-outlined fill");
-			$(obj).attr("onclick", "delWhishList(this, " + memberNo + ", " + productNo + ")");
+			$(obj).attr("onclick", "delWhishList(this)");
 		}
 		
 		//찜하기 삭제
 		function delWhishList(obj) {
 			//1. 클릭 시 스타일 변경 및 찜한 상품에서 삭제
 			$(obj).attr("class", "material-symbols-outlined");
-			$(obj).attr("onclick", "addWishList(this, " + memberNo + ", " + productNo + ")");
+			$(obj).attr("onclick", "addWishList(this)");
 		}
 	</script>
 </body>

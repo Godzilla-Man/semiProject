@@ -1,7 +1,6 @@
-package kr.or.iei.product.controller;
+package kr.or.iei.event.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -10,20 +9,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import kr.or.iei.product.model.service.ProductService;
-import kr.or.iei.product.model.vo.Product;
+import kr.or.iei.event.model.service.EventService;
+import kr.or.iei.event.model.vo.Event;
 
 /**
- * Servlet implementation class ProductAllList
+ * Servlet implementation class EventUpdateFrmServlet
  */
-@WebServlet("/product/allList")
-public class ProductAllListServlet extends HttpServlet {
+@WebServlet("/event/updateFrm")
+public class EventUpdateFrmServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ProductAllListServlet() {
+    public EventUpdateFrmServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,12 +31,17 @@ public class ProductAllListServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ProductService service = new ProductService();
-		ArrayList<Product> productAllList = service.selectAllList();
+		//값 추출
+		String eventNo = request.getParameter("eventNo");
 		
-		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/productAllList.jsp");
+		//로직 - 게시글 1개 정보 조회
+		EventService service = new EventService();
+		Event event = service.selectOneEvent(eventNo, false);
 		
-		request.setAttribute("productList", productAllList);
+		//결과 처리
+		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/event/updateFrm.jsp");
+		
+		request.setAttribute("event", event);
 		
 		view.forward(request, response);
 	}

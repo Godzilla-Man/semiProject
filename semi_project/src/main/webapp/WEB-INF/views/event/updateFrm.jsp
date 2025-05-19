@@ -15,20 +15,20 @@
 	<div class="wrap">
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 	    <div class="write-notice">
-	        <div class="write-title">이벤트</div>
-	        <form action="/event/write" method="post" enctype="multipart/form-data">
-	        	<input type="hidden" name="eventWriter" value="${loginMember.memberNo}">
+	        <div class="write-title">이벤트 수정</div>
+	        <form action="/event/update" method="post" enctype="multipart/form-data">
+	        	<input type="hidden" name="eventNo" value="${event.eventNo}">
 	            <table class="write-tbl">
 	                <tr>
 	                    <th>제목</th>
 	                    <td>
-	                        <input type="text" name="eventTitle">
+	                        <input type="text" name="eventTitle" value="${event.eventTitle}">
 	                    </td>
 	                </tr>
 	                <tr>
 	                    <th style="width: 20%;">내용</th>
 	                    <td style="width: 80%;">
-	                        <textarea name="eventContent"></textarea>
+	                        <textarea name="eventContent">${event.eventContent}</textarea>
 	                    </td>
 	                </tr>
 	                <tr>
@@ -39,7 +39,7 @@
 	                </tr>
 	                <tr>
 	                    <td colspan="2">
-	                        <button type="submit">작성</button>
+	                        <button type="submit">수정</button>
 	                    </td>
 	                </tr>
 	            </table>
