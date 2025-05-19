@@ -166,7 +166,7 @@ public class EventDao {
 		
 		Event event = null;
 		
-		String query = "select event_title, event_content, (select member_nickname from tbl_member where member_no = member_no) as event_writer, event_enroll_date, read_count from tbl_event where event_no = ?";
+		String query = "select event_title, event_content, (select member_nickname from tbl_member b where b.member_no = a.member_no) as event_writer, event_enroll_date, read_count from tbl_event a where event_no = ?";
 		
 		try {
 			pstmt = conn.prepareStatement(query);

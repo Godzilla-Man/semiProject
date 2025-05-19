@@ -165,7 +165,7 @@ public class NoticeDao {
 		
 		Notice notice = null;
 		
-		String query = "select notice_title, notice_content, (select member_nickname from tbl_member where member_no = member_no) as notice_writer, notice_enroll_date, read_count from tbl_notice where notice_no = ?";
+		String query = "select notice_title, notice_content, (select member_nickname from tbl_member b where b.member_no = a.member_no) as notice_writer, notice_enroll_date, read_count from tbl_notice a where a.notice_no = ?";
 		
 		try {
 			pstmt = conn.prepareStatement(query);
