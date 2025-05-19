@@ -943,6 +943,14 @@ hr {
   border: none;
   border-bottom: 1px solid black;
 }
+.write-tbl input[name=eventTitle] {
+  width: 770px;
+  height: 50px;
+  font-size: 25px;
+  margin: 5px;
+  border: none;
+  border-bottom: 1px solid black;
+}
 .write-tbl textarea {
   width: 760px;
   height: 300px;
@@ -952,6 +960,11 @@ hr {
   resize: none;
 }
 .write-tbl input[name=noticeFile] {
+  height: 50px;
+  line-height: 50px;
+  font-size: 15px;
+}
+.write-tbl input[name=eventFile] {
   height: 50px;
   line-height: 50px;
   font-size: 15px;
@@ -1017,8 +1030,8 @@ hr {
 .del-btn {
   display: block;
   width: 100px;
-  height: 40px;
-  line-height: 40px;
+  height: 43px;
+  line-height: 43px;
   text-align: center;
   border: 2px solid rgb(41, 64, 246);
   border-radius: 10px;
@@ -1026,6 +1039,7 @@ hr {
   color: white;
   font-weight: bold;
   margin-left: 5px;
+  cursor: pointer;
 }
 .notice-view {
   margin: 20px 0;

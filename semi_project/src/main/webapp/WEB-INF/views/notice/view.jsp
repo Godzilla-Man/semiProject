@@ -15,8 +15,8 @@
 	            <div class="notice-title"><a href="/notice/list?reqPage=1">공지사항</a></div>
 	            <c:if test="${loginMember.memberId eq 'admin'}">
 	            <div class="div-btn">
-	                <a class="write-btn" href="#">수정</a>
-	                <a class="del-btn" href="#">삭제</a>
+	                <a class="write-btn" href="/notice/updateFrm?noticeNo=${notice.noticeNo}">수정</a>
+	                <button class="del-btn" onclick="deleteNotice('${notice.noticeNo}')">삭제</button>
 	            </div>
 				</c:if>
 	        </div>
@@ -60,5 +60,34 @@
 	    </div>
 		<jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
 	</div>
+	
+	<script>
+	//게시글 삭제
+	function deleteNotice(noticeNo){
+		swal({
+			title : "삭제",
+			text : "게시글을 삭제하시겠습니까?",
+			icon : "warning",
+			buttons : {
+				cancel : {
+					text : "취소",
+					value : false,
+					visible : true,
+					closeModal : true
+				},
+				confirm : {
+					text : "삭제",
+					value : true,
+					visible : true,
+					closeModal : true
+				}
+			}
+		}).then(function(val){
+			if(val){
+				location.href = "/notice/delete?noticeNo=" + noticeNo;
+			}
+		});
+	}
+	</script>
 </body>
 </html>

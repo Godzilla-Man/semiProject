@@ -254,5 +254,76 @@ public class EventDao {
 		
 		return fileList;
 	}
+
+	public int updateEvent(Connection conn, Event event) {
+		PreparedStatement pstmt = null;
+		
+		String query = "update tbl_event set event_title = ?, event_content = ? where event_no = ?";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, event.getEventTitle());
+			pstmt.setString(2, event.getEventContent());
+			pstmt.setString(3, event.getEventNo());
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	public int deleteEventFile(Connection conn, String preFileNo) {
+		PreparedStatement pstmt = null;
+		
+		String query = "delete from tbl_file where file_no = ?";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, preFileNo);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	public int deleteEvent(Connection conn, String eventNo) {
+		PreparedStatement pstmt = null;
+		
+		String query = "delete from tbl_event where event_no = ?";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, eventNo);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
 	
 }
