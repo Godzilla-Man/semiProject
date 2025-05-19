@@ -1,8 +1,10 @@
 package kr.or.iei.product.model.service;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
+import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.product.model.dao.ProductDao;
@@ -54,5 +56,29 @@ public class ProductService {
         // 4. 결과 반환
         return result1 * result2; // 둘 다 성공해야 양수, 아니면 0 또는 음수
     }
+
+	public Category selectCategory(String category) {
+		Connection conn = JDBCTemplate.getConnection();
+		Category ctg = dao.selectCategory(conn, category);
+		JDBCTemplate.close(conn);
+		
+		return ctg;
+	}
+
+	public ArrayList<Product> searchProdcutName(String productName) {
+		Connection conn = JDBCTemplate.getConnection();
+		ArrayList<Product> productList = dao.searchProductName(conn, productName);
+		JDBCTemplate.close(conn);
+		
+		return productList;
+	}
+
+	public ArrayList<Product> searchMemberNickname(String memberNickname) {
+		Connection conn = JDBCTemplate.getConnection();
+		ArrayList<Product> productList = dao.searchMemberNickname(conn, memberNickname);
+		JDBCTemplate.close(conn);
+		
+		return productList;
+	}
 
 }

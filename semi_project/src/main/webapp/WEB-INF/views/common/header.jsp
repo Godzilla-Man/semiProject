@@ -166,10 +166,10 @@
             <li><a href="/notice/list?reqPage=1">공지사항</a></li>
             <li><a href="/product/enroll">판매하기</a></li>
         </ul>
-        <form class="search" action="#" method="get">
-            <select name="search-option" id="search-option">
-                <option value="title">상품명</option>
-                <option value="nickname">작성자</option>
+        <form class="search" action="/product/searchList" method="get">
+            <select name="searchOption" id="search-option">
+                <option value="productName">상품명</option>
+                <option value="memberNickname">작성자</option>
             </select>
             <input type="text" name="search">
             <button type="submit">검색</button>

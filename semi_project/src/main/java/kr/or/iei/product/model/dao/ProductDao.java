@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.product.model.vo.Product;
@@ -83,5 +85,105 @@ public class ProductDao {
 
         return result;
     }
+
+	public Category selectCategory(Connection conn, String category) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select s.category_name as small_ctg_name, m.category_name as mid_ctg_name, l.category_name as lar_ctg_name from tbl_prod_category s join tbl_prod_category m on (s.par_category_code = m.category_code) join tbl_prod_category l on(m.par_category_code = l.category_code) where s.category_code = ?";
+		
+		Category ctg = null;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, category);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				ctg = new Category();
+				ctg.setCategoryName(rset.getString("small_ctg_name"));
+				ctg.setMidCategoryName(rset.getString("mid_ctg_name"));
+				ctg.setLarCategoryName(rset.getString("lar_ctg_name"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return ctg;
+	}
+
+	public ArrayList<Product> searchProductName(Connection conn, String productName) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select product_no, product_name, product_price from tbl_prod where product_name like ?";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, "%" + productName + "%");
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+
+	public ArrayList<Product> searchMemberNickname(Connection conn, String memberNickname) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select product_no, product_name, product_price from tbl_prod where member_no = (select member_no from tbl_member where member_nickname = ?)";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNickname);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
     
 }

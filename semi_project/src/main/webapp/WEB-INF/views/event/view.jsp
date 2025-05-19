@@ -28,20 +28,18 @@
 	                </tr>
 	                <tr>
 	                    <th style="width: 10%; border-right: 1px solid black;">작성자</th>
-	                    <td style="width: 30%; border-right: 1px solid black; padding-left: 10px;">${event.memberNo}</td>
+	                    <td style="width: 35%; border-right: 1px solid black; padding-left: 10px;">${event.memberNo}</td>
 	                    <th style="width: 10%; border-right: 1px solid black;">작성일</th>
-	                    <td style="width: 20%; border-right: 1px solid black; padding-left: 10px;">${event.eventEnrollDate}</td>
+	                    <td style="width: 30%; border-right: 1px solid black; padding-left: 10px;">${event.eventEnrollDate}</td>
 	                    <th style="width: 10%; border-right: 1px solid black;">조회수</th>
-	                    <td style="width: 20%; padding-left: 10px;">${event.readCount}</td>
+	                    <td style="width: 5%; padding-left: 10px;">${event.readCount}</td>
 	                </tr>
 	                <tr>
-	                    <td colspan="6" style="border-bottom: none; text-align: center;">
-	                        <img src="/">
-	                    </td>
-	                </tr>
-	                <tr>
-	                    <td colspan="6">
-	                        <div>${event.eventContent}</div>
+	                    <td colspan="6" style="border-bottom: none;">
+	                    	<div style="height: 400px;">
+		                        <img src="/">
+								${event.eventContent}
+	                    	</div>
 	                    </td>
 	                </tr>
 	            </table>

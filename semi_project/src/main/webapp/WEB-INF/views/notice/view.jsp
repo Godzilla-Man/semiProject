@@ -28,20 +28,18 @@
 	                </tr>
 	                <tr>
 	                    <th style="width: 10%; border-right: 1px solid black;">작성자</th>
-	                    <td style="width: 30%; border-right: 1px solid black; padding-left: 10px;">${notice.memberNo}</td>
+	                    <td style="width: 35%; border-right: 1px solid black; padding-left: 10px;">${notice.memberNo}</td>
 	                    <th style="width: 10%; border-right: 1px solid black;">작성일</th>
-	                    <td style="width: 20%; border-right: 1px solid black; padding-left: 10px;">${notice.noticeEnrollDate}</td>
+	                    <td style="width: 30%; border-right: 1px solid black; padding-left: 10px;">${notice.noticeEnrollDate}</td>
 	                    <th style="width: 10%; border-right: 1px solid black;">조회수</th>
-	                    <td style="width: 20%; padding-left: 10px;">${notice.readCount}</td>
+	                    <td style="width: 5%; padding-left: 10px;">${notice.readCount}</td>
 	                </tr>
 	                <tr>
-	                    <td colspan="6" style="border-bottom: none; text-align: center;">
-	                        <img src="/">
-	                    </td>
-	                </tr>
-	                <tr>
-	                    <td colspan="6">
-	                        <div>${notice.noticeContent}</div>
+	                    <td colspan="6" style="border-bottom: none;">
+	                        <div style="height: 400px;">	                        
+		                        <img src="/">
+		                        ${notice.noticeContent}
+	                        </div>
 	                    </td>
 	                </tr>
 	            </table>

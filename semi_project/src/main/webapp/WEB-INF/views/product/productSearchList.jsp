@@ -11,9 +11,7 @@
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 		<div class="main-wrap">
 			<div class="category">
-				<span>${ctg.larCategoryName}</span> > 
-				<span>${ctg.midCategoryName}</span> >
-				<span>${ctg.categoryName}</span>
+				<span>'${search}'로 검색하신 결과입니다.</span>
 			</div>
 			<div class="filter">
 	            <select id="filter" onchange="filterChange()">
