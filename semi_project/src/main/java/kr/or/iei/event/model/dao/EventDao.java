@@ -20,7 +20,7 @@ public class EventDao {
 		ArrayList<Event> list = new ArrayList<Event>();
 		
 		//목록 페이지에서는 일부 정보만 표기하기 위해 모든 컬럼 조회 X, 작성일 기준 내림차순 (가장 최신글이 상단에 보이도록)
-		String query = "select event_no, (select member_nickname from tbl_member where member_no = member_no) event_writer ,event_title, event_enroll_date, read_count from (select rownum rnum, a.* from (select * from tbl_event a order by event_enroll_date desc) a) where rnum >= ? and rnum <= ?";
+		String query = "select event_no, (select member_nickname from tbl_member c where c.member_no = b.member_no) event_writer ,event_title, event_enroll_date, read_count from (select rownum rnum, a.* from (select * from tbl_event a order by event_enroll_date desc) a) b where rnum >= ? and rnum <= ?";
 		
 		try {
 			pstmt = conn.prepareStatement(query);
