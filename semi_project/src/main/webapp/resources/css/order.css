@@ -1,6 +1,7 @@
 /* --- 공통 스타일 (order_style.css) --- */
 
 /* 1. 기본 설정 및 레이아웃 */
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: #FFFFFF;
@@ -9,20 +10,30 @@ body {
     padding: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    /* align-items: center; */ /* <- 이 줄을 잠시 주석 처리 */
     min-height: 100vh;
     font-size: 14px; /* 바디 기본 폰트 크기 설정 (필요 시) */
     line-height: 1.6; /* 기본 줄 간격 */
 }
 
-.container {
+/* form 태그에 대한 스타일 추가 */
+form {
     width: 100%;
     max-width: 480px;
+    margin-left: auto;  /* body의 align-items:center 대신 form 자체를 중앙 정렬 */
+    margin-right: auto; /* body의 align-items:center 대신 form 자체를 중앙 정렬 */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.container {
+    width: 100%; /* 부모(form)의 너비 전체 사용 */
+    /* max-width는 form에서 이미 제한하므로 여기서는 제거해도 됨 */
     background-color: #FFFFFF;
     padding: 20px;
-    padding-bottom: 100px; /* 하단 고정 요소 여백 */
-    box-sizing: border-box;
-    flex-grow: 1;
+    padding-bottom: 100px;
+    box-sizing: border-box; /* 중요! */
 }
 
 /* 2. 헤더 */
@@ -580,3 +591,27 @@ body.page-index3 .payment-info-completed .simplified-payment-summary.no-box-styl
 .faq-answer p {
     margin: 0;
 }
+
+
+/*--------------- orderStart.jsp 배송 방법 옵션 스타일 ----------------------*/
+
+.method-option.disabled-option .option-text,
+.method-option.disabled-option .option-price,
+.method-option.disabled-option .option-description {
+    color: #c9c9c9; /* 비활성화된 텍스트 색상 (회색 계열) */    
+}
+
+/* 모든 라디오 버튼은 disabled 상태, checked 된 라디오 버튼 옆의 텍스트(.option-text)는 강조 */
+
+.method-option input[type="radio"]:checked:disabled + .option-text {
+    font-weight: bold; /* 선택된 항목의 텍스트를 굵게 */
+    color: #333333;    /* 선택된 항목 텍스트 색상을 기본 색상으로 (disabled-option에 의해 흐려지는 것 방지) */
+}
+
+.method-option input[type="radio"]:checked:disabled + .option-text + .option-price,
+.method-option input[type="radio"]:checked:disabled + .option-text + .option-description {
+    color: #333333; /* 기본 텍스트 색상 */
+    opacity: 1; /* disabled-option에 의해 흐려지는 것 방지 */
+}
+
+

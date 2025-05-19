@@ -14,6 +14,8 @@
 </head>
 
 <body>
+
+	<form action="/order/orderPay" method="post">	
     <div class="container">
         <div class="header">
             <a href="javascript:history.back();" class="back-button">&lt;</a>
@@ -45,35 +47,29 @@
             <div class="method-options">
             	            
               	<%-- 선불 택배 옵션 (M1) --%>
-                <label class="method-option <c:if test="${selectedDeliveryMethodCode != 'M1'}">disabled-option</c:if>">
+                <label class="method-option <c:if test="${product.tradeMethodCode != 'M1'}">disabled-option</c:if>">
                     <input type="radio" name="displayedDeliveryMethod" value="M1" 
-                           <c:if test="${selectedDeliveryMethodCode == 'M1'}">checked</c:if> 
+                           <c:if test="${product.tradeMethodCode == 'M1'}">checked</c:if> 
                            disabled> <%-- 모든 옵션의 라디오 버튼은 disabled로 변경 불가 명시 --%>
                     <span class="option-text">선불</span> 
-                    <c:if test="${selectedDeliveryMethodCode == 'M1'}">
+                    <c:if test="${product.tradeMethodCode  == 'M1'}">
                         <span class="option-price"><fmt:formatNumber value="${deliveryFee}" type="number"/>원</span>
                     </c:if>
-                    <c:if test="${selectedDeliveryMethodCode != 'M1'}">
-                         <%-- M1이 선택되지 않았을 때, M1 옵션의 가격 표시 (흐리게) --%>
-                        <span class="option-price"><fmt:formatNumber value="5000" type="number"/>원</span>
+                    <c:if test="${product.tradeMethodCode != 'M1'}"><%-- M1이 선택되지 않았을 때(흐리게) --%>
+                        <span class="option-price"><fmt:formatNumber value="${deliveryFee}" type="number"/>원</span>
                     </c:if>
                 </label>
 
                 <%-- 착불 택배 옵션 (M3) --%>
-                <label class="method-option <c:if test="${selectedDeliveryMethodCode != 'M3'}">disabled-option</c:if>">
+                <label class="method-option <c:if test="${product.tradeMethodCode != 'M3'}">disabled-option</c:if>">
                     <input type="radio" name="displayedDeliveryMethod" value="M3" 
-                           <c:if test="${selectedDeliveryMethodCode == 'M3'}">checked</c:if> 
+                           <c:if test="${product.tradeMethodCode == 'M3'}">checked</c:if> 
                            disabled> <%-- 모든 옵션의 라디오 버튼은 disabled로 변경 불가 명시 --%>
                     <span class="option-text">착불</span>
-                    <c:if test="${selectedDeliveryMethodCode == 'M3'}">
-                        <span class="option-description">배송 기사님께 직접 결제</span>
-                        <%-- 착불시 배송비가 0원이 아니라면 여기에 표시도 가능합니다. 
-                             예: <span class="option-price"><fmt:formatNumber value="${deliveryFee}" type="number"/>원</span> 
-                             (서블릿 로직상 M3는 deliveryFee가 0일 것입니다) 
-                        --%>
+                    <c:if test="${product.tradeMethodCode == 'M3'}">
+                        <span class="option-description">배송 기사님께 직접 결제</span>            
                     </c:if>
-                    <c:if test="${selectedDeliveryMethodCode != 'M3'}">
-                        <%-- M3가 선택되지 않았을 때, M3 옵션의 설명 표시 (흐리게) --%>
+                    <c:if test="${product.tradeMethodCode != 'M3'}"><%-- M3가 선택되지 않았을 때(흐리게) --%>                        
                         <span class="option-description">배송 기사님께 직접 결제</span>
                     </c:if>
                 </label>                
@@ -84,10 +80,11 @@
         <div class="payment-summary">
             <span class="summary-label">결제 예상 금액</span>
             <span class="summary-amount"><fmt:formatNumber value="${totalProductAmount}" type="number"/>원</span>
-        </div>
-
-        <button class="next-button">다음</button>
-    </div>
+        </div>                
+        
+        <button type="submit" class="next-button">다음</button>
+    </div>    
+    </form>    
 </body>
 
 </html>

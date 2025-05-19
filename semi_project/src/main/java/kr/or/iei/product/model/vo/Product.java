@@ -20,4 +20,5 @@ public class Product {
     private String statusCode;         // 상품 상태 코드 (S01~S12)
     private Date enrollDate;           // 등록일
     private int readCount;             // 조회수
+    private int productQuantity;	   // 상품 수량(1 : 판매 가능/ 0 : 불가)
 }

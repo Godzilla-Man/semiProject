@@ -36,7 +36,8 @@ CREATE TABLE TBL_MEMBER (
     MEMBER_ADDR VARCHAR2(300) NOT NULL,             -- 회원 주소
     MEMBER_EMAIL VARCHAR2(300) NOT NULL,            -- 회원 이메일
     JOIN_DATE DATE DEFAULT SYSDATE NOT NULL,        -- 회원 가입일
-    MEMBER_RATE NUMBER DEFAULT 0 NOT NULL           -- 회원 평점
+    MEMBER_RATE NUMBER DEFAULT 0 NOT NULL,          -- 회원 평점
+    
 );
 
 -- 회원 번호 생성 시 사용할 시퀀스
@@ -167,6 +168,7 @@ CREATE TABLE TBL_PROD (
     STATUS_CODE CHAR(3) REFERENCES TBL_PROD_STATUS(STATUS_CODE),                -- 상품상태 코드 (상품상태 테이블)
     ENROLL_DATE DATE DEFAULT SYSDATE NOT NULL,                                  -- 상품 등록일
     READ_COUNT NUMBER DEFAULT 0                                                 -- 조회수
+    PRODUCT_QUANTITY NUMBER DEFAULT 1 NOT NULL                                  -- 상품 수량(판매 가능/불가)
 );
 
 -- 상품 번호 생성 시 사용할 시퀀스
@@ -439,4 +441,20 @@ SELECT * FROM TBL_FILE;
 
 SELECT * FROM TBL_COMMENT;
 
+SELECT * FROM TBL_PROD;
+
 COMMIT;
+
+-- ------------------------------------------------------
+/*
+TBL_PROD 에 PRODCUT_QUANTITY 컬럼 추가
+추가 사유 : 해당 상품 상태 판매 가능/불가 값을 바로 판단하기 위함이며 현재 '상품 상태'로는 상태값이 너무 많고 복잡하여 각 담당하시는 분들께서 상품 노출 조건 등에 사용할수 있도록 함입니다.
+*/
+
+ALTER TABLE TBL_PROD
+  ADD (PRODUCT_QUANTITY NUMBER DEFAULT 1 NOT NULL);
+
+COMMENT ON COLUMN TBL_PROD.PRODUCT_QUANTITY IS '상품 재고 수량(1: 재고 있음 / 0:판매 완료)';
+
+COMMIT;
+  
