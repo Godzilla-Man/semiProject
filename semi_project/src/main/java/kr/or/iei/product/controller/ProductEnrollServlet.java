@@ -31,7 +31,14 @@ public class ProductEnrollServlet extends HttpServlet {
     public ProductEnrollServlet() {
         super();
     }
+    
+    	@Override
+    	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 판매 글 등록 페이지로 이동
+        request.getRequestDispatcher("/WEB-INF/views/product/productEnroll.jsp").forward(request, response);
+    	}
 
+    
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
         // 1. 인코딩 - 필터에서 처리됨
@@ -64,7 +71,8 @@ public class ProductEnrollServlet extends HttpServlet {
         List<Files> fileList = new ArrayList<>();
         for (Part part : request.getParts()) {
             if (part.getName().equals("productImages") && part.getSize() > 0) {
-                String originName = part.getSubmittedFileName();
+            	String originName = part.getSubmittedFileName().replaceAll("[^a-zA-Z0-9._-]", "_");
+
 
                 // 중복 방지를 위한 새로운 파일명 생성 (ex: timestamp_파일명)
                 String newFileName = System.currentTimeMillis() + "_" + originName;

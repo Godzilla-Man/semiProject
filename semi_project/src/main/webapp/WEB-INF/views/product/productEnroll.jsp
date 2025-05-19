@@ -56,52 +56,118 @@
     align-items: flex-start;
     gap: 20px;
   }
+  
 
-  .image-upload-box {
-    width: 300px;
-    height: 200px;
-    border: 1px dashed #aaa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #ccc;
-    font-size: 14px;
-  }
-
-  .image-tools-outside {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: flex-start;
-    height: 200px;
-    gap: 6px;
-  }
-
-  .image-count {
-    font-size: 13px;
-    color: #333;
-  }
-
-  .upload-btn {
-    padding: 6px 10px;
-    background-color: #f5f5f5;
-    border: 1px solid #888;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-    display: inline-block;
-  }
-
-  .upload-btn input {
-    display: none;
-  }
-
-  .upload-hint {
-    font-size: 11px;
-    color: #999;
-    max-width: 180px;
-    text-align: left;
+/* 상품 이미지 업로드 영역 스타일 */
+/* 미리보기 이미지 박스 (이미지가 표시될 영역) */
+.image-upload-box {
+  width: 300px;
+  height: 200px;
+  border: 1px dashed #aaa;
+  background-color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
 }
+
+/* 이미지 업로드 전체 감싸는 wrapper (슬라이드 버튼/카운터 포함) */
+.image-upload-wrapper {
+  position: relative;
+  display: inline-block; /* absolute 요소 기준이 됨 */
+}
+
+/* 업로드된 이미지 스타일 */
+.image-upload-box img,
+.preview-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: none; /* 선택된 이미지 외에는 감춤 */
+}
+
+/* 이미지 슬라이드 버튼 스타일 */
+.slide-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  padding: 4px 10px;
+  opacity: 0.6;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 10;
+}
+
+.slide-btn:hover {
+  opacity: 1;
+}
+
+/* 슬라이드 버튼 위치 */
+#prevBtn {
+  left: 5px;
+}
+#nextBtn {
+  right: 5px;
+}
+
+
+/* 이미지 수 카운터 오버레이 */
+
+.image-count-overlay {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 12px;
+  background-color: rgba(128, 128, 128, 0.5); /* 기존 회색 계열로 자연스럽게 */
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 10px;
+  z-index: 9999;
+  white-space: nowrap;
+  pointer-events: none; /* 클릭 방해 방지 */
+}
+
+
+/* 이미지 업로드 외부 툴 (파일 선택 버튼 등) */
+
+.image-tools-outside {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  height: 200px;
+  gap: 6px;
+}
+
+/* 파일 선택 버튼 */
+.upload-btn {
+  padding: 6px 10px;
+  background-color: #f5f5f5;
+  border: 1px solid #888;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+/* 힌트 텍스트 */
+.upload-hint {
+  font-size: 11px;
+  color: #999;
+  max-width: 180px;
+  text-align: left;
+}
+
+/* 숨겨진 실제 input 요소 */
+.upload-btn input {
+  display: none;
+}
+
+
 
 /* 전체 form-row 중에서 category-row만 위쪽 정렬 */
 .form-row.category-row {
@@ -330,22 +396,32 @@
       <span class="char-counter" id="nameCounter">0 / 30</span>
     </div>
 
-    <!-- 상품 이미지 -->
-    <div class="form-row">
-      <div class="form-label">상품 이미지</div>
-      <div class="form-input-box">
-        <div class="image-upload-box">상품 이미지 등록</div>
-        <div class="image-tools-outside">
-          <div class="image-count">0 / 10</div>
-          <label class="upload-btn">
-            사진 첨부하기
-            <input type="file" name="productImages" multiple accept="image/*" />
-          </label>
-          <div class="upload-hint">가장 먼저 등록한 이미지가<br>게시글 썸네일이 됩니다.</div>
-        </div>
+<!-- 상품 이미지 -->
+<div class="form-row">
+  <div class="form-label">상품 이미지</div>
+  <div class="form-input-box">
+    <!-- 미리보기 박스 + 좌우 화살표 포함 -->
+    <div class="image-upload-wrapper" style="position: relative;">
+      <div class="image-upload-box" id="imagePreviewContainer">
+        <span class="placeholder-text">상품 이미지 등록</span>
+       </div>
+        <!-- 좌우 슬라이드 버튼 -->
+        <button type="button" id="prevBtn" class="slide-btn">&#10094;</button>
+        <button type="button" id="nextBtn" class="slide-btn">&#10095;</button> 
+        <!-- 이미지 갯수 -->
+       <div id="imageCount" class="image-count-overlay" ><span id="fileNum">0</span> / 10
       </div>
     </div>
 
+
+    <div class="image-tools-outside">
+
+      <label for="fileInput" class="upload-btn">사진 첨부하기</label>
+      <input type="file" id="fileInput" name="productImages" multiple accept="image/*" style="display: none;">
+      <div class="upload-hint">가장 먼저 등록한 이미지가<br>게시글 썸네일이 됩니다.</div>
+    </div>
+  </div>
+</div>
 
 
 <!-- 카테고리 선택 영역 -->
@@ -729,7 +805,92 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
 
+  const fileInput = document.getElementById('fileInput');
+  const previewContainer = document.getElementById('imagePreviewContainer');
+  const fileNum = document.getElementById('fileNum');  // 숫자 span
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let currentIndex = 0;
+  let previewImages = [];
+
+  // 이미지 표시 함수
+  function showImage(index) {
+    previewImages.forEach((img, i) => {
+      img.style.display = i === index ? 'block' : 'none';
+    });
+  }
+
+  // 파일 첨부 시 처리
+  fileInput.addEventListener('change', () => {
+    const files = fileInput.files;
+    const totalFiles = files.length;
+
+    // 이미지 수 업데이트 (전체 수)
+    if (fileNum) {
+      fileNum.textContent = totalFiles > 0 ? 1 : 0; // 초기값 1 or 0
+    }
+
+    previewImages = [];
+    currentIndex = 0;
+    previewContainer.innerHTML = '';
+
+    if (totalFiles === 0) {
+      previewContainer.innerHTML = '<span class="placeholder-text">상품 이미지 등록</span>';
+      prevBtn.style.display = 'none';
+      nextBtn.style.display = 'none';
+      return;
+    }
+
+    let loadedCount = 0;
+
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.classList.add('preview-img');
+        img.style.display = 'none';
+        previewImages.push(img);
+        previewContainer.appendChild(img);
+
+        loadedCount++;
+
+        if (loadedCount === totalFiles) {
+          showImage(0);
+          currentIndex = 0;
+          fileNum.textContent = 1; //  초기 1페이지 표시
+          prevBtn.style.display = totalFiles > 1 ? 'inline-block' : 'none';
+          nextBtn.style.display = totalFiles > 1 ? 'inline-block' : 'none';
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  // 이전 이미지 보기
+  prevBtn.addEventListener('click', () => {
+    if (previewImages.length <= 1) return;
+    previewImages[currentIndex].style.display = 'none';
+    currentIndex = (currentIndex - 1 + previewImages.length) % previewImages.length;
+    previewImages[currentIndex].style.display = 'block';
+    fileNum.textContent = currentIndex + 1; //  인덱스 갱신
+  });
+
+  // 다음 이미지 보기
+  nextBtn.addEventListener('click', () => {
+    if (previewImages.length <= 1) return;
+    previewImages[currentIndex].style.display = 'none';
+    currentIndex = (currentIndex + 1) % previewImages.length;
+    previewImages[currentIndex].style.display = 'block';
+    fileNum.textContent = currentIndex + 1; //  인덱스 갱신
+  });
+
+}); 
+</script>
 
 
 
