@@ -11,6 +11,7 @@ import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.product.model.vo.Product;
+import kr.or.iei.product.model.vo.WishList;
 
 public class ProductDao {
 
@@ -250,6 +251,131 @@ public class ProductDao {
 		}
 		
 		return productCtgList;
+	}
+
+	public int addWishList(Connection conn, String memberNo, String productNo) {
+		PreparedStatement pstmt = null;
+		
+		String query = "insert into tbl_wishlist values (seq_wishlist.nextval, ?, ?, sysdate)";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, productNo);
+			pstmt.setString(2, memberNo);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	public WishList selectWishList(Connection conn, String memberNo, String productNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select * from tbl_wishlist where product_no = ? and member_no = ?";
+		
+		WishList wishList = null;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, productNo);
+			pstmt.setString(2, memberNo);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				wishList = new WishList();
+				wishList.setWishListNo(rset.getInt("wishlist_no"));
+				wishList.setProductNo(rset.getString("product_no"));
+				wishList.setMemberNo(rset.getString("member_no"));
+				wishList.setWishListDate(rset.getString("wishlist_date"));
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return wishList;
+	}
+
+	public ArrayList<WishList> selectMemberWishList(Connection conn, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select * form tbl_wishlist where member_no = ?";
+		
+		ArrayList<WishList> memberWishList = new ArrayList<WishList>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				WishList wishList = new WishList();
+				wishList.setWishListNo(rset.getInt("wishlist_no"));
+				wishList.setProductNo(rset.getString("product_no"));
+				wishList.setMemberNo(rset.getString("member_no"));
+				wishList.setWishListDate(rset.getString("wishlist_date"));
+				
+				memberWishList.add(wishList);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return memberWishList;
+	}
+
+	public Product selectMyProd(Connection conn, String memberNo, String productNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select * from tbl_prod where member_no = ? and product_no = ?";
+		
+		Product prod = null;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, productNo);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				prod = new Product();
+				prod.setMemberNo(memberNo);
+				prod.setProductNo(productNo);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		return prod;
 	}
     
 }

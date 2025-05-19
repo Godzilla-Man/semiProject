@@ -40,7 +40,7 @@
 									<div class="image">
 										<img src="/" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
 										<c:if test="${not empty sessionScope.loginMember}">
-										<span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
+										<span class="material-symbols-outlined" onclick="addWishList(this, '${loginMember.memberNo}', '${prod.productNo}')">favorite</span>
 										</c:if>
 									</div>
 									<div class="image-info" onclick="clickProd(this)">
@@ -76,12 +76,69 @@
 		}
 	
 		//찜하기 추가
-		function addWishList(obj) {
-			//1. 로그인이 안 되어 있는데 클릭 시 로그인하라는 알림창 띄워주기
-			
-			//2. 로그인이 되어 있으면 클릭 시 스타일 변경 및 찜한 상품에 등록
-			$(obj).attr("class", "material-symbols-outlined fill");
-			$(obj).attr("onclick", "delWhishList(this)");
+		function addWishList(obj, memberNo, productNo) {
+			swal({
+				title : "알림",
+				text : "해당 상품을 찜하기 리스트에 추가하시겠습니까?",
+				icon : "warning",
+				buttons : {
+					cancel : {
+						text : "취소",
+						value : false,
+						visible : true,
+						closeModal : true
+					},
+					confirm : {
+						text : "추가",
+						value : true,
+						visible : true,
+						closeModal : true
+					}
+				}
+			}).then(function(val){
+				if(val){ //추가 버튼 클릭 시
+					$.ajax({
+						url : "/product/addWishList",
+						data : {"memberNo" : memberNo, "productNo" : productNo},
+						type : "get",
+						success : function(res){
+							if(res > 0){ //찜하기 성공
+								swal({
+									title : "성공",
+									text : "찜하기 리스트에 추가되었습니다.",
+									icon : "success"
+								});
+								
+								//클릭시 스타일 변경
+								$(obj).attr("class", "material-symbols-outlined fill");
+								$(obj).attr("onclick", "delWhishList(this, " + memberNo + ", " + productNo + ")");
+								
+							}else if(res == 0){ //찜하기 실패
+								swal({
+									title : "실패",
+									text : "찜하기 리스트 추가 중 오류가 발생했습니다.",
+									icon : "error"
+								});
+							}else if(res == -1){ //이미 찜한 상품
+								swal({
+									title : "실패",
+									text : "이미 찜한 상품입니다.",
+									icon : "error"
+								});
+							}else{
+								swal({ //내가 등록한 상품
+									title : "실패",
+									text : "내가 등록한 상품입니다.",
+									icon : "error"
+								});
+							}
+						},
+						error : function(){
+							console.log("ajax 통신 오류");
+						}
+					});
+				}
+			});
 		}
 		
 		//찜하기 삭제

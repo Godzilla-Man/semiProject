@@ -43,7 +43,7 @@
 			</div>
 	        <button onclick="fullProduct()">+ 더보기</button>
 	        <hr>
-	        <span><a href="#">스타일 후기</a></span>
+	        <span><a href="/review/list">스타일 후기</a></span>
 	        <div class="sub-image">
 	            <div>
 	                <div class="image">
@@ -124,7 +124,7 @@
 		}
 		//두 번째 더보기 클릭 시 스타일 후기 게시판으로 이동
 		function styleReview() {
-			location.href="/";
+			location.href="/review/list";
 		}
 		//클릭 시 해당 상품 상세 페이지로 이동
 		function clickProd(obj) {
