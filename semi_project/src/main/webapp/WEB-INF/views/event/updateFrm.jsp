@@ -5,6 +5,11 @@
 <head>
 <meta charset="UTF-8">
 <title>이벤트</title>
+<style>
+.main-menu>li:nth-child(3) {
+	font-weight: bold;
+}
+</style>
 </head>
 <body>
 	<div class="wrap">

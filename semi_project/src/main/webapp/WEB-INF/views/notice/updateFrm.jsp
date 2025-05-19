@@ -5,6 +5,11 @@
 <head>
 <meta charset="UTF-8">
 <title>공지사항</title>
+<style>
+.main-menu>li:nth-child(4) {
+	font-weight: bold;
+}
+</style>
 </head>
 <body>
 	<div class="wrap">
