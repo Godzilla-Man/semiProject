@@ -44,7 +44,9 @@
 								<div class="card">
 									<div class="image">
 										<img src="/" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
+										<c:if test="${not empty sessionScope.loginMember}">
 										<span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
+										</c:if>
 									</div>
 									<div class="image-info" onclick="clickProd(this)">
 										<span class="image-prod"><a href="/?=productNo=${prod.productNo}">${prod.productName}</a></span>

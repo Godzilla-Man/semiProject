@@ -39,7 +39,9 @@
 								<div class="card">
 									<div class="image">
 										<img src="/" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
+										<c:if test="${not empty sessionScope.loginMember}">
 										<span class="material-symbols-outlined" onclick="addWishList(this)">favorite</span>
+										</c:if>
 									</div>
 									<div class="image-info" onclick="clickProd(this)">
 										<span class="image-prod"><a href="/?=productNo=${prod.productNo}">${prod.productName}</a></span>
@@ -76,6 +78,7 @@
 		//찜하기 추가
 		function addWishList(obj) {
 			//1. 로그인이 안 되어 있는데 클릭 시 로그인하라는 알림창 띄워주기
+			
 			//2. 로그인이 되어 있으면 클릭 시 스타일 변경 및 찜한 상품에 등록
 			$(obj).attr("class", "material-symbols-outlined fill");
 			$(obj).attr("onclick", "delWhishList(this)");
