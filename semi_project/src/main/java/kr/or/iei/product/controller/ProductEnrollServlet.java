@@ -49,7 +49,8 @@ public class ProductEnrollServlet extends HttpServlet {
         int productPrice = Integer.parseInt(request.getParameter("productPrice"));
         String tradeMethodCode = request.getParameter("tradeMethodCode");
         String categoryCode = request.getParameter("categoryCode");
-
+        
+        
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loginMember") == null) {
             // 로그인하지 않은 사용자는 로그인 페이지로 리다이렉트
@@ -91,6 +92,11 @@ public class ProductEnrollServlet extends HttpServlet {
         p.setProductName(productName);
         p.setProductIntrod(productIntrod);
         p.setProductPrice(productPrice);
+        String priceOfferYn = request.getParameter("priceOffer");
+        if (priceOfferYn == null) {
+            priceOfferYn = "N";
+        }
+        p.setPriceOfferYn(priceOfferYn);
         p.setCategoryCode(categoryCode);
         p.setTradeMethodCode(tradeMethodCode);
         p.setMemberNo(memberNo);
@@ -105,7 +111,8 @@ public class ProductEnrollServlet extends HttpServlet {
         // 4.2 화면 구현에 필요한 데이터 등록
         if (result > 0) {
             // 등록 성공 시 상세페이지로 리다이렉트
-            response.sendRedirect(request.getContextPath() + "/product/detail?no=" + p.getProductNo());
+        	String priceOffer = request.getParameter("priceOffer") != null ? "true" : "false";
+        	response.sendRedirect(request.getContextPath() + "/product/detail?no=" + p.getProductNo() + "&priceOffer=" + priceOffer);
         } else {
             // 등록 실패 시 실패 페이지로 포워드
             request.setAttribute("msg", "상품 등록에 실패했습니다.");
