@@ -55,10 +55,7 @@ public class MemberService {
 		
 		return loginMember;
 	}
-<<<<<<< HEAD
 
-=======
-	
 	//이름+전화번호로 아이디 찾기
 	public String searchId(String memberName, String memberPhone) {
 		Connection conn = JDBCTemplate.getConnection();
@@ -85,5 +82,5 @@ public class MemberService {
 		
 		return memberPw;
 	}
->>>>>>> master
+
 }

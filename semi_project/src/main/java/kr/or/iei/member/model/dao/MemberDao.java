@@ -143,9 +143,6 @@ public class MemberDao {
 		
 		return loginMember;
 	}
-<<<<<<< HEAD
-
-=======
 	
 	//이름+전화번호로 아이디 찾기
 	public String searchId(Connection conn, String memberName, String memberPhone) {
@@ -235,5 +232,4 @@ public class MemberDao {
 		
 		return memberPw;
 	}
->>>>>>> master
 }
