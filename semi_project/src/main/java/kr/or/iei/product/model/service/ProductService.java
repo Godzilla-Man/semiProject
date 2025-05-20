@@ -368,36 +368,36 @@ public class ProductService {
 	}
 
 	//상품명으로 검색 시 상품 리스트
-	public ArrayList<Product> searchProdcutName(String productName) {
+	public ArrayList<Product> searchProdcutName(String productName, String memberNo) {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productList = dao.searchProductName(conn, productName);
+		ArrayList<Product> productList = dao.searchProductName(conn, productName, memberNo);
 		JDBCTemplate.close(conn);
 		
 		return productList;
 	}
 
 	//작성자 닉네임으로 검색 시 상품 리스트
-	public ArrayList<Product> searchMemberNickname(String memberNickname) {
+	public ArrayList<Product> searchMemberNickname(String memberNickname, String memberNo) {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productList = dao.searchMemberNickname(conn, memberNickname);
+		ArrayList<Product> productList = dao.searchMemberNickname(conn, memberNickname, memberNo);
 		JDBCTemplate.close(conn);
 		
 		return productList;
 	}
 
 	//최신순 전체 상품 리스트
-	public ArrayList<Product> selectAllListDesc() {
+	public ArrayList<Product> selectAllListDesc(String memberNo) {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productList = dao.selectAllListDesc(conn);
+		ArrayList<Product> productList = dao.selectAllListDesc(conn, memberNo);
 		JDBCTemplate.close(conn);
 		
 		return productList;
 	}
 
 	//카테고리별 상품 리스트
-	public ArrayList<Product> selectCategoryList(String category) {
+	public ArrayList<Product> selectCategoryList(String category, String memberNo) {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productCtgList = dao.selectCategoryList(conn, category);
+		ArrayList<Product> productCtgList = dao.selectCategoryList(conn, category, memberNo);
 		JDBCTemplate.close(conn);
 		
 		return productCtgList;
@@ -436,6 +436,14 @@ public class ProductService {
 		JDBCTemplate.close(conn);
 		
 		return productList;
+	}
+
+	public int delWishList(String memberNo, String productNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		int result = dao.delWishList(conn, memberNo, productNo);
+		JDBCTemplate.close(conn);
+		
+		return result;
 	}
 }
 

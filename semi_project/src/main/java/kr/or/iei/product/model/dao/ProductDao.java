@@ -127,18 +127,19 @@ public class ProductDao {
 		return ctg;
 	}
 
-	public ArrayList<Product> searchProductName(Connection conn, String productName) {
+	public ArrayList<Product> searchProductName(Connection conn, String productName, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select product_no, product_name, product_price from tbl_prod where product_name like ?";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where product_name like ? order by enroll_date desc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
 		try {
 			pstmt = conn.prepareStatement(query);
 			
-			pstmt.setString(1, "%" + productName + "%");
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, "%" + productName + "%");
 			
 			rset = pstmt.executeQuery();
 			
@@ -147,6 +148,7 @@ public class ProductDao {
 				p.setProductNo(rset.getString("product_no"));
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
 				
 				productList.add(p);
 			}
@@ -161,18 +163,19 @@ public class ProductDao {
 		return productList;
 	}
 
-	public ArrayList<Product> searchMemberNickname(Connection conn, String memberNickname) {
+	public ArrayList<Product> searchMemberNickname(Connection conn, String memberNickname, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select product_no, product_name, product_price from tbl_prod where member_no = (select member_no from tbl_member where member_nickname = ?)";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where member_no = (select member_no from tbl_member where member_nickname = ?) order by enroll_date desc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
 		try {
 			pstmt = conn.prepareStatement(query);
 			
-			pstmt.setString(1, memberNickname);
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, memberNickname);
 			
 			rset = pstmt.executeQuery();
 			
@@ -181,6 +184,7 @@ public class ProductDao {
 				p.setProductNo(rset.getString("product_no"));
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
 				
 				productList.add(p);
 			}
@@ -195,17 +199,19 @@ public class ProductDao {
 		return productList;
 	}
 
-	public ArrayList<Product> selectAllListDesc(Connection conn) {
+	public ArrayList<Product> selectAllListDesc(Connection conn, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String qeury = "select * from tbl_prod order by enroll_date desc";
+		String qeury = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod order by enroll_date desc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
 		try {
 			pstmt = conn.prepareStatement(qeury);
 			
+			pstmt.setString(1, memberNo);
+			
 			rset = pstmt.executeQuery();
 			
 			while(rset.next()) {
@@ -213,6 +219,7 @@ public class ProductDao {
 				p.setProductNo(rset.getString("product_no"));
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
 				
 				productList.add(p);
 			}
@@ -227,18 +234,19 @@ public class ProductDao {
 		return productList;
 	}
 
-	public ArrayList<Product> selectCategoryList(Connection conn, String category) {
+	public ArrayList<Product> selectCategoryList(Connection conn, String category, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select product_no, product_name, product_price from tbl_prod where category_code = ?";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where category_code = ? order by enroll_date desc";
 		
 		ArrayList<Product> productCtgList = new ArrayList<Product>();
 		
 		try {
 			pstmt = conn.prepareStatement(query);
 			
-			pstmt.setString(1, category);
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, category);
 			
 			rset = pstmt.executeQuery();
 			
@@ -247,6 +255,7 @@ public class ProductDao {
 				p.setProductNo(rset.getString("product_no"));
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
 				
 				productCtgList.add(p);
 			}
@@ -969,6 +978,30 @@ public class ProductDao {
 
         return result;
     }
+
+	public int delWishList(Connection conn, String memberNo, String productNo) {
+		PreparedStatement pstmt = null;
+		
+		String query = "delete from tbl_wishlist where member_no = ? and product_no = ?";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, productNo);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
 
 
 }
