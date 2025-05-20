@@ -18,7 +18,7 @@
                	</c:when>
                	<c:otherwise>
                 <li>${loginMember.memberNickname}님</li>
-                <li><a href="#">마이페이지</a></li>
+                <li><a href="/member/myPage">마이페이지</a></li>
                 <li><a href="/member/logout">로그아웃</a></li>
                	</c:otherwise>
          	</c:choose>
