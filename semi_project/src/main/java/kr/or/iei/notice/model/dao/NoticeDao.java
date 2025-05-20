@@ -19,7 +19,7 @@ public class NoticeDao {
 		ArrayList<Notice> list = new ArrayList<Notice>();
 		
 		//목록 페이지에서는 일부 정보만 표기하기 위해 모든 컬럼 조회 X, 작성일 기준 내림차순 (가장 최신글이 상단에 보이도록)
-		String query = "select notice_no, (select member_nickname from tbl_member where member_no = member_no) notice_writer ,notice_title, notice_enroll_date, read_count from (select rownum rnum, a.* from (select * from tbl_notice a order by notice_enroll_date desc) a) where rnum >= ? and rnum <= ?";
+		String query = "select notice_no, (select member_nickname from tbl_member c where c.member_no = b.member_no) notice_writer ,notice_title, notice_enroll_date, read_count from (select rownum rnum, a.* from (select * from tbl_notice a order by notice_enroll_date desc) a) b where rnum >= ? and rnum <= ?";
 		
 		try {
 			pstmt = conn.prepareStatement(query);
@@ -165,7 +165,7 @@ public class NoticeDao {
 		
 		Notice notice = null;
 		
-		String query = "select notice_title, notice_content, (select member_nickname from tbl_member where member_no = member_no) as notice_writer, notice_enroll_date, read_count from tbl_notice where notice_no = ?";
+		String query = "select notice_title, notice_content, (select member_nickname from tbl_member b where b.member_no = a.member_no) as notice_writer, notice_enroll_date, read_count from tbl_notice a where a.notice_no = ?";
 		
 		try {
 			pstmt = conn.prepareStatement(query);
@@ -252,5 +252,76 @@ public class NoticeDao {
 		}
 		
 		return fileList;
+	}
+
+	public int updateNotice(Connection conn, Notice notice) {
+		PreparedStatement pstmt = null;
+		
+		String query = "update tbl_notice set notice_title = ?, notice_content = ? where notice_no = ?";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, notice.getNoticeTitle());
+			pstmt.setString(2, notice.getNoticeContent());
+			pstmt.setString(3, notice.getNoticeNo());
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	public int deleteNoticeFile(Connection conn, String preFileNo) {
+		PreparedStatement pstmt = null;
+		
+		String query = "delete from tbl_file where file_no = ?";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, preFileNo);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	public int deleteNotice(Connection conn, String noticeNo) {
+		PreparedStatement pstmt = null;
+		
+		String query = "delete from tbl_notice where notice_no = ?";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, noticeNo);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
 	}
 }

@@ -20,7 +20,7 @@ public class EventDao {
 		ArrayList<Event> list = new ArrayList<Event>();
 		
 		//목록 페이지에서는 일부 정보만 표기하기 위해 모든 컬럼 조회 X, 작성일 기준 내림차순 (가장 최신글이 상단에 보이도록)
-		String query = "select event_no, (select member_nickname from tbl_member where member_no = member_no) event_writer ,event_title, event_enroll_date, read_count from (select rownum rnum, a.* from (select * from tbl_event a order by event_enroll_date desc) a) where rnum >= ? and rnum <= ?";
+		String query = "select event_no, (select member_nickname from tbl_member c where c.member_no = b.member_no) event_writer ,event_title, event_enroll_date, read_count from (select rownum rnum, a.* from (select * from tbl_event a order by event_enroll_date desc) a) b where rnum >= ? and rnum <= ?";
 		
 		try {
 			pstmt = conn.prepareStatement(query);
@@ -166,7 +166,7 @@ public class EventDao {
 		
 		Event event = null;
 		
-		String query = "select event_title, event_content, (select member_nickname from tbl_member where member_no = member_no) as event_writer, event_enroll_date, read_count from tbl_event where event_no = ?";
+		String query = "select event_title, event_content, (select member_nickname from tbl_member b where b.member_no = a.member_no) as event_writer, event_enroll_date, read_count from tbl_event a where event_no = ?";
 		
 		try {
 			pstmt = conn.prepareStatement(query);
@@ -253,6 +253,77 @@ public class EventDao {
 		}
 		
 		return fileList;
+	}
+
+	public int updateEvent(Connection conn, Event event) {
+		PreparedStatement pstmt = null;
+		
+		String query = "update tbl_event set event_title = ?, event_content = ? where event_no = ?";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, event.getEventTitle());
+			pstmt.setString(2, event.getEventContent());
+			pstmt.setString(3, event.getEventNo());
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	public int deleteEventFile(Connection conn, String preFileNo) {
+		PreparedStatement pstmt = null;
+		
+		String query = "delete from tbl_file where file_no = ?";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, preFileNo);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	public int deleteEvent(Connection conn, String eventNo) {
+		PreparedStatement pstmt = null;
+		
+		String query = "delete from tbl_event where event_no = ?";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, eventNo);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
 	}
 	
 }

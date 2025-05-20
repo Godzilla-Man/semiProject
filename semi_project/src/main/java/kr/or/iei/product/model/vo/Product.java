@@ -26,4 +26,6 @@ public class Product {
     private int wishlistCount;         // 찜 횟수 (JSP 출력용)
     private String priceOfferYn;	   // 가격 제안 여부 ('Y' 또는 'N')
     private String thumbnailPath;	   // 제품 대표 썸네일 ( 등록 당시 첫번째 사진 )
+    private int productQuantity;	   // 상품 수량(1 : 판매 가능/ 0 : 불가)
+
 }

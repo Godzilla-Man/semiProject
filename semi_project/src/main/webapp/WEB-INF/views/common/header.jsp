@@ -18,8 +18,16 @@
                	</c:when>
                	<c:otherwise>
                 <li>${loginMember.memberNickname}님</li>
-                <li><a href="#">마이페이지</a></li>
-                <li><a href="/member/logout">로그아웃</a></li>
+                	<c:choose>
+	                	<c:when test="${loginMember.memberId eq 'admin'}">
+	                	<%-- 관리자로 로그인 했을 때 관리페이지 보이게하기 --%>
+	                	<li><a href="/admin/adminPage">관리페이지</a></li>
+	                	</c:when>
+	                	<c:otherwise>
+		                <li><a href="#">마이페이지</a></li>
+	                	</c:otherwise>
+                	</c:choose>
+	                <li><a href="/member/logout">로그아웃</a></li>
                	</c:otherwise>
          	</c:choose>
         </ul>
@@ -161,15 +169,15 @@
                     </li>
                 </ul>
             </li>
-            <li><a href="#">스타일 후기</a></li>
+            <li><a href="/review/list">스타일 후기</a></li>
             <li><a href="/event/list?reqPage=1">이벤트</a></li>
             <li><a href="/notice/list?reqPage=1">공지사항</a></li>
             <li><a href="/product/enroll">판매하기</a></li>
         </ul>
-        <form class="search" action="#" method="get">
-            <select name="search-option" id="search-option">
-                <option value="title">상품명</option>
-                <option value="nickname">작성자</option>
+        <form class="search" action="/product/searchList" method="get">
+            <select name="searchOption" id="search-option">
+                <option value="productName">상품명</option>
+                <option value="memberNickname">작성자</option>
             </select>
             <input type="text" name="search">
             <button type="submit">검색</button>

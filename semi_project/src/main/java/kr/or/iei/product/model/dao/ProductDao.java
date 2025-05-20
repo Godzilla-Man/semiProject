@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kr.or.iei.comment.model.vo.Comment;
+import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.product.model.vo.Product;
+import kr.or.iei.product.model.vo.WishList;
 
 public class ProductDao {
 
@@ -93,6 +95,296 @@ public class ProductDao {
         return result;
     }
 
+	public Category selectCategory(Connection conn, String category) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select s.category_name as small_ctg_name, m.category_name as mid_ctg_name, l.category_name as lar_ctg_name from tbl_prod_category s join tbl_prod_category m on (s.par_category_code = m.category_code) join tbl_prod_category l on(m.par_category_code = l.category_code) where s.category_code = ?";
+		
+		Category ctg = null;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, category);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				ctg = new Category();
+				ctg.setCategoryName(rset.getString("small_ctg_name"));
+				ctg.setMidCategoryName(rset.getString("mid_ctg_name"));
+				ctg.setLarCategoryName(rset.getString("lar_ctg_name"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return ctg;
+	}
+
+	public ArrayList<Product> searchProductName(Connection conn, String productName) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select product_no, product_name, product_price from tbl_prod where product_name like ?";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, "%" + productName + "%");
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+
+	public ArrayList<Product> searchMemberNickname(Connection conn, String memberNickname) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select product_no, product_name, product_price from tbl_prod where member_no = (select member_no from tbl_member where member_nickname = ?)";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNickname);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+
+	public ArrayList<Product> selectAllList(Connection conn) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String qeury = "select * from tbl_prod";
+		
+		ArrayList<Product> productAllList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(qeury);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				
+				productAllList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productAllList;
+	}
+
+	public ArrayList<Product> selectCategoryList(Connection conn, String category) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select product_no, product_name, product_price from tbl_prod where category_code = ?";
+		
+		ArrayList<Product> productCtgList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, category);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				
+				productCtgList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productCtgList;
+	}
+
+	public int addWishList(Connection conn, String memberNo, String productNo) {
+		PreparedStatement pstmt = null;
+		
+		String query = "insert into tbl_wishlist values (seq_wishlist.nextval, ?, ?, sysdate)";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, productNo);
+			pstmt.setString(2, memberNo);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+	public WishList selectWishList(Connection conn, String memberNo, String productNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select * from tbl_wishlist where product_no = ? and member_no = ?";
+		
+		WishList wishList = null;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, productNo);
+			pstmt.setString(2, memberNo);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				wishList = new WishList();
+				wishList.setWishListNo(rset.getInt("wishlist_no"));
+				wishList.setProductNo(rset.getString("product_no"));
+				wishList.setMemberNo(rset.getString("member_no"));
+				wishList.setWishListDate(rset.getString("wishlist_date"));
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return wishList;
+	}
+
+	public ArrayList<WishList> selectMemberWishList(Connection conn, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select * form tbl_wishlist where member_no = ?";
+		
+		ArrayList<WishList> memberWishList = new ArrayList<WishList>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				WishList wishList = new WishList();
+				wishList.setWishListNo(rset.getInt("wishlist_no"));
+				wishList.setProductNo(rset.getString("product_no"));
+				wishList.setMemberNo(rset.getString("member_no"));
+				wishList.setWishListDate(rset.getString("wishlist_date"));
+				
+				memberWishList.add(wishList);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return memberWishList;
+	}
+
+	public Product selectMyProd(Connection conn, String memberNo, String productNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select * from tbl_prod where member_no = ? and product_no = ?";
+		
+		Product prod = null;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, productNo);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				prod = new Product();
+				prod.setMemberNo(memberNo);
+				prod.setProductNo(productNo);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		return prod;
+	}
     
     /**
      * 특정 상품 번호에 해당하는 상품 1개의 상세 정보를 조회하는 메서드

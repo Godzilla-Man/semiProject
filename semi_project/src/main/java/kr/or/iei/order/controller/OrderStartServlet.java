@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import kr.or.iei.order.model.service.OrderService;
 import kr.or.iei.product.model.vo.Product;
 
 /**
@@ -30,8 +31,61 @@ public class OrderStartServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		
 		//1. 인코딩 설정 - 필터에서 진행
 		
+		
+		//2. 값 추출
+		String productId = request.getParameter("productId");
+		//String deliveryMethod = request.getParameter("deliveryMethod"); // 배송비 포함 최종 결제 금액 계산.    
+		
+		//3. 로직 -> 주문 상품의 상품번호(prodcutId)와 일지하는 상품 조회
+		OrderService service = new OrderService();
+		Product p = service.selectOrderProduct(productId);
+		
+			//3.1 에러 발생 시 안ㅇ내페이지 생성
+	     	if (p == null) {	            
+	            // 사용자에게 보여줄 오류 메시지 설정
+	            request.setAttribute("errorTitle", "상품 정보 조회 실패");
+	            request.setAttribute("errorMessage", "요청하신 상품 ID('" + productId + "')에 해당하는 상품 정보를 찾을 수 없거나, 현재 구매할 수 없는 상품입니다. 상품 ID를 다시 확인해주세요.");
+	            // 공통 에러 페이지로 포워딩 (이 JSP 파일은 직접 만드셔야 합니다)
+	            RequestDispatcher errorView = request.getRequestDispatcher("/WEB-INF/views/order/errorPage.jsp"); 
+	            errorView.forward(request, response);
+	            return; //
+	        }
+		
+			//2.1 총 결제 예상 금액 계산
+			int productPrice = p.getProductPrice(); // DB에서 조회한 상품 가격.
+			String trdadeMethodCode = p.getTradeMethodCode(); //DB에서 조회한 택배 코드 
+			
+			int deliveryFee = 0;
+			if("M1".equals(trdadeMethodCode)) { //M1 = 선불, M3 = 후불
+				deliveryFee = 5000; // 일반 택배
+			}else if ("M3".equals(trdadeMethodCode))
+				deliveryFee = 0;
+			
+			int totalProductAmount = productPrice + deliveryFee;
+			
+		//4. 결과 처리
+		//4.1 이동할 JSP 페이지 지정
+		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/order/orderStart.jsp");
+		
+		//4.2 화면 구현에 필요한 데이터 등록
+		request.setAttribute("product", p);
+			
+			//4.3 배송 방법 및 총 결제 상품 금액			
+			request.setAttribute("totalProductAmount", totalProductAmount); // 총 상품 금액
+			request.setAttribute("deliveryFee", deliveryFee); // 배송비
+		
+		//4.3 페이지 이동
+		view.forward(request, response);  
+		
+		
+		
+		/* 아래 버전은 테스트 주문 페이지에서 orderStart.jsp까지 잘 넘아기지지는지 간단 테스트
+		  
+		[단순 버전]
 		//2. 값 추출
 		String productId = request.getParameter("productId");
         String productName = request.getParameter("productName");
@@ -56,15 +110,17 @@ public class OrderStartServlet extends HttpServlet {
         
         
         //3.2 결과값 전송
-    	request.setAttribute("product", product); // 상품 정보        
+    	request.setAttribute("product", product); // 상품 '전체' 정보        
         request.setAttribute("deliveryMethod", deliveryMethod); // 선택된 배송 방법        
         request.setAttribute("deliveryFee", deliveryFee); // 배송비
         request.setAttribute("totalProductAmount", totalProductAmount); // 총 상품 금액
         
-    	//4. 결과 처리
+    	//4. 결과 처리(포워딩)
         RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/order/orderStart.jsp");
         view.forward(request, response);        	
         
+        */
+		
 	}
 
 	/**
