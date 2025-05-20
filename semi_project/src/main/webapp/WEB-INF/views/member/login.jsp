@@ -41,7 +41,7 @@
 					</div>
 					
 					<div class="member-link-box">
-						<a href="#">아이디/비밀번호 찾기</a>
+						<a href="/member/searchInfoFrm">아이디/비밀번호 찾기</a>
 						<a href="/member/joinFrm">회원가입</a>
 					</div>
 				</form>

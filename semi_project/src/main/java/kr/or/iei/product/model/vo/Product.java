@@ -1,6 +1,6 @@
 package kr.or.iei.product.model.vo;
-import java.util.Date;
 
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,5 +20,13 @@ public class Product {
     private String statusCode;         // 상품 상태 코드 (S01~S12)
     private Date enrollDate;           // 등록일
     private int readCount;             // 조회수
+    private String wishYn;				//찜하기 여부
+
+    // 25-05-20 이후로 추가된 속성
+    private String productStatus;      // 상품판매상태 (임시저장, 이후 삭제 예정)
+    private int wishlistCount;         // 찜 횟수 (JSP 출력용)
+    private String priceOfferYn;	   // 가격 제안 여부 ('Y' 또는 'N')
+    private String thumbnailPath;	   // 제품 대표 썸네일 ( 등록 당시 첫번째 사진 )
     private int productQuantity;	   // 상품 수량(1 : 판매 가능/ 0 : 불가)
+
 }

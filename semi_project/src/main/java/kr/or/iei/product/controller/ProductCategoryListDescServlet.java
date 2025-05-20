@@ -15,19 +15,18 @@ import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.product.model.service.ProductService;
 import kr.or.iei.product.model.vo.Product;
-import kr.or.iei.product.model.vo.WishList;
 
 /**
  * Servlet implementation class ProductCategoryListServlet
  */
-@WebServlet("/product/categoryList")
-public class ProductCategoryListServlet extends HttpServlet {
+@WebServlet("/product/categoryListDesc")
+public class ProductCategoryListDescServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ProductCategoryListServlet() {
+    public ProductCategoryListDescServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -38,24 +37,24 @@ public class ProductCategoryListServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String category = request.getParameter("ctg");
 		
-		HttpSession session = request.getSession(false); //세션 객체가 존재하면 존재하는 객체 반환, 없으면 null 반환
+		String memberNo = null;
+		Member loginMember = null;
+		HttpSession session = request.getSession(false); //세션 있으면 존재, 없으면 null (로그인 되어 있으면 존재, 비로그인 시 null)
+		if(session != null) {
+			loginMember = (Member) session.getAttribute("loginMember");
+			if(loginMember != null) {
+				memberNo = loginMember.getMemberNo();				
+			}
+		}
 		
 		ProductService service = new ProductService();
 		Category ctg = service.selectCategory(category); //카테고리명 가져오기
-		ArrayList<Product> productCtgList = service.selectCategoryList(category); //카테고리랑 일치하는 상품 리스트 가져오기
-		ArrayList<WishList> memberWishList = new ArrayList<WishList>(); //밑에서 실행항 로그인한 회원의 찜 리스트 가져오기 미리 선언
-		
-		if(session != null) { //로그인한 상태
-			Member loginMember = (Member) session.getAttribute("loginMember"); //로그인 회원 정보
-			String memberNo = loginMember.getMemberNo(); //로그인한 회원 번호
-			memberWishList = service.selectMemberWishList(memberNo); //로그인한 회원의 찜 리스트 가져오기			
-		}
+		ArrayList<Product> productCtgList = service.selectCategoryList(category, memberNo); //카테고리랑 일치하는 상품 리스트 가져오기
 		
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/productCategoryList.jsp");
 		
 		request.setAttribute("ctg", ctg);
 		request.setAttribute("productList", productCtgList);
-		request.setAttribute("memberWishList", memberWishList);
 		
 		view.forward(request, response);
 		

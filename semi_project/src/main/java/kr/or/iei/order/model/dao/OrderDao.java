@@ -36,19 +36,17 @@ public class OrderDao {
 			
 			//결과 처리
 			if(rset.next()) {
-				String productNo = rset.getString("product_no");
-				String memberNo = rset.getString("member_no");
-				String productName = rset.getString("product_name");
-				String productIntrod = rset.getString("product_introd");
-				int productPrice = rset.getInt("product_price");
-				String categoryCode = rset.getString("category_code");
-				String tradeMethodCode = rset.getString("trade_method_code");
-				String statusCode = rset.getString("status_code");
-				Date enrollDate = rset.getDate("enroll_date");
-				int readCount = rset.getInt("read_count");
-				int productQuantity = rset.getInt("product_quantity");
-				
-				p = new Product(productNo, memberNo, productName, productIntrod, productPrice, categoryCode, tradeMethodCode, statusCode, enrollDate, readCount, productQuantity);				
+				p.setProductNo(rset.getString("product_no"));
+				p.setMemberNo(rset.getString("member_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductIntrod(rset.getString("product_introd"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setCategoryCode(rset.getString("category_code"));
+				p.setTradeMethodCode(rset.getString("trade_method_code"));
+				p.setStatusCode(rset.getString("status_code"));
+				p.setEnrollDate(rset.getDate("enroll_date"));
+				p.setReadCount(rset.getInt("read_count"));
+				p.setProductQuantity(rset.getInt("product_quantity"));
 			}
 			
 		} catch (SQLException e) {

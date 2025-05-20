@@ -1,4 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -56,52 +60,118 @@
     align-items: flex-start;
     gap: 20px;
   }
+  
 
-  .image-upload-box {
-    width: 300px;
-    height: 200px;
-    border: 1px dashed #aaa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #ccc;
-    font-size: 14px;
-  }
-
-  .image-tools-outside {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: flex-start;
-    height: 200px;
-    gap: 6px;
-  }
-
-  .image-count {
-    font-size: 13px;
-    color: #333;
-  }
-
-  .upload-btn {
-    padding: 6px 10px;
-    background-color: #f5f5f5;
-    border: 1px solid #888;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-    display: inline-block;
-  }
-
-  .upload-btn input {
-    display: none;
-  }
-
-  .upload-hint {
-    font-size: 11px;
-    color: #999;
-    max-width: 180px;
-    text-align: left;
+/* 상품 이미지 업로드 영역 스타일 */
+/* 미리보기 이미지 박스 (이미지가 표시될 영역) */
+.image-upload-box {
+  width: 300px;
+  height: 200px;
+  border: 1px dashed #aaa;
+  background-color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
 }
+
+/* 이미지 업로드 전체 감싸는 wrapper (슬라이드 버튼/카운터 포함) */
+.image-upload-wrapper {
+  position: relative;
+  display: inline-block; /* absolute 요소 기준이 됨 */
+}
+
+/* 업로드된 이미지 스타일 */
+.image-upload-box img,
+.preview-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: none; /* 선택된 이미지 외에는 감춤 */
+}
+
+/* 이미지 슬라이드 버튼 스타일 */
+.slide-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  padding: 4px 10px;
+  opacity: 0.6;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 10;
+}
+
+.slide-btn:hover {
+  opacity: 1;
+}
+
+/* 슬라이드 버튼 위치 */
+#prevBtn {
+  left: 5px;
+}
+#nextBtn {
+  right: 5px;
+}
+
+
+/* 이미지 수 카운터 오버레이 */
+
+.image-count-overlay {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 12px;
+  background-color: rgba(128, 128, 128, 0.5); /* 기존 회색 계열로 자연스럽게 */
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 10px;
+  z-index: 9999;
+  white-space: nowrap;
+  pointer-events: none; /* 클릭 방해 방지 */
+}
+
+
+/* 이미지 업로드 외부 툴 (파일 선택 버튼 등) */
+
+.image-tools-outside {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  height: 200px;
+  gap: 6px;
+}
+
+/* 파일 선택 버튼 */
+.upload-btn {
+  padding: 6px 10px;
+  background-color: #f5f5f5;
+  border: 1px solid #888;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+/* 힌트 텍스트 */
+.upload-hint {
+  font-size: 11px;
+  color: #999;
+  max-width: 180px;
+  text-align: left;
+}
+
+/* 숨겨진 실제 input 요소 */
+.upload-btn input {
+  display: none;
+}
+
+
 
 /* 전체 form-row 중에서 category-row만 위쪽 정렬 */
 .form-row.category-row {
@@ -318,33 +388,52 @@
 
 <main class="container">
 
-  <form action="/product/enroll" method="post" enctype="multipart/form-data">
+  <form action="${editMode ? '/product/update' : '/product/enroll'}" method="post" enctype="multipart/form-data">
 
     <!-- 상품정보 제목 + 구분선 -->
     <h2 class="section-title">상품정보</h2>
 
-    <!-- 상품명 -->
-    <div class="form-row">
-      <div class="form-label">상품명</div>
-      <input type="text" name="productName" maxlength="30" placeholder="상품명을 입력하세요." class="product-name-input" />
-      <span class="char-counter" id="nameCounter">0 / 30</span>
-    </div>
+	  <%-- 수정 모드일 경우 상품번호 hidden으로 전달 --%>
+	  <c:if test="${editMode}">
+	    <input type="hidden" name="productNo" value="${product.productNo}" />
+	  </c:if>
 
-    <!-- 상품 이미지 -->
-    <div class="form-row">
-      <div class="form-label">상품 이미지</div>
-      <div class="form-input-box">
-        <div class="image-upload-box">상품 이미지 등록</div>
-        <div class="image-tools-outside">
-          <div class="image-count">0 / 10</div>
-          <label class="upload-btn">
-            사진 첨부하기
-            <input type="file" name="productImages" multiple accept="image/*" />
-          </label>
-          <div class="upload-hint">가장 먼저 등록한 이미지가<br>게시글 썸네일이 됩니다.</div>
-        </div>
+  <!-- 상품명 -->
+  <div class="form-row">
+    <div class="form-label">상품명</div>
+    <input type="text" name="productName" maxlength="30"
+           placeholder="상품명을 입력하세요."
+           class="product-name-input"
+           value="<c:out value='${product.productName}' default=''/>"> <!-- 수정: JSTL 방식으로 안전하게 출력 -->
+    <span class="char-counter" id="nameCounter">0 / 30</span>
+  </div>
+
+<!-- 상품 이미지 -->
+<div class="form-row">
+  <div class="form-label">상품 이미지</div>
+  <div class="form-input-box">
+  
+    <!-- 미리보기 박스 + 좌우 화살표 포함 -->
+    <div class="image-upload-wrapper" style="position: relative;">
+      <div class="image-upload-box" id="imagePreviewContainer">
+        <span class="placeholder-text">상품 이미지 등록</span>
+      </div>
+      <!-- 좌우 슬라이드 버튼 -->
+      <button type="button" id="prevBtn" class="slide-btn">&#10094;</button>
+      <button type="button" id="nextBtn" class="slide-btn">&#10095;</button>
+      <!-- 이미지 갯수 -->
+      <div id="imageCount" class="image-count-overlay">
+        <span id="fileNum">0</span> / 10
       </div>
     </div>
+
+    <div class="image-tools-outside">
+      <label for="fileInput" class="upload-btn">사진 첨부하기</label>
+      <input type="file" id="fileInput" name="productImages" multiple accept="image/*" style="display: none;">
+      <div class="upload-hint">가장 먼저 등록한 이미지가<br>게시글 썸네일이 됩니다.</div>
+    </div>
+  </div>
+</div>
 
 
 
@@ -386,23 +475,23 @@
 
 
 
-<!-- 상품 설명 -->
-<div class="form-row">
-  <div class="form-label">상품 설명</div>
-  <div class="description-box">
-    <textarea id="productDescription" name="productIntrod" maxlength="2000"
-      placeholder="상품의 상태, 사용 기간, 구성품, 하자 유무 등을 구체적으로 기재해 주시기 바랍니다.
+  <!-- 상품 설명 -->
+  <div class="form-row">
+    <div class="form-label">상품 설명</div>
+    <div class="description-box">
+      <textarea id="productDescription" name="productIntrod" maxlength="1000"
+        placeholder="상품의 상태, 사용 기간, 구성품, 하자 유무 등을 구체적으로 기재해 주시기 바랍니다.
 구매에 도움이 될 수 있는 상세 정보(사이즈, 사용감 등)를 성실히 작성해 주세요.
 개인정보 입력(전화번호, 계좌번호, SNS 등)은 제한될 수 있으니 유의해 주세요.
 
 특히 상품이 얼룩/오염/찢어짐/변형 등 하자 있을 경우 반드시 표기해 주세요.
 일반적인 사용 정보 외에 판매자가 꼭 언급하고 싶은 특이사항이 있다면 함께 작성해 주세요.
-구매 후 분쟁 예방에 도움이 될 수 있습니다."></textarea>
-    <div class="description-count">
-      <span id="descCharCount">0</span> / 2000
+구매 후 분쟁 예방에 도움이 될 수 있습니다."><c:out value='${product.productIntrod}' default=''/></textarea>
+      <div class="description-count">
+        <span id="descCharCount">0</span> / 1000
+      </div>
     </div>
   </div>
-</div>
 
     <!-- 가격정보 제목 + 구분선 -->
     <h2 class="section-title">가격</h2>
@@ -412,16 +501,20 @@
   <div class="form-label">가격</div>
 
   <div class="price-box">
-    <!-- 가격 입력 -->
-    <div class="price-input-group">
-      <input type="number" name="productPrice" placeholder="가격을 입력하세요." class="price-input" />
-      <span class="price-unit">원</span>
-    </div>
+  
+  <!-- 가격 입력 -->
+  <div class="price-input-group">
+    <input type="number" name="productPrice" placeholder="가격을 입력하세요."
+           class="price-input" max="11000000000"
+           value="<c:out value='${product.productPrice}' default=''/>">
+    <span class="price-unit">원</span>
+  </div>
 
     <!-- 가격 제안 받기 -->
+    <!-- 사용자가 체크하면 value="Y"가 전송됨, 체크하지 않으면 null 로 전달되어 기본값 'N' 처리됨 -->
     <div class="price-option">
       <label>
-        <input type="checkbox" name="priceOffer" />
+        <input type="checkbox" name="priceOffer" value="Y">
         가격제안 받기
       </label>
 
@@ -440,21 +533,14 @@
   <div class="form-label">배송비</div>
 
   <div class="delivery-box">
-    <!-- 배송비 라디오 버튼 -->
-    <label class="delivery-option">
-      <input type="radio" name="tradeMethodCode" value="M1" required />
-      배송비 포함
-    </label>
-
-    <label class="delivery-option">
-      <input type="radio" name="tradeMethodCode" value="M2" />
-      배송비 미포함
-    </label>
-
-    <label class="delivery-option">
-      <input type="radio" name="tradeMethodCode" value="M3" />
-      배송비 착불 (구매자 부담)
-    </label>
+  
+  <!-- 배송방법 라디오 버튼 -->
+  <input type="radio" name="tradeMethodCode" value="M1"
+    <c:if test="${not empty product && product.tradeMethodCode eq 'M1'}">checked</c:if>> 배송비 포함
+  <input type="radio" name="tradeMethodCode" value="M2"
+    <c:if test="${not empty product && product.tradeMethodCode eq 'M2'}">checked</c:if>> 배송비 미포함
+  <input type="radio" name="tradeMethodCode" value="M3"
+    <c:if test="${not empty product && product.tradeMethodCode eq 'M3'}">checked</c:if>> 배송비 착불
 
     <!-- 안내 문구 -->
     <p class="delivery-hint">
@@ -475,14 +561,39 @@
 
   <!-- 등록 버튼 -->
   <div class="submit-box">
-    <button type="submit" id="submitBtn" disabled>등록하기</button>
+      <!-- 등록/수정 버튼 텍스트 분기 -->
+  <button type="submit" id="submitBtn" disabled>
+    <c:choose>
+      <c:when test="${editMode}">수정하기</c:when>
+      <c:otherwise>등록하기</c:otherwise>
+    </c:choose>
+  </button>
   </div>
 </div>
     </form>
   </main>
+	<div class="fixed" style="right: 280px;">
+		<div class="top" onclick="scrollToTop()">
+			<span class="material-symbols-outlined">arrow_upward</span>
+		</div>
+	</div>
   <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   
+    <!-- 카테고리 히든 필드 (소분류 코드) -->
+  <input type="hidden" name="categoryCode" id="categoryCode"
+         value="<c:out value='${product.categoryCode}' default=''/>">
+
 <script>
+	//우측 하단 ↑ 버튼 클릭 시 상단으로 스크롤 이동
+    function scrollToTop() {
+        window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // 부드럽게 스크롤
+        });
+    }
+</script>
+<script>
+
 // 카테고리 선택 관련 스크립트 (대분류 - 중분류 - 소분류)
 document.addEventListener('DOMContentLoaded', () => {
 	
@@ -683,6 +794,18 @@ function updateCategoryText() {
 </script>
 
 <script>
+  // 상품명 글자 수 카운트 함수
+  const nameInput = document.querySelector('input[name="productName"]');
+  const nameCounter = document.getElementById('nameCounter');
+
+  if (nameInput && nameCounter) {
+    nameInput.addEventListener('input', () => {
+      nameCounter.textContent = nameInput.value.length + " / 30";
+    });
+  }
+</script>
+
+<script>
   //상품 설명 글자 수 카운트 함수
   const descInput = document.getElementById('productDescription');
   const countDisplay = document.getElementById('descCharCount');
@@ -699,14 +822,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const submitBtn = document.getElementById('submitBtn');
   const warningMsg = document.getElementById('submitWarning');
 
-	//필수 입력 항목들
+  // 필수 입력 요소들
   const productNameInput = document.querySelector('input[name="productName"]');
   const productDescTextarea = document.querySelector('textarea[name="productIntrod"]');
   const priceInput = document.querySelector('input[name="productPrice"]');
   const tradeMethodRadios = document.querySelectorAll('input[name="tradeMethodCode"]');
   const imageInput = document.querySelector('input[name="productImages"]');
 
-	//입력값 유효성 검사 함수
+  //  상품 가격 상한 제한
+  priceInput.addEventListener('input', () => {
+    const value = parseInt(priceInput.value, 10);
+    if (value > 1000000000) {
+      alert("상품 가격은 10억 원 이하로 입력해야 합니다.");
+      priceInput.value = '';
+    }
+    triggerValidation(); // 입력값 초기화 후 버튼 상태 다시 검사
+  });
+  
+  // 유효성 검사 함수
   function validateForm() {
     const isName = productNameInput.value.trim() !== '';
     const isDesc = productDescTextarea.value.trim() !== '';
@@ -716,22 +849,122 @@ document.addEventListener('DOMContentLoaded', () => {
     return isName && isDesc && isPrice && isTrade && isImage;
   }
 
-	//입력 이벤트 발생 시 버튼 상태 갱신
-  form.addEventListener('input', () => {
+  // 버튼 상태 갱신 함수
+  function triggerValidation() {
     if (validateForm()) {
-        submitBtn.disabled = false;            // 모든 항목이 입력되면 버튼 활성화
-        warningMsg.style.display = 'none';     // 경고 메시지 숨김
-      } else {
-        submitBtn.disabled = true;             // 미입력 시 버튼 비활성화
-        warningMsg.style.display = 'block';    // 경고 메시지 표시
+      submitBtn.disabled = false;
+      warningMsg.style.display = 'none';
+    } else {
+      submitBtn.disabled = true;
+      warningMsg.style.display = 'block';
     }
-  });
+  }
+
+  // 각각의 입력 요소에 이벤트 연결
+  productNameInput.addEventListener('input', triggerValidation);
+  productDescTextarea.addEventListener('input', triggerValidation);
+  priceInput.addEventListener('input', triggerValidation);
+  tradeMethodRadios.forEach(radio => radio.addEventListener('change', triggerValidation));
+  imageInput.addEventListener('change', triggerValidation); // 파일은 change 이벤트
+
+  //  페이지 로드 직후 한 번 상태 검사
+  triggerValidation();
 });
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
 
+  const fileInput = document.getElementById('fileInput');
+  const previewContainer = document.getElementById('imagePreviewContainer');
+  const fileNum = document.getElementById('fileNum');  // 이미지 순서 숫자 표시용
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
 
+  let currentIndex = 0;
+  let previewImages = [];
 
+  // 슬라이드에서 현재 인덱스의 이미지만 보여주는 함수
+  function showImage(index) {
+    previewImages.forEach((img, i) => {
+      img.style.display = i === index ? 'block' : 'none';
+    });
+  }
+
+  // 파일 첨부 시 실행
+  fileInput.addEventListener('change', () => {
+    const files = fileInput.files;
+    const totalFiles = files.length;
+
+    // 이미지 수 초기화 및 숫자 표시
+    fileNum.textContent = totalFiles > 0 ? 1 : 0;
+
+    //  placeholder-text가 남아있다면 제거 (중복 표시 방지)
+    const placeholder = previewContainer.querySelector('.placeholder-text');
+    if (placeholder) {
+      placeholder.remove();
+    }
+
+    // 이미지 미리보기 배열 초기화 및 컨테이너 비우기
+    previewImages = [];
+    currentIndex = 0;
+    previewContainer.innerHTML = '';
+
+    // 이미지가 없는 경우, placeholder 다시 표시
+    if (totalFiles === 0) {
+      previewContainer.innerHTML = '<span class="placeholder-text">상품 이미지 등록</span>';
+      prevBtn.style.display = 'none';
+      nextBtn.style.display = 'none';
+      return;
+    }
+
+    let loadedCount = 0;
+
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.classList.add('preview-img');
+        img.style.display = 'none';  // 기본은 숨김
+        previewImages.push(img);
+        previewContainer.appendChild(img);
+
+        loadedCount++;
+
+        // 모든 이미지 로딩 완료 시, 첫 이미지 표시 + 버튼 활성화
+        if (loadedCount === totalFiles) {
+          showImage(0);
+          currentIndex = 0;
+          fileNum.textContent = 1;
+          prevBtn.style.display = totalFiles > 1 ? 'inline-block' : 'none';
+          nextBtn.style.display = totalFiles > 1 ? 'inline-block' : 'none';
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  // 이전 이미지 보기
+  prevBtn.addEventListener('click', () => {
+    if (previewImages.length <= 1) return;
+    previewImages[currentIndex].style.display = 'none';
+    currentIndex = (currentIndex - 1 + previewImages.length) % previewImages.length;
+    previewImages[currentIndex].style.display = 'block';
+    fileNum.textContent = currentIndex + 1;
+  });
+
+  // 다음 이미지 보기
+  nextBtn.addEventListener('click', () => {
+    if (previewImages.length <= 1) return;
+    previewImages[currentIndex].style.display = 'none';
+    currentIndex = (currentIndex + 1) % previewImages.length;
+    previewImages[currentIndex].style.display = 'block';
+    fileNum.textContent = currentIndex + 1;
+  });
+
+});
+</script>
 
 
 </body>

@@ -4,9 +4,11 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+import kr.or.iei.comment.model.vo.Comment;
 import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.file.model.vo.Files;
+import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.product.model.dao.ProductDao;
 import kr.or.iei.product.model.vo.Product;
 import kr.or.iei.product.model.vo.WishList;
@@ -58,6 +60,305 @@ public class ProductService {
         return result1 * result2; // 둘 다 성공해야 양수, 아니면 0 또는 음수
     }
 
+    /**
+     * 상품 1개 상세 조회 서비스
+     * @param productNo 조회할 상품 번호
+     * @return 해당 상품 정보 (없으면 null)
+     */
+    
+    public Product selectOneProduct(String productNo) {
+        Connection conn = JDBCTemplate.getConnection();
+
+        Product p = dao.selectOneProduct(conn, productNo);
+
+        JDBCTemplate.close(conn);
+        return p;
+    }
+
+    /**
+     * 상품 이미지 파일 목록 조회 서비스
+     *
+     * @param productNo 조회할 상품 번호 (예: "P2405190001")
+     * @return 해당 상품에 등록된 이미지 파일 목록 (List<Files>)
+     */
+    
+    public List<Files> selectProductFiles(String productNo) {
+        // 1. DB 연결 생성
+        Connection conn = JDBCTemplate.getConnection();
+
+        // 2. DAO를 통해 파일 목록 조회
+        List<Files> fileList = dao.selectProductFiles(conn, productNo);
+
+        // 3. 연결 해제
+        JDBCTemplate.close(conn);
+
+        // 4. 결과 반환
+        return fileList;
+    }
+
+    /**
+     * 특정 상품에 등록된 댓글 목록 조회 서비스
+     *
+     * @param productNo 댓글을 조회할 대상 상품 번호
+     * @return          해당 상품의 댓글 리스트 (List<Comment>)
+     */
+    
+    public List<Comment> selectProductComments(String productNo) {
+        // 1. DB 연결 생성
+        Connection conn = JDBCTemplate.getConnection();
+
+        // 2. DAO 호출 → 상품 번호에 해당하는 댓글 리스트 조회
+        List<Comment> list = dao.selectProductComments(conn, productNo);
+
+        // 3. 연결 해제
+        JDBCTemplate.close(conn);
+
+        // 4. 결과 반환
+        return list;
+    }
+
+    /**
+     * 상품 판매자의 회원 정보 조회
+     *
+     * @param memberNo 판매자의 회원 번호
+     * @return         판매자 정보가 담긴 Member 객체
+     */
+    public Member selectSellerInfo(String memberNo) {
+        // 1. DB 연결
+        Connection conn = JDBCTemplate.getConnection();
+
+        // 2. DAO를 통해 판매자 정보 조회
+        Member seller = dao.selectSellerInfo(conn, memberNo);
+
+        // 3. 연결 해제
+        JDBCTemplate.close(conn);
+
+        // 4. 결과 반환
+        return seller;
+    }
+
+    /**
+     * 댓글 등록 서비스
+     * 
+     * @param c 등록할 댓글 객체 (productNo, memberNo, content 포함)
+     * @return 등록 성공 여부 (1: 성공, 0: 실패)
+     */
+    
+    public int insertComment(Comment c) {
+        // 1. DB 연결 생성
+        Connection conn = JDBCTemplate.getConnection();
+
+        // 2. DAO 호출
+        int result = dao.insertComment(conn, c);
+
+        // 3. 트랜잭션 처리
+        if (result > 0) {
+            JDBCTemplate.commit(conn);
+        } else {
+            JDBCTemplate.rollback(conn);
+        }
+
+        // 4. 연결 해제
+        JDBCTemplate.close(conn);
+
+        // 5. 결과 반환
+        return result;
+    }
+
+    /**
+     * 댓글 내용을 수정하는 서비스 메서드
+     * @param c 수정할 댓글 객체 (댓글번호, 수정된 내용 포함)
+     * @return 처리 결과 (1: 성공, 0: 실패)
+     */
+    public int updateComment(Comment c) {
+        Connection conn = JDBCTemplate.getConnection();
+
+        // DAO를 통해 댓글 수정 쿼리 수행
+        int result = dao.updateComment(conn, c);
+
+        // 트랜잭션 처리
+        if (result > 0) {
+            JDBCTemplate.commit(conn);
+        } else {
+            JDBCTemplate.rollback(conn);
+        }
+
+        JDBCTemplate.close(conn);
+        return result;
+    }
+
+	public int deleteComment(int commentNo) {
+        Connection conn = JDBCTemplate.getConnection();
+
+        // DAO를 통해 댓글 수정 쿼리 수행
+        int result = dao.deleteComment(conn, commentNo);
+
+        // 트랜잭션 처리
+        if (result > 0) {
+            JDBCTemplate.commit(conn);
+        } else {
+            JDBCTemplate.rollback(conn);
+        }
+
+        JDBCTemplate.close(conn);
+        return result;
+    }
+	
+    // 찜 횟수 조회 메서드 추가
+    public int getWishlistCount(String productNo) {
+        Connection conn = JDBCTemplate.getConnection();
+        int count = dao.selectWishlistCount(conn, productNo);
+        JDBCTemplate.close(conn);
+        return count;
+    }
+
+ // 찜 여부 확인 (이미 찜한 상태인지 여부를 확인)
+    public boolean checkWishlist(String productNo, String memberNo) {
+        Connection conn = JDBCTemplate.getConnection();
+        boolean exists = new ProductDao().checkWishlist(conn, productNo, memberNo);
+        JDBCTemplate.close(conn);
+        return exists;
+    }
+
+    // 찜 추가 (TBL_WISHLIST 테이블에 새로운 찜 정보 삽입)
+    public int addWishlist(String productNo, String memberNo) {
+        Connection conn = JDBCTemplate.getConnection();
+        int result = new ProductDao().insertWishlist(conn, productNo, memberNo);
+        if (result > 0) {
+            JDBCTemplate.commit(conn);
+        } else {
+            JDBCTemplate.rollback(conn);
+        }
+        JDBCTemplate.close(conn);
+        return result;
+    }
+
+    // 찜 해제 (TBL_WISHLIST 테이블에서 해당 찜 정보 삭제)
+    public int removeWishlist(String productNo, String memberNo) {
+        Connection conn = JDBCTemplate.getConnection();
+        int result = new ProductDao().deleteWishlist(conn, productNo, memberNo);
+        if (result > 0) {
+            JDBCTemplate.commit(conn);
+        } else {
+            JDBCTemplate.rollback(conn);
+        }
+        JDBCTemplate.close(conn);
+        return result;
+    }
+
+    // 현재 판매자가 판매중인 상품 갯수 표시
+    public int getSellingProductCount(String memberNo) {
+        Connection conn = JDBCTemplate.getConnection();
+        int count = dao.getSellingProductCount(conn, memberNo);
+        JDBCTemplate.close(conn);
+        return count;
+    }
+
+    // 조회수 증가
+    public int increaseReadCount(String productNo) {
+        Connection conn = JDBCTemplate.getConnection();
+        int result = dao.increaseReadCount(conn, productNo);
+        if (result > 0) {
+            JDBCTemplate.commit(conn);
+        } else {
+            JDBCTemplate.rollback(conn);
+        }
+        JDBCTemplate.close(conn);
+        return result;
+    }
+
+    // 비슷한 ( 같은 소분류 카테고리 ) 제품 최근 등록 순으로 6개 출력
+    public List<Product> selectRelatedProducts(String categoryCode, String currentProductNo) {
+        Connection conn = JDBCTemplate.getConnection();
+        List<Product> list = dao.selectRelatedProducts(conn, categoryCode, currentProductNo);
+        JDBCTemplate.close(conn);
+        return list;
+    }
+
+    // 상품 논리 삭제: 상태코드를 'S99'로 변경
+    public int markProductAsDeleted(String productNo) {
+        Connection conn = JDBCTemplate.getConnection();
+
+        // statusCode를 'S99'로 설정 (삭제 상태)
+        int result = new ProductDao().updateProductStatus(conn, productNo, "S99");
+
+        if (result > 0) {
+            JDBCTemplate.commit(conn);  // 성공 시 커밋
+        } else {
+            JDBCTemplate.rollback(conn);  // 실패 시 롤백
+        }
+
+        JDBCTemplate.close(conn);
+        return result;
+    }
+    
+ /* 
+    @Deprecated
+    // 상품 수정 후 DB에 재등록 메서드
+    // 상품 수정 시 기존 이미지 삭제 후 새로 업로드된 이미지로 대체
+    // 파일이 없는 경우에도 기존 이미지 삭제만 수행됨
+    
+    public int updateProduct(Product p, List<Files> fileList) {
+        Connection conn = JDBCTemplate.getConnection();
+
+        // 1. 상품 기본 정보 업데이트
+        int result1 = dao.updateProduct(conn, p);
+
+        // 2. 기존 파일 삭제
+        int result2 = dao.deleteFilesByProductNo(conn, p.getProductNo());
+
+        // 3. 새 파일 등록 (파일이 있을 경우)
+        int result3 = 1;
+        if (fileList != null && !fileList.isEmpty()) {
+            for (Files f : fileList) {
+                f.setProductNo(p.getProductNo());
+            }
+            result3 = dao.insertFiles(conn, fileList);
+        }
+
+        // 4. 트랜잭션 처리
+        if (result1 > 0 && result2 >= 0 && result3 > 0) {
+            JDBCTemplate.commit(conn);
+        } else {
+            JDBCTemplate.rollback(conn);
+        }
+
+        JDBCTemplate.close(conn);
+        return result1 * result3;
+    }
+*/
+    
+    
+    // 사진 수정시, 기존 사진들 다 삭제후 새로운 사진만 업로드.
+    public int updateProductWithFreshFiles(Product p, List<Files> fileList) {
+        Connection conn = JDBCTemplate.getConnection();
+
+        // 1. 상품 기본 정보 업데이트
+        int result1 = dao.updateProduct(conn, p);
+
+        // 2. 기존 파일 모두 삭제
+        int result2 = dao.deleteFilesByProductNo(conn, p.getProductNo());
+
+        // 3. 새 파일들 DB에 등록
+        int result3 = 1; // 파일이 없을 경우 성공 상태 유지
+        if (fileList != null && !fileList.isEmpty()) {
+            for (Files f : fileList) {
+                f.setProductNo(p.getProductNo()); // 상품 번호 설정
+            }
+            result3 = dao.insertFiles(conn, fileList);
+        }
+
+        // 4. 트랜잭션 처리
+        if (result1 > 0 && result2 >= 0 && result3 > 0) {
+            JDBCTemplate.commit(conn);
+        } else {
+            JDBCTemplate.rollback(conn);
+        }
+
+        JDBCTemplate.close(conn);
+        return result1 * result3; // 하나라도 실패하면 0 이하
+    }
+
 	public Category selectCategory(String category) {
 		Connection conn = JDBCTemplate.getConnection();
 		Category ctg = dao.selectCategory(conn, category);
@@ -66,33 +367,37 @@ public class ProductService {
 		return ctg;
 	}
 
-	public ArrayList<Product> searchProdcutName(String productName) {
+	//상품명으로 검색 시 상품 리스트
+	public ArrayList<Product> searchProdcutName(String productName, String memberNo) {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productList = dao.searchProductName(conn, productName);
+		ArrayList<Product> productList = dao.searchProductName(conn, productName, memberNo);
 		JDBCTemplate.close(conn);
 		
 		return productList;
 	}
 
-	public ArrayList<Product> searchMemberNickname(String memberNickname) {
+	//작성자 닉네임으로 검색 시 상품 리스트
+	public ArrayList<Product> searchMemberNickname(String memberNickname, String memberNo) {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productList = dao.searchMemberNickname(conn, memberNickname);
+		ArrayList<Product> productList = dao.searchMemberNickname(conn, memberNickname, memberNo);
 		JDBCTemplate.close(conn);
 		
 		return productList;
 	}
 
-	public ArrayList<Product> selectAllList() {
+	//최신순 전체 상품 리스트
+	public ArrayList<Product> selectAllListDesc(String memberNo) {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productAllList = dao.selectAllList(conn);
+		ArrayList<Product> productList = dao.selectAllListDesc(conn, memberNo);
 		JDBCTemplate.close(conn);
 		
-		return productAllList;
+		return productList;
 	}
 
-	public ArrayList<Product> selectCategoryList(String category) {
+	//카테고리별 상품 리스트
+	public ArrayList<Product> selectCategoryList(String category, String memberNo) {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productCtgList = dao.selectCategoryList(conn, category);
+		ArrayList<Product> productCtgList = dao.selectCategoryList(conn, category, memberNo);
 		JDBCTemplate.close(conn);
 		
 		return productCtgList;
@@ -124,12 +429,25 @@ public class ProductService {
 		return result; //-2 : 내가 등록한 상품, -1 : 이미 찜한 상품, 0 : 리스트에 추가 실패, 1 : 리스트에 추가 성공
 	}
 
-	public ArrayList<WishList> selectMemberWishList(String memberNo) {
+	//오래된순 전체 상품 리스트
+	public ArrayList<Product> selectAllListAsc() {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<WishList> memberWishList = dao.selectMemberWishList(conn, memberNo);
+		ArrayList<Product> productList = dao.selectAllListAsc(conn);
 		JDBCTemplate.close(conn);
 		
-		return memberWishList;
+		return productList;
 	}
 
+	public int delWishList(String memberNo, String productNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		int result = dao.delWishList(conn, memberNo, productNo);
+		JDBCTemplate.close(conn);
+		
+		return result;
+	}
 }
+
+
+
+
+

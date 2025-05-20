@@ -134,10 +134,24 @@
 		        </form>
 			</section>
 		</main>
+		
+		<div class="fixed" style="right: 280px;">
+			<div class="top" onclick="scrollToTop()">
+				<span class="material-symbols-outlined">arrow_upward</span>
+			</div>
+		</div>
+		
 		<jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
 	</div>
 	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 	<script>
+ 	//우측 하단 ↑ 버튼 클릭 시 상단으로 스크롤 이동
+    function scrollToTop() {
+        window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // 부드럽게 스크롤
+        });
+    }
 	$(document).ready(function(){
 		//selectbox 현재시간기준으로 값 설정
 	    var now = new Date();

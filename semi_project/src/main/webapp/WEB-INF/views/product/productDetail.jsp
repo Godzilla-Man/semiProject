@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,17 +28,14 @@ main.container {
   position: relative;
 }
 
-/* 상품 이미지 박스 */
+/*  실제 이미지가 출력되는 박스: 크기 고정이 필요한 곳 */
 .product-image-box {
-  position: relative;
-  width: 350px;
-  height: 300px;
-  border: 1px solid var(--line2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 10px; /* 인디케이터와 간격 확보 */
+  width: 400px;
+  height: 400px;
+  position: relative;       /* 자식 이미지의 absolute 기준 */
+  overflow: hidden;
 }
+
 
 /*  이미지 + 인디케이터 전체를 세로 정렬하는 컨테이너 */
 .image-section {
@@ -44,16 +44,45 @@ main.container {
   align-items: center;
 }
 
-/* 슬라이드 버튼 */
+/* 슬라이드 컨테이너 */
+.image-slider {
+  width: 100%;
+  height: 100%;             /* ✅ 반드시 높이를 100%로 */
+  position: relative;
+}
+
+/*  이미지 슬라이드 이미지 */
+/* 슬라이드 이미지 */
+.slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        /* ✅ 꽉 채우기 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;            /* ✅ JS로 block 처리 필요 */
+}
+
+/* 슬라이드 버튼 스타일 개선 */
 .slide-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(0, 0, 0, 0.4);
   border: none;
-  cursor: pointer;
-  color: var(--gray4);
+  border-radius: 50%;
+  color: white;
   font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+.slide-btn:hover {
+  background-color: rgba(0, 0, 0, 0.7);
 }
 .slide-btn.left {
   left: 10px;
@@ -62,17 +91,16 @@ main.container {
   right: 10px;
 }
 
-/* 슬라이드 인디케이터 영역 */
+/* 인디케이터 원 만들기 */
 .image-indicators {
   display: flex;
   justify-content: center;
-  align-items: center;
   gap: 8px;
-  margin-top: 5px;
+  margin-top: 12px; /* 슬라이더 하단 여백 */
 }
 
 /* 각 인디케이터 원 */
-.image-indicators .dot {
+.image-indicators .indicator-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -81,9 +109,11 @@ main.container {
 }
 
 /* 활성된 인디케이터 원 */
-.image-indicators .dot.active {
+.image-indicators .indicator-dot.active {
   background-color: var(--main2); /* 선택된 이미지 강조 색 */
 }
+
+
 
 
 
@@ -95,7 +125,7 @@ main.container {
   padding-top: 10px;
 }
 
-/* 판매중 배지 */
+/* 판매중 뱃지 상태 */
 .product-status {
   font-size: 15px;
   color: #fff;
@@ -104,6 +134,12 @@ main.container {
   padding: 5px 12px;
   border-radius: 12px;
   margin-bottom: 15px;
+}
+
+/* 삭제된 상품 상태일 경우 (회색) */
+.product-status.deleted {
+  background-color: #b0b0b0;
+  color: white;
 }
 
 /* 상품명 */
@@ -170,6 +206,35 @@ main.container {
   background-color: #e19300;
 }
 
+/* 우측 상단 수정/삭제 텍스트 링크 */
+.product-manage-links {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 14px;
+  color: var(--gray3);
+  z-index: 10;
+}
+
+/* 링크형 텍스트 스타일 */
+.product-manage-links a,
+.product-manage-links .text-link-delete {
+  color: var(--gray4);
+  background: none;
+  border: none;
+  font-size: 13px;
+  padding: 0;
+  margin: 0 3px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.product-manage-links a:hover,
+.product-manage-links .text-link-delete:hover {
+  color: var(--main3);
+}
+
+
 /* 비슷한 상품 전체 섹션 */
 .related-products {
   border-top: 1px solid var(--gray6);
@@ -193,32 +258,60 @@ main.container {
 }
 
 
-/* 상품 카드 아이템 - default의 posting-item 재사용 */
 .related-item {
   width: 140px;
+  padding: 10px;
+  border: 1px solid var(--gray6);         /* 박스 구분선 */
+  border-radius: 8px;
+  background-color: #fff;                 /* 흰 배경 */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;       /* hover 부드럽게 */
+  cursor: pointer;
+  text-align: center;
+}
+
+.related-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 강조된 그림자 */
+  transform: translateY(-2px);             /* 살짝 위로 */
+  border-color: var(--primary);            /* 강조 색상 */
 }
 
 /* 상품 이미지 영역 */
 .related-img {
   width: 100%;
-  aspect-ratio: 1 / 1;
-  background-color: var(--gray7);
-  border: 1px solid var(--gray5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--gray4);
-  font-size: 14px;
+  height: 140px; /* 고정 높이 지정 */
+  overflow: hidden;
+  border-radius: 6px;
+  background-color: var(--gray5); /* 로딩 전 배경용 */
 }
 
-/* 상품명 - 좌측정렬, 생략표시 */
+.related-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 비율 유지하면서 채우기 */
+  display: block;
+}
+
+/* 카드 제목, 가격 표시 */
 .related-name {
-  font-size: 13px;
-  margin-top: 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: left;
+  font-size: 15px;            
+  font-weight: bold;
+  color: var(--gray1);          /* 텍스트 색상 강조 */
+  margin: 6px 0 2px 0;
+  background-color: rgba(255, 255, 255, 0.75); /* 반투명 배경 */
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.related-price {
+  font-size: 14px;              /* 가격은 살짝 작게 */
+  color: var(--primary);        /* 강조 색상 사용 (default.css의 var) */
+  font-family: ns-b;            /* 숫자 강조 시 읽기 쉬운 볼드체 */
+  background-color: rgba(255, 255, 255, 0.65); /* 연한 배경 */
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-align: center;
 }
 
 /* 상품 설명 + 판매자 정보 영역 전체 컨테이너 */
@@ -242,6 +335,21 @@ main.container {
   text-align: center;
   white-space: pre-line;
 }
+
+/* 상품설명내용 폰트작성*/
+.product-description-text {
+  font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  background-color: rgba(245, 245, 245, 0.85);
+  padding: 14px;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--gray2);
+  text-align: center;
+}
+
 
 /* 판매자 정보 박스 */
 .seller-info-box {
@@ -283,6 +391,21 @@ main.container {
   font-size: 12px;
   color: var(--gray4);
   margin-bottom: 10px;
+}
+
+/* 가격 제안 알림 영역 */
+.price-offer-notice {
+  display: flex;
+  align-items: center;
+  margin: 12px 0 20px 0;   /* 위: 상품 메타와 간격 / 아래: 버튼 그룹과 간격 */
+  font-size: 15px;
+  color: #ff6600;
+  gap: 6px;
+}
+
+.price-offer-notice .material-icons {
+  font-size: 20px;
+  vertical-align: middle;
 }
 
 
@@ -366,7 +489,7 @@ textarea::placeholder {
   gap: 16px;
   border: 1px solid var(--gray6);
   padding: 20px;
-  background-color: var(--gray8);
+  background-color: #e3ecff; /* 연한 파스텔 하늘색 */
   margin-bottom: 16px;
 }
 
@@ -398,18 +521,19 @@ textarea::placeholder {
 }	
 
 
-/* 본문 전체 */
+/* 댓글 본문 박스 내부: 너비 제한 및 flex 대응 */
 .comment-box-body {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;  /* flex 하위에서 overflow 방지 */
 }
 
 
 /* 댓글 내용 박스 - 고정 크기 */
 .comment-box-content-fixed {
-  background-color: var(--gray7);
+  background-color: #ffffff;
   border: 1px solid var(--gray5);
   border-radius: 4px;
   padding: 12px 14px;
@@ -444,11 +568,14 @@ textarea::placeholder {
 }
 
 /* 답글 버튼 */
-.comment-box-reply-btn {
+.comment-box-reply-btn,
+.comment-box-delete-btn,
+.comment-box-edit-btn {
   border: 1px solid var(--gray4);
   background-color: transparent;
   padding: 4px 10px;
-  font-size: 13px;
+  font-family: inherit;
+  font-size: inherit;
   border-radius: 5px;
   cursor: pointer;
 }
@@ -458,7 +585,8 @@ textarea::placeholder {
   border: none;
   background: none;
   color: var(--gray4);
-  font-size: 13px;
+  font-family: inherit;
+  font-size: inherit;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -467,11 +595,15 @@ textarea::placeholder {
   font-size: 16px;
   margin-right: 4px;
 }
-/* 대댓글 입력창 전체 */
+
+/* 대댓글 입력 영역 전체 */
 .comment-box-reply-form {
+  display: block;             /* flex 안에서 불필요한 확장 방지 */
+  width: 100%;
+  max-width: 100%;
+  padding-left: 60px;         /* 프로필 공간 확보 */
   margin-top: 12px;
-  padding-left: 0;              /* 좌측 들여쓰기 제거 */
-  width: 100%;                  /* 부모 기준 전체 너비 */
+  box-sizing: border-box;
 }
 
 
@@ -513,7 +645,7 @@ textarea::placeholder {
 }
 
 .comment-box-item.comment-reply {
-  background-color: var(--gray7);
+  background-color: #d2ddff; /* 댓글보다 조금 진한 파스텔 블루 */
   border: 1px solid var(--gray5);
   padding: 16px;
   margin-bottom: 12px;
@@ -524,6 +656,93 @@ textarea::placeholder {
 .comment-box-item.comment-reply .comment-box-content-fixed {
   background-color: var(--gray8);
 }
+
+/* 대댓글 폼 내부 textarea */
+.comment-box-reply-form .comment-textarea {
+  width: 100%;
+  height: 80px;
+  resize: none;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid var(--gray5);
+  border-radius: 6px;
+  box-sizing: border-box;
+  background-color: var(--gray9);
+}
+
+/* 대댓글 등록 버튼 우측 정렬 */
+.comment-box-reply-form .comment-submit-wrap {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.modal-content h3 {
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.modal-textarea {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  font-size: 14px;
+  resize: none;
+  border: 1px solid var(--gray4);
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* 기본 상태는 숨김 상태 */
+#replyModal,
+#editModal {
+  display: none; /* 기본적으로 숨김 */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+
+/* 댓글이 1개도 등록되있지 않을때 */
+.comment-empty-box {
+  margin-top: 20px;
+  padding: 30px;
+  text-align: center;
+  background-color: rgba(41, 64, 246, 0.15); /* 옅은 파란색 (투명도 15%) */
+  color: #ffffff; /* 흰색 글자 */
+  font-size: 16px;
+  border-radius: 10px;
+}
+
 
 </style>
 
@@ -542,78 +761,163 @@ textarea::placeholder {
 
     <!-- 상품 이미지 박스 + 슬라이드 버튼 포함 컨테이너 -->
     <div class="product-image-box">
+		
+		<!-- 현재 보여지는 메인 이미지 -->
+		<div class="image-slider">
+		  <c:forEach var="file" items="${fileList}" varStatus="status">
+		    <img src="${file.filePath}" 
+		         alt="상품 이미지 ${status.index + 1}" 
+		         class="slide-image" 
+		         style="
+             ${status.first ? 'display: block;' : 'display: none;'}
+             width: 100%;
+             height: 100%;
+             position: absolute;
+             top: 0;
+             left: 0;
+             object-fit: cover;
+           " />
+		  </c:forEach>
+		</div>
 
-      <!-- 좌측 슬라이드 버튼 -->
-      <button class="slide-btn left material-icons">chevron_left</button>
-
-      <!-- 현재 보여지는 메인 이미지 -->
-      <img src="/resources/images/sample.png" alt="상품 이미지" id="mainImage" />
-
-      <!-- 우측 슬라이드 버튼 -->
-      <button class="slide-btn right material-icons">chevron_right</button>
+     <!-- 좌측 슬라이드 버튼 -->
+     <button class="slide-btn left material-icons">chevron_left</button>
+     
+     <!-- 우측 슬라이드 버튼 -->
+     <button class="slide-btn right material-icons">chevron_right</button>
     </div>
 
-    <!-- 이미지 인디케이터 (●●●○○ 등) -->
-    <div class="image-indicators"></div>
-
+	<!-- 이미지 인디케이터 (●●●○○ 등) -->
+	<div class="image-indicators">
+	  <c:forEach var="file" items="${fileList}" varStatus="status">
+	    <span class="indicator-dot ${status.first ? 'active' : ''}"></span>
+	  </c:forEach>
+	</div>
   </div>
 
-  <!-- 우측 - 상품 정보 요약 영역 -->
-  <div class="product-summary">
-    <div class="product-status">판매중</div>
-    <h2 class="product-title">상품명 예시</h2>
-    <p class="product-price">₩120,000</p>
-    <div class="product-meta">
-      <span>찜 <strong>23</strong></span> |
-      <span>조회수 <strong>145</strong></span> |
-      <span>등록일 <strong>2025.05.14</strong></span>
-    </div>
 
-    <div class="action-buttons" style="display: flex; gap: 10px; align-items: center;">
-      <button class="btn-secondary outline">찜하기</button>
-      <button class="btn-warning">신고하기</button>
-      <button class="btn-primary">바로구매</button>
-    </div>
+<!-- 우측 - 상품 정보 요약 영역 -->
+<div class="product-summary">
+
+<%-- (1) 수정/삭제 링크: 작성자 또는 admin 계정일 경우만 출력 --%>
+<c:if test="${loginMember != null && (loginMember.memberNo eq product.memberNo || loginMember.memberId eq 'admin')}">
+  <div class="product-manage-links">
+    <a href="/product/edit?no=${product.productNo}">수정</a>
+    |
+    <form action="/product/delete" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');" style="display:inline;">
+      <input type="hidden" name="productNo" value="${product.productNo}">
+      <button type="submit" class="text-link-delete">삭제</button>
+    </form>
   </div>
+</c:if>
+
+<%-- 상품 상태 박스 --%>
+<c:choose>
+  <c:when test="${product.statusCode eq 'S99'}">
+    <div class="product-status deleted">${product.productStatus}</div>
+  </c:when>
+  <c:otherwise>
+    <div class="product-status">${product.productStatus}</div>
+  </c:otherwise>
+</c:choose>
+
+  <!-- 상품명 -->
+  <h2 class="product-title">${product.productName}</h2>
+
+  <!-- 상품 가격 -->
+  <p class="product-price">
+    ₩<fmt:formatNumber value="${product.productPrice}" pattern="#,###"/>
+  </p>
+
+  <!-- 찜, 조회수, 등록일 -->
+  <div class="product-meta">
+    <span>찜 <strong>${product.wishlistCount}</strong></span> |
+    <span>조회수 <strong>${product.readCount}</strong></span> |
+    <span>등록일 <strong><fmt:formatDate value="${product.enrollDate}" pattern="yyyy.MM.dd"/></strong></span>
+  </div>
+
+<%-- 가격제안 여부(product.priceOfferYn == 'Y')일 때만 안내 문구 표시 --%>
+<c:if test="${product.priceOfferYn eq 'Y'}">
+  <div class="price-offer-notice">
+    <span class="material-icons">local_offer</span>
+    이 상품은 <strong>가격 제안</strong>을 받을 수 있어요!
+  </div>
+</c:if>
+
+
+  <!-- 액션 버튼 -->
+  <div class="action-buttons" style="display: flex; gap: 10px; align-items: center;">
+  
+<!-- 찜 버튼: 로그인한 사용자만 사용 가능하며, 한 번 누르면 찜/찜 해제가 토글됨 -->
+<!-- 로그인 정보는 서버 세션에서 처리함 -->
+
+<form id="wishlistForm" action="/wishlist/toggle" method="post">
+  <!-- 현재 상품 번호 전달 -->
+  <input type="hidden" name="productNo" value="${product.productNo}">
+
+  <!-- 찜 여부에 따라 버튼 텍스트를 동적으로 변경 -->
+  <button type="submit" class="btn-secondary outline" id="wishlistBtn">
+    <c:choose>
+      <c:when test="${isWished}">
+        찜 해제
+      </c:when>
+      <c:otherwise>
+        찜하기
+      </c:otherwise>
+    </c:choose>
+  </button>
+  
+</form>
+
+
+    <button class="btn-warning">신고하기</button>
+    <button class="btn-primary">바로구매</button>
+    
+ 
+  </div>
+</div>
+
 </section>
 
 
 
 
-<!-- 비슷한 상품 추천 영역 -->
+<%--
+  관련 상품 추천 영역.
+  서버로부터 전달받은 'relatedProducts' 리스트를 반복 출력하여,
+  현재 상품과 동일한 카테고리(CATEGORY_CODE)를 가진 최근 등록 상품 6개를 소개함.
+  각 상품은 대표 이미지(thumbnailPath), 상품명, 가격으로 구성되어 있으며,
+  카드 전체를 <a> 태그로 감싸서 클릭 시 상세 페이지로 이동하도록 구성함.
+--%>
+
 <section class="related-products">
   <h3 class="related-title">비슷한 상품을 찾아보세요</h3>
-  
+  <%-- 관련 상품 리스트: 한 줄에 최대 6개 상품이 Flex로 정렬됨 --%>
   <div class="related-list">
-    <!-- 샘플 상품 6개 반복 -->
-    <div class="related-item">
-      <div class="related-img">상품 이미지</div>
-      <p class="related-name">상품제목 좌측정렬....</p>
-    </div>
-    <div class="related-item">
-      <div class="related-img">상품 이미지</div>
-      <p class="related-name">상품제목 좌측정렬....</p>
-    </div>
-    <div class="related-item">
-      <div class="related-img">상품 이미지</div>
-      <p class="related-name">상품제목 좌측정렬....</p>
-    </div>
-    <div class="related-item">
-      <div class="related-img">상품 이미지</div>
-      <p class="related-name">상품제목 좌측정렬....</p>
-    </div>
-    <div class="related-item">
-      <div class="related-img">상품 이미지</div>
-      <p class="related-name">상품제목 좌측정렬....</p>
-    </div>
+    <%-- 관련 상품 개별 카드 출력 --%>
+    <c:forEach var="prod" items="${relatedProducts}">  
+      <%-- 카드 전체를 <a>로 감싸 클릭 시 상세 페이지 이동 --%>
+      <a href="${pageContext.request.contextPath}/product/detail?no=${prod.productNo}" class="related-item-link">        
+        <%-- 개별 카드 박스 --%>
         <div class="related-item">
-      <div class="related-img">상품 이미지</div>
-      <p class="related-name">상품제목 좌측정렬....</p>
-    </div>
+          <%-- 썸네일 이미지 영역 --%>
+          <div class="related-img">
+            <img src="${prod.thumbnailPath}" alt="${prod.productName}">
+          </div>
+          <%-- 상품명 출력 --%>
+          <div class="related-name">${prod.productName}</div>
+          <%-- 가격 출력 --%>
+          <div class="related-price">
+            ₩<fmt:formatNumber value="${prod.productPrice}" pattern="#,###"/>
+          </div>
+
+        </div>
+      </a>
+    </c:forEach>
   </div>
 </section>
-<!-- 백엔드가 아직 구현이 안되서, 사진 파일로 대체. -->
-<%-- 이후 c:foreach 를 사용해서 상품 연동 가능 ( 예정 ) --%>
+
+
 
 
 <!-- 상품 정보 + 판매자 정보 섹션 -->
@@ -621,19 +925,13 @@ textarea::placeholder {
 
   <!-- 좌측: 상품 설명 영역 -->
   <div class="product-detail-box">
-    <h3 class="section-title">상품 정보</h3>
-
-    <!-- 상품 설명 내용 - 나중에 서버에서 데이터를 주입할 예정 -->
-    <div id="productDescription" class="product-description">
-      <!-- 상품 설명이 이 영역에 동적으로 삽입될 예정 -->
-            상품의 상태, 사용 기간, 구성품, 하자 유무 등을 구체적으로 기재해 주시기 바랍니다.
-      구매에 도움이 될 수 있는 상세 정보(사이즈, 사용감 등)를 성실히 작성해 주세요.
-      개인정보 입력(전화번호, 계좌번호, SNS 등)은 제한될 수 있으니 유의해 주세요.
-	<br>
-      상품에 알레르기 요소, 반려동물 접촉, 흡연 환경 노출 여부, 특수 오염 내역 등
-      일반적인 사용 정보 외의 구매자가 꼭 알아야 할 특이사항이 있다면 작성해 주세요.
-      구매 후 분쟁 예방에 도움이 될 수 있습니다.
-    </div>
+    <h3 class="section-title">상품 정보</h3>	
+	<!-- 상품 설명 출력 영역 -->
+	<div class="form-row">
+	  <div class="product-description">
+	    <pre class="product-description-text">${product.productIntrod}</pre>
+	  </div>
+	</div>
   </div>
 
   <!-- 우측: 판매자 정보 영역 -->
@@ -643,16 +941,19 @@ textarea::placeholder {
 <div class="seller-profile">
   <!--  정사각형 프로필 사진 공간 -->
   <div class="profile-image">판매자 프로필</div>
-  <div class="profile-name"><strong>판매자 이름</strong></div>
   
-  <!--  나중에 상품 수를 동적으로 삽입할 수 있도록 id 추가 -->
-  <div class="product-count" id="productCount">판매중인 상품갯수: 0개</div>
+  <!-- 판매자 이름 출력 -->
+  <div class="profile-name"> <strong>${seller.memberName}</strong></div>
+  
+	<!-- 판매중인 상품 수 표시 -->
+	<div class="product-count" id="productCount">판매중인 상품갯수: ${sellingCount}개</div>
 </div>
+
 
 
     <!-- 판매자 링크 영역 - 항상 하단에 위치 -->
     <div class="seller-links">
-      <a href="#">판매자의 다른 상품 보기</a><br>
+      <a href="/product/sellerProfile?memberNo=${product.memberNo}">판매자의 다른 상품 보기</a><br>
       <a href="#">판매자 후기 작성하기</a>
     </div>
   </aside>
@@ -666,8 +967,7 @@ textarea::placeholder {
 
   <!-- 댓글 작성 form -->
   <form action="/product/insertComment" method="post" class="comment-form">
-    <input type="hidden" name="productRef" value="${product.prodNo}" />
-    <input type="hidden" name="commentWriter" value="${loginMember.memberNo}" />
+    <input type="hidden" name="productRef" value="${product.productNo}" />
 
     <!-- 댓글 입력 전체 영역 -->
     <div class="comment-input-wrap">
@@ -692,183 +992,225 @@ textarea::placeholder {
   </form>
 </section>
 
+
 <!-- 전체 댓글 영역 시작 -->
 <section class="comment-box-section section">
-
-  <!-- 댓글 헤더 전체 개수 + 정렬 옵션 -->
   <div class="comment-box-header">
-    <h3 class="section-title">전체 댓글 (<span>3</span>개)</h3>
+    <h3 class="section-title">전체 댓글 (<span>${fn:length(commentList)}</span>개)</h3>
     <div class="comment-box-sort">정렬 : <strong>최신순</strong></div>
   </div>
+      <!-- 댓글이 0개일 경우 나오는 화면 -->
+    <c:if test="${empty commentList}">
+  <div class="comment-empty-box">
+    현재 등록된 댓글은 0개입니다.
+  </div>
+</c:if>
 
-  <!-- 댓글 1개 항목 시작 -->
-  <div class="comment-box-item">
-
-    <!-- 좌측: 프로필 이미지 + 사용자명 -->
-    <div class="comment-box-profile">
-      <div class="profile-image">A</div>
-      <div class="comment-box-username">홍길동</div>
-    </div>
-
-    <!-- 우측: 댓글 본문 -->
-    <div class="comment-box-body">
-
-      <!-- 본문 내용 박스 -->
-      <div class="comment-box-content-fixed">
-        이 상품 괜찮아 보이네요. 상태는 어떤가요?
-      </div>
-
-      <!-- 하단: 등록일자 + 버튼 -->
-      <div class="comment-box-footer">
-        <span class="comment-box-date">2025-05-15</span>
-        <div class="comment-box-actions">
-          <button class="comment-box-reply-btn" onclick="toggleReplyForm(this)">답글</button>
-          <button class="comment-box-report-btn">
-            <span class="material-icons">block</span>신고하기
-          </button>
+  <!-- 댓글 목록 반복 -->
+  <c:forEach var="comment" items="${commentList}">
+    <c:if test="${empty comment.parentCommentNo}">
+      <!--  일반 댓글 박스 -->
+      <div class="comment-box-item">
+        <div class="comment-box-profile">
+          <div class="profile-image">${fn:substring(comment.memberNickname, 0, 1)}</div>
+          <div class="comment-box-username">${comment.memberNickname}</div>
+        </div>
+        <div class="comment-box-body">
+          <div class="comment-box-content-fixed">${comment.content}</div>
+          <div class="comment-box-footer">
+            <span class="comment-box-date">
+              <fmt:formatDate value="${comment.createdDate}" pattern="yyyy-MM-dd" />
+            </span>
+            <div class="comment-box-actions">
+            	<c:if test="${loginMember.memberNo == comment.memberNo}">
+					<button class="comment-box-edit-btn"
+					        onclick="openEditModal(${comment.commentNo}, '${fn:replace(fn:replace(comment.content, '\'', '\\\'') , '&#10;', '')}')">
+					  수정
+					</button>
+				</c:if>
+		        <c:if test="${loginMember.memberNo == comment.memberNo or loginMember.memberNickname eq 'admin'}">
+				 <button class="comment-box-delete-btn" onclick="deleteComment(${comment.commentNo}, '${comment.productNo}')">
+					  삭제
+				 </button>
+				</c:if>
+              <button class="comment-box-reply-btn" onclick="openReplyModal(${comment.commentNo})">답글</button>
+              <button class="comment-box-report-btn">
+                <span class="material-icons">block</span>신고하기
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 답글 입력창: 클릭 시 펼쳐지는 영역 -->
-      <div class="comment-box-reply-form" style="display: none;">
-        <textarea class="comment-textarea" maxlength="500" placeholder="댓글 작성 시 타인에게 불쾌감을 줄 수 있는 비방, 욕설, 개인정보 노출은 삼가주시기 바랍니다.
-부적절한 내용은 사전 경고 없이 삭제될 수 있으며, 반복 시 이용이 제한될 수 있습니다.
-거래와 무관한 광고성 댓글은 금지되며, 신고 대상이 될 수 있습니다."></textarea>
-
-        <!-- 글자 수 카운트 + 등록 버튼 -->
-        <div class="comment-submit-wrap">
-          <span class="comment-char-count"><span class="current-count">0</span> / 500</span>
-          <button type="button" class="btn-primary sm">등록</button>
-        </div>
-      </div>
-
-      <!-- 대댓글 목록 (예시) -->
+      <!--  대댓글 반복 -->
       <div class="comment-box-replies">
-
-        <!-- 대댓글 1 -->
-        <div class="comment-box-item comment-reply">
-          <div class="comment-box-profile">
-            <div class="profile-image">판매</div>
-            <div class="comment-box-username">판매자</div>
-          </div>
-          <div class="comment-box-body">
-            <div class="comment-box-content-fixed">
-              사용감 거의 없고 깨끗합니다 :)
-            </div>
-            <div class="comment-box-footer">
-              <span class="comment-box-date">2025-05-15</span>
-              <div class="comment-box-actions">
-                <button class="comment-box-report-btn">
-                  <span class="material-icons">block</span>신고하기
-                </button>
+        <c:forEach var="reply" items="${commentList}">
+          <c:if test="${not empty reply.parentCommentNo and reply.parentCommentNo eq comment.commentNo}">
+            <div class="comment-box-item comment-reply">
+              <div class="comment-box-profile">
+                <div class="profile-image">${fn:substring(reply.memberNickname, 0, 1)}</div>
+                <div class="comment-box-username">${reply.memberNickname}</div>
+              </div>
+              <div class="comment-box-body">
+                <div class="comment-box-content-fixed">${reply.content}</div>
+                <div class="comment-box-footer">
+                  <span class="comment-box-date">
+                    <fmt:formatDate value="${reply.createdDate}" pattern="yyyy-MM-dd" />
+                  </span>
+                  <div class="comment-box-actions">
+                  <c:if test="${loginMember.memberNo == comment.memberNo}">
+					<button class="comment-box-edit-btn"
+					        onclick="openEditModal(${comment.commentNo}, '${fn:replace(fn:replace(comment.content, '\'', '\\\'') , '&#10;', '')}')">
+					  수정
+					</button>
+				</c:if>
+                  <c:if test="${loginMember.memberNo == reply.memberNo or loginMember.memberNickname eq 'admin'}">
+					  <button class="comment-box-delete-btn" onclick="deleteComment(${reply.commentNo}, '${reply.productNo}')">
+					    삭제
+					  </button>
+				  </c:if>
+                    <button class="comment-box-report-btn">
+                      <span class="material-icons">block</span>신고하기
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- 대댓글 2 -->
-        <div class="comment-box-item comment-reply">
-          <div class="comment-box-profile">
-            <div class="profile-image">C</div>
-            <div class="comment-box-username">유저123</div>
-          </div>
-          <div class="comment-box-body">
-            <div class="comment-box-content-fixed">
-              저도 여기서 샀는데 만족했어요!
-            </div>
-            <div class="comment-box-footer">
-              <span class="comment-box-date">2025-05-15</span>
-              <div class="comment-box-actions">
-                <button class="comment-box-report-btn">
-                  <span class="material-icons">block</span>신고하기
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div> <!-- .comment-box-replies -->
-
-    </div> <!-- .comment-box-body -->
-
-  </div> <!-- .comment-box-item -->
-
+          </c:if>
+        </c:forEach>
+      </div> <!-- /대댓글 -->
+    </c:if>
+  </c:forEach>
 </section>
+
+<!-- 대댓글 작성 모달 -->
+<div id="replyModal"
+     class="modal-overlay"
+     role="dialog"
+     aria-modal="true"
+     style="display: none; justify-content: center; align-items: center;">
+  
+  <div class="modal-content"
+       style="width: 90%; max-width: 600px; padding: 24px;">
+    
+    <!-- 대댓글 입력 폼 -->
+    <form action="/product/insertComment" method="post" class="reply-form">
+
+      <!-- 필수 hidden 값들 -->
+      <input type="hidden" name="productRef" value="${product.productNo}" />
+      <input type="hidden" name="commentWriter" value="${loginMember.memberNo}" />
+      <input type="hidden" name="parentCommentNo" id="modalParentCommentNo" />
+
+      <!-- 대댓글 입력창 -->
+      <textarea name="commentContent"
+                class="comment-textarea"
+                maxlength="500"
+                placeholder="대댓글 내용을 입력해주세요."
+                style="height: 120px; font-size: 1rem;"></textarea>
+
+      <!-- 버튼 영역 -->
+      <div class="comment-submit-wrap" style="margin-top: 14px;">
+        <button type="submit" class="btn-primary sm">등록</button>
+        <button type="button" class="btn-secondary sm" onclick="closeReplyModal()">취소</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 댓글 수정 모달 -->
+<div id="editModal"
+     class="modal-overlay"
+     style="display: none; justify-content: center; align-items: center;">
+
+  <div class="modal-content"
+       style="width: 90%; max-width: 600px; padding: 24px;">
+
+    <form action="/product/updateComment" method="post" class="reply-form">
+      <!-- 댓글 번호 전달 -->
+      <input type="hidden" name="commentNo" id="modalEditCommentNo">
+      <input type="hidden" name="productNo" value="${param.no}">
+
+      <!-- 수정 textarea -->
+      <textarea name="commentContent"
+                id="modalEditContent"
+                class="comment-textarea"
+                maxlength="500"
+                placeholder="댓글 내용을 수정하세요."
+                style="height: 120px; font-size: 1rem;"></textarea>
+
+      <!-- 버튼 영역 -->
+      <div class="comment-submit-wrap" style="margin-top: 14px;">
+        <button type="submit" class="btn-primary sm">수정 완료</button>
+        <button type="button" class="btn-secondary sm" onclick="closeEditModal()">취소</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
 
 
     </main>
+		<div class="fixed" style="right: 280px;">
+			<div class="top" onclick="scrollToTop()">
+				<span class="material-symbols-outlined">arrow_upward</span>
+			</div>
+		</div>
     <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
     
- <script>
- 
-// 이미지 슬라이더 기능 함수
-// [1] 이미지 배열 정의 (샘플 이미지 경로들)
-const images = [
-  "/resources/images/sample1.jpg",
-  "/resources/images/sample2.jpg",
-  "/resources/images/sample3.jpg",
-  "/resources/images/sample4.jpg",
-  "/resources/images/sample5.jpg",
-  "/resources/images/sample6.jpg",
-  "/resources/images/sample7.jpg"
-];
 
-// [2] 현재 인덱스를 기억할 변수
-let currentIndex = 0;
+<script>
+	//우측 하단 ↑ 버튼 클릭 시 상단으로 스크롤 이동
+    function scrollToTop() {
+        window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // 부드럽게 스크롤
+        });
+    }
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const images = document.querySelectorAll(".slide-image");
+  const indicators = document.querySelectorAll(".indicator-dot");
+  const prevBtn = document.querySelector(".slide-btn.left");
+  const nextBtn = document.querySelector(".slide-btn.right");
 
-// [3] DOM 요소 선택
-const mainImage = document.getElementById("mainImage");
-const indicatorsContainer = document.querySelector(".image-indicators");
-const prevBtn = document.querySelector(".slide-btn.left");
-const nextBtn = document.querySelector(".slide-btn.right");
+  let currentIndex = 0;
 
-let indicatorDots = []; // 동적으로 생성되는 dot들 참조용
+  function showImage(index) {
+    if (images.length === 0 || indicators.length === 0) return;
 
-// [4] 인디케이터(dot) 생성 함수
-function renderIndicators() {
-  indicatorsContainer.innerHTML = ""; // 초기화
-
-  images.forEach((_, index) => {
-    const dot = document.createElement("span");
-    dot.classList.add("dot");
-    if (index === currentIndex) dot.classList.add("active");
-
-    // [추가 기능] 클릭 시 해당 이미지로 이동
-    dot.addEventListener("click", () => {
-      currentIndex = index;
-      updateSlider();
+    images.forEach((img, i) => {
+      img.style.display = i === index ? "block" : "none";
+      indicators[i].classList.toggle("active", i === index);
     });
 
-    indicatorsContainer.appendChild(dot);
-    indicatorDots.push(dot);
+    currentIndex = index;
+  }
+
+  if (prevBtn && nextBtn) {
+    prevBtn.addEventListener("click", () => {
+      const newIndex = (currentIndex - 1 + images.length) % images.length;
+      showImage(newIndex);
+    });
+
+    nextBtn.addEventListener("click", () => {
+      const newIndex = (currentIndex + 1) % images.length;
+      showImage(newIndex);
+    });
+  }
+
+  indicators.forEach((dot, i) => {
+    dot.addEventListener("click", () => showImage(i));
   });
-}
 
-// [5] 슬라이더 갱신 함수
-function updateSlider() {
-  // 이미지 변경
-  mainImage.src = images[currentIndex];
-
-  // 인디케이터 갱신
-  indicatorDots.forEach((dot, idx) => {
-    dot.classList.toggle("active", idx === currentIndex);
-  });
-}
-
-// [6] 좌우 버튼 클릭 이벤트
-prevBtn.addEventListener("click", () => {
-  currentIndex = (currentIndex - 1 + images.length) % images.length;
-  updateSlider();
+  showImage(0); // 초기화
 });
-nextBtn.addEventListener("click", () => {
-  currentIndex = (currentIndex + 1) % images.length;
-  updateSlider();
-});
-
-// [7] 초기 세팅
-renderIndicators();
-updateSlider();
 </script>
+
+
+
 
 <script>
 // 댓글 입력창에서 글자 수 실시간 카운팅 함수
@@ -899,5 +1241,74 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 </script>
 
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const textareas = document.querySelectorAll('.comment-textarea');
+  textareas.forEach(textarea => {
+    const countSpan = textarea
+      .closest('.comment-input-wrap, .comment-box-reply-form')
+      .querySelector('.current-count');
+    if (countSpan) {
+      textarea.addEventListener('input', () => {
+        countSpan.textContent = textarea.value.length;
+      });
+    }
+  });
+});
+</script>
+
+<script>
+	// 대댓글 전용 팝업창 작성
+
+  function openReplyModal(parentCommentNo) {
+    // 부모 댓글 번호를 hidden input에 설정
+    document.getElementById("modalParentCommentNo").value = parentCommentNo;
+
+    // 모달을 화면 중앙에 표시 (flex 기반 중앙 정렬)
+    const modal = document.getElementById("replyModal");
+    modal.style.display = "flex";
+  }
+   // 대댓글 작성 모달을 닫습니다.
+   
+  function closeReplyModal() {
+    const modal = document.getElementById("replyModal");
+    modal.style.display = "none";
+  }
+</script>
+
+<script>
+  // 댓글 수정 모달을 엽니다.
+  function openEditModal(commentNo, content) {
+    // 댓글 번호를 hidden input에 설정
+    const commentNoInput = document.getElementById("modalEditCommentNo");
+    commentNoInput.value = commentNo;
+
+    // 기존 댓글 내용을 textarea에 설정
+    const contentTextarea = document.getElementById("modalEditContent");
+    contentTextarea.value = content;
+
+    // 모달을 화면 중앙에 표시 (flex 기반 중앙 정렬)
+    const modal = document.getElementById("editModal");
+    modal.style.display = "flex";
+  }
+
+  // 댓글 수정 모달을 닫습니다.
+  function closeEditModal() {
+    const modal = document.getElementById("editModal");
+    modal.style.display = "none";
+  }
+</script>
+
+
+
+<script>
+// 댓글 삭제 경고문
+	function deleteComment(commentNo, productNo) {
+    if (confirm("정말 이 댓글을 삭제하시겠습니까?")) {
+      location.href = "/product/deleteComment?no=" + commentNo + "&product=" + productNo;
+    }
+  }
+</script>
 </body>
 </html>

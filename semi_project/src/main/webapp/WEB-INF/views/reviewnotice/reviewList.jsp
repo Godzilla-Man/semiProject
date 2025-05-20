@@ -187,13 +187,39 @@
       </div>
     </div>
 
-    <!-- 등록 버튼 -->
+    <!-- 등록 버튼 
     <form action="/review/writeFrm" method="get">
       <button type="submit" class="fixed-register" title="스타일 후기 등록">등록</button>
     </form>
+    -->
   </main>
-
+	<div class="fixed" style="right: 280px;">
+		<%-- 로그인 시에만 판매 글을 올릴 수 있는 등록 버튼 표시 --%>
+		<c:if test="${!empty sessionScope.loginMember}">
+		<div class="post" onclick="reviewWrite()">
+			<span class="material-symbols-outlined">add</span>
+		</div>
+		</c:if>
+		<div class="top" onclick="scrollToTop()">
+			<span class="material-symbols-outlined">arrow_upward</span>
+		</div>
+	</div>
   <!-- 푸터 영역 -->
   <jsp:include page="/WEB-INF/views/common/footer.jsp" />
+  
+  <script>
+	//로그인 후 우측 하단 + 버튼 클릭 시 상품 판매 페이지로 이동
+	function reviewWrite() {
+		location.href = "/review/writeFrm";
+	}
+
+	//우측 하단 ↑ 버튼 클릭 시 상단으로 스크롤 이동
+  function scrollToTop() {
+      window.scrollTo({
+      top: 0,
+      behavior: 'smooth' // 부드럽게 스크롤
+      });
+  }
+  </script>
 </body>
 </html>

@@ -1086,3 +1086,89 @@ hr {
   float: right;
   padding-right: 5px;
 }
+
+/* 관리 페이지 */
+.admin-page {
+	width: 1200px;
+	min-height: 52.2vh;
+	margin: 0 auto;
+}
+.admin-page>span {
+	font-weight: bold;
+	font-size: 20px;
+}
+.admin-page>div {
+	display: flex;
+}
+.search-member,
+.search-report,
+.search-black {
+	width: 80%;
+	height: 400px;
+	margin-top: 20px;
+	margin-bottom: 10px;
+	text-align: center;
+}
+.admin-page>div a {
+	font-size: 30px;
+}
+.admin-page a:hover {
+	text-decoration: underline;
+}
+
+/* 전체 회원 조회 */
+.tbl-member {
+	width: 100%;
+	border-spacing: 0;
+	margin-bottom: 15px;
+}
+.tbl-member th {
+	height: 50px;
+	border-bottom: 1px solid #eee;
+}
+.tbl-member tr:first-child>th {
+	background-color: rgb(41, 64, 246);
+	color: white;
+	font-size: 20px;
+	border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.tbl-member td {
+	text-align: center;
+	border-bottom: 1px solid #eee;
+}
+.tbl-member button {
+	display: block;
+	background-color: rgb(41, 64, 246);
+	color: white;
+	border: none;
+	border-radius: 10px;
+	height: 30px;
+	width: 70px;
+	margin: 0 auto
+}
+.tbl-member button:hover {
+	cursor: pointer;
+}
+
+/* 블랙 등록 팝업 */
+.black-wrap {
+	width: 495px;
+	height: 325px;
+}
+.black-wrap>table {
+	width: 100%;
+}
+#blackReason {
+	width: 90%;
+	height: 230px;
+	resize: none;
+	font-size: 18px;
+}
+.black-wrap input {
+	width: 90%;
+	height: 30px;
+	margin: 5px 0;
+	border: none;
+	border-bottom: 1px solid black;
+}

@@ -12,7 +12,7 @@
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 		<div class="main-wrap">
 			<div class="filter">
-	            <select id="filter" onchange="filterChange()">
+	            <select id="filter" onchange="filterChange(this)">
 	                <option value="newest">최신순</option>
 	                <option value="oldest">오래된순</option>
 	                <option value="popular">인기순</option>
@@ -39,12 +39,18 @@
 								<div class="card">
 									<div class="image">
 										<img src="/" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
+										<%-- 로그인한 상태에서만 찜하기 버튼 활성화 --%>
 										<c:if test="${not empty sessionScope.loginMember}">
-										<span class="material-symbols-outlined" onclick="addWishList(this, '${loginMember.memberNo}', '${prod.productNo}')">favorite</span>
+											<c:if test="${prod.wishYn eq 'Y'}">
+												<span class="material-symbols-outlined fill" onclick="delWhishList(this, '${loginMember.memberNo}', '${prod.productNo}')">favorite</span>
+											</c:if>
+											<c:if test="${prod.wishYn ne 'Y'}">
+												<span class="material-symbols-outlined" onclick="addWishList(this, '${loginMember.memberNo}', '${prod.productNo}')">favorite</span>
+											</c:if>
 										</c:if>
 									</div>
-									<div class="image-info" onclick="clickProd(this)">
-										<span class="image-prod"><a href="/?=productNo=${prod.productNo}">${prod.productName}</a></span>
+									<div class="image-info">
+										<span class="image-prod"><a href="/product/detail?no=${prod.productNo}">${prod.productName}</a></span>
 										<span class="image-price">${prod.productPrice }</span>
 									</div>
 								</div>
@@ -55,24 +61,68 @@
 				</div>
 			</div>
 		</div>
+		
+		<div class="fixed" style="right: 280px;">
+			<%-- 로그인 시에만 판매 글을 올릴 수 있는 등록 버튼 표시 --%>
+			<c:if test="${!empty sessionScope.loginMember}">
+			<div class="post" onclick="productEnroll()">
+				<span class="material-symbols-outlined">add</span>
+			</div>
+			</c:if>
+			<div class="top" onclick="scrollToTop()">
+				<span class="material-symbols-outlined">arrow_upward</span>
+			</div>
+		</div>
+		
 		<jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
 	</div>
 	
 	<script>
-		//필터 항목에서 가격 설정을 선택하면 가격 입력창이 나오게
-		$(document).ready(function () {
-			$('#filter').on('change', function () {
-				if ($(this).val() === 'setPrice') {
-					$('.price-range').show();  // 가격 설정 영역 표시
-				} else {
-					$('.price-range').hide();  // 그 외에는 숨김
-				}
-			});
-		});
+	 	//로그인 후 우측 하단 + 버튼 클릭 시 상품 판매 페이지로 이동
+	 	function productEnroll() {
+	 		location.href = "/product/enroll";
+	 	}
+	 
+	 	//우측 하단 ↑ 버튼 클릭 시 상단으로 스크롤 이동
+	    function scrollToTop() {
+	        window.scrollTo({
+	        top: 0,
+	        behavior: 'smooth' // 부드럽게 스크롤
+	        });
+	    }
+		//필터 항목에서 설정 변경 시
+		function filterChange(obj){
+			switch($(obj).val()){
+			case "newest" :
+				$(".price-range").hide();
+				location.href="/product/allListDesc";
+				break;
+			case "oldest" :
+				$(".price-range").hide();
+				location.href="/product/allListAsc";
+				break;
+			case "popular" :
+				$(".price-range").hide();
+				console.log("인기");
+				break;
+			case "cheaper" :
+				$(".price-range").hide();
+				console.log("싼");
+				break;
+			case "expensive" :
+				$(".price-range").hide();
+				console.log("비싼");
+				break;
+			case "setPrice" :
+				$(".price-range").show();
+				console.log("가격");
+				break;
+			}
+		}
 	
 		//클릭 시 해당 상품 상세 페이지로 이동
 		function clickProd(productNo) {
-			location.href="http://www.naver.com";
+			location.href="/product/detail?no=" + productNo;
 		}
 	
 		//찜하기 추가
@@ -142,10 +192,57 @@
 		}
 		
 		//찜하기 삭제
-		function delWhishList(obj) {
-			//1. 클릭 시 스타일 변경 및 찜한 상품에서 삭제
-			$(obj).attr("class", "material-symbols-outlined");
-			$(obj).attr("onclick", "addWishList(this)");
+		function delWhishList(obj, memberNo, productNo) {
+			swal({
+				title : "알림",
+				text : "해당 상품을 찜하기 리스트에 삭제하시겠습니까?",
+				icon : "warning",
+				buttons : {
+					cancel : {
+						text : "취소",
+						value : false,
+						visible : true,
+						closeModal : true
+					},
+					confirm : {
+						text : "삭제",
+						value : true,
+						visible : true,
+						closeModal : true
+					}
+				}
+			}).then(function(val){
+				if(val){ //삭제 버튼 클릭 시
+					$.ajax({
+						url : "/product/delWishList",
+						data : {"memberNo" : memberNo, "productNo" : productNo},
+						type : "get",
+						success : function(res){
+							if(res > 0){ //찜하기 성공
+								swal({
+									title : "성공",
+									text : "찜하기 리스트에서 삭제되었습니다.",
+									icon : "success"
+								});
+								
+								//클릭시 스타일 변경
+								$(obj).attr("class", "material-symbols-outlined");
+								$(obj).attr("onclick", "addWishList(this, " + memberNo + ", " + productNo + ")");
+								
+							}else{ //찜하기 삭제 실패
+								swal({
+									title : "실패",
+									text : "찜하기 리스트 삭제 중 오류가 발생했습니다.",
+									icon : "error"
+								});
+							}
+						},
+						error : function(){
+							console.log("ajax 통신 오류");
+						}
+					});
+				}
+			});
 		}
 	</script>
 </body>
