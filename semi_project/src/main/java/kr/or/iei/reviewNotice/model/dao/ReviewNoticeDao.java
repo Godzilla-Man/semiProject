@@ -143,12 +143,12 @@ public class ReviewNoticeDao {
 
             while (rset.next()) {
                 Comment comment = new Comment();
-                comment.setCommentNo(rset.getString("COMMENT_NO"));
+                comment.setCommentNo(rset.getInt("COMMENT_NO"));
                 comment.setMemberNo(rset.getString("MEMBER_NO"));
                 comment.setProductNo(rset.getString("PRODUCT_NO"));
                 comment.setStylePostNo(rset.getString("STYLE_POST_NO"));
                 comment.setContent(rset.getString("CONTENT"));
-                comment.setCreateDate(rset.getString("CREATE_DATE"));
+                comment.setCreatedDate(rset.getDate("CREATED_DATE"));
                 commentList.add(comment);
             }
         } catch (SQLException e) {
