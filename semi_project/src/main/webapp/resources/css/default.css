@@ -1086,3 +1086,54 @@ hr {
   float: right;
   padding-right: 5px;
 }
+
+/* 관리 페이지 */
+.admin-page {
+	width: 1000px;
+	min-height: 52.2vh;
+	margin: 0 auto;
+}
+.admin-page>span {
+	font-weight: bold;
+	font-size: 20px;
+}
+.admin-page>div {
+	display: flex;
+}
+.search-member,
+.search-report,
+.search-black {
+	width: 80%;
+	height: 400px;
+	margin-top: 20px;
+	margin-bottom: 10px;
+	text-align: center;
+}
+.admin-page a {
+	font-size: 30px;
+}
+.admin-page a:hover {
+	text-decoration: underline;
+}
+
+/* 전체 회원 조회 */
+.tbl-member {
+	width: 100%;
+	border-spacing: 0;
+	margin-bottom: 15px;
+}
+.tbl-member th {
+	height: 50px;
+	border-bottom: 1px solid #eee;
+}
+.tbl-member tr:first-child>th {
+	background-color: rgb(41, 64, 246);
+	color: white;
+	font-size: 20px;
+	border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.tbl-member td {
+	text-align: center;
+	border-bottom: 1px solid #eee;
+}

@@ -1,6 +1,7 @@
 package kr.or.iei.member.model.service;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.member.model.dao.MemberDao;
@@ -53,5 +54,13 @@ public class MemberService {
 		JDBCTemplate.close(conn);
 		
 		return loginMember;
+	}
+
+	public ArrayList<Member> selectAllMember() {
+		Connection conn = JDBCTemplate.getConnection();
+		ArrayList<Member> memberList = dao.selectAllMember(conn);
+		JDBCTemplate.close(conn);
+		
+		return memberList;
 	}
 }

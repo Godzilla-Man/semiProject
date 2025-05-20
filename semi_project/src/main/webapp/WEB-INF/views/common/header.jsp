@@ -18,8 +18,16 @@
                	</c:when>
                	<c:otherwise>
                 <li>${loginMember.memberNickname}님</li>
-                <li><a href="#">마이페이지</a></li>
-                <li><a href="/member/logout">로그아웃</a></li>
+                	<c:choose>
+	                	<c:when test="${loginMember.memberId eq 'admin'}">
+	                	<%-- 관리자로 로그인 했을 때 관리페이지 보이게하기 --%>
+	                	<li><a href="/member/adminPage">관리페이지</a></li>
+	                	</c:when>
+	                	<c:otherwise>
+		                <li><a href="#">마이페이지</a></li>
+	                	</c:otherwise>
+                	</c:choose>
+	                <li><a href="/member/logout">로그아웃</a></li>
                	</c:otherwise>
          	</c:choose>
         </ul>

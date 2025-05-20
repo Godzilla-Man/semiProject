@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.member.model.vo.Member;
@@ -143,5 +144,43 @@ public class MemberDao {
 		}
 		
 		return loginMember;
+	}
+
+	public ArrayList<Member> selectAllMember(Connection conn) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select * from tbl_member";
+		
+		ArrayList<Member> memberList = new ArrayList<Member>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Member m = new Member();
+				m.setMemberNo(rset.getString("member_no"));
+				m.setMemberId(rset.getString("member_id"));
+				m.setMemberNickname(rset.getString("member_nickname"));
+				m.setMemberName(rset.getString("member_name"));
+				m.setMemberBirth(rset.getString("member_birth"));
+				m.setMemberPhone(rset.getString("member_phone"));
+				m.setMemberAddr(rset.getString("member_addr"));
+				m.setMemberEmail(rset.getString("member_email"));
+				m.setJoin_date(rset.getString("join_date"));
+				
+				memberList.add(m);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return memberList;
 	}
 }
