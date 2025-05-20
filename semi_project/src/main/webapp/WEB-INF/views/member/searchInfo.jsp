@@ -11,7 +11,7 @@
 <body>
 	<div class="wrap">
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
-		<main class="contents searchInfo-container">
+		<main class="contents searchInfo-container" style="min-height:52.2vh;">
 			<section class="section searchInfo-wrap">
 				<div class="page-title">회원 정보 찾기</div>
 				<form action="/member/searchInfo"

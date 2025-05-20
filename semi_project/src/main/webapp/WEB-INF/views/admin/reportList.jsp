@@ -37,10 +37,26 @@
 				</c:forEach>
 			</table>
 		</div>
+		
+		<div class="fixed" style="right: 280px;">
+			<div class="top" onclick="scrollToTop()">
+				<span class="material-symbols-outlined">arrow_upward</span>
+			</div>
+		</div>
+		
 		<jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
 	</div>
 	
 	<script>
+	
+	 	//우측 하단 ↑ 버튼 클릭 시 상단으로 스크롤 이동
+	    function scrollToTop() {
+	        window.scrollTo({
+	        top: 0,
+	        behavior: 'smooth' // 부드럽게 스크롤
+	        });
+	    }
+	 	
 		function insertBlackList(memberNo, reportNo){
 			swal({
 				title : "알림",

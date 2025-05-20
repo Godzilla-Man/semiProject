@@ -102,11 +102,36 @@
 			</div>
         	<button onclick="styleReview()">+ 더보기</button>
     	</div>
+    	
+		<div class="fixed" style="right: 280px;">
+			<%-- 로그인 시에만 판매 글을 올릴 수 있는 등록 버튼 표시 --%>
+			<c:if test="${!empty sessionScope.loginMember}">
+			<div class="post" onclick="productEnroll()">
+				<span class="material-symbols-outlined">add</span>
+			</div>
+			</c:if>
+			<div class="top" onclick="scrollToTop()">
+				<span class="material-symbols-outlined">arrow_upward</span>
+			</div>
+		</div>
+		
 		<jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
 	</div>
 	
 	<script>
-
+	 	//로그인 후 우측 하단 + 버튼 클릭 시 상품 판매 페이지로 이동
+	 	function productEnroll() {
+	 		location.href = "/product/enroll";
+	 	}
+	 
+	 	//우측 하단 ↑ 버튼 클릭 시 상단으로 스크롤 이동
+	    function scrollToTop() {
+	        window.scrollTo({
+	        top: 0,
+	        behavior: 'smooth' // 부드럽게 스크롤
+	        });
+	    }
+	 	
 		//첫 번째 더보기 클릭 시 전체 판매 상품 페이지로 이동
 		function fullProduct() {
 			location.href="/product/allListDesc";

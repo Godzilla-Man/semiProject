@@ -24,12 +24,10 @@
 	                	<li><a href="/admin/adminPage">관리페이지</a></li>
 	                	</c:when>
 	                	<c:otherwise>
-		                <li><a href="#">마이페이지</a></li>
+		                <li><a href="/member/myPage">마이페이지</a></li>
 	                	</c:otherwise>
                 	</c:choose>
 	                <li><a href="/member/logout">로그아웃</a></li>
-                <li><a href="/member/myPage">마이페이지</a></li>
-                <li><a href="/member/logout">로그아웃</a></li>
                	</c:otherwise>
          	</c:choose>
         </ul>
@@ -188,6 +186,7 @@
 </header>
 <div class="padding"></div>
 
+<!--
 <div class="fixed" style="right: 280px;">
 	<%-- 로그인 시에만 판매 글을 올릴 수 있는 등록 버튼 표시 --%>
 	<c:if test="${!empty sessionScope.loginMember}">
@@ -199,6 +198,7 @@
         <span class="material-symbols-outlined">arrow_upward</span>
     </div>
 </div>
+-->
 
  <script>
  	//로그인 후 우측 하단 + 버튼 클릭 시 상품 판매 페이지로 이동
