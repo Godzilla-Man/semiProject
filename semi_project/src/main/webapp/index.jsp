@@ -12,7 +12,7 @@
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 		<div class="main-wrap">
 	        <img src="/" class="main-image">
-	        <span><a href="/product/allList">최신 등록 상품</a></span> <%-- 클릭 시 전체 상품 화면으로 이동 --%>
+	        <span><a href="/product/allListDesc">최신 등록 상품</a></span> <%-- 클릭 시 전체 상품 화면으로 이동 --%>
     		<div class="style-review-board">
 				<div class="cards-container">
 					<!-- reviewList가 request scope에 있는 경우 반복문으로 카드 출력 -->
@@ -120,7 +120,7 @@
 	<script>
 		//첫 번째 더보기 클릭 시 전체 판매 상품 페이지로 이동
 		function fullProduct() {
-			location.href="/product/allList";
+			location.href="/product/allListDesc";
 		}
 		//두 번째 더보기 클릭 시 스타일 후기 게시판으로 이동
 		function styleReview() {

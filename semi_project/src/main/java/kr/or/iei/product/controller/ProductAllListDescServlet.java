@@ -16,14 +16,14 @@ import kr.or.iei.product.model.vo.Product;
 /**
  * Servlet implementation class ProductAllList
  */
-@WebServlet("/product/allList")
-public class ProductAllListServlet extends HttpServlet {
+@WebServlet("/product/allListDesc")
+public class ProductAllListDescServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ProductAllListServlet() {
+    public ProductAllListDescServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,11 +33,11 @@ public class ProductAllListServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ProductService service = new ProductService();
-		ArrayList<Product> productAllList = service.selectAllList();
+		ArrayList<Product> productList = service.selectAllListDesc();
 		
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/productAllList.jsp");
 		
-		request.setAttribute("productList", productAllList);
+		request.setAttribute("productList", productList);
 		
 		view.forward(request, response);
 	}

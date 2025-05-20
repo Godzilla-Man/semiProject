@@ -46,14 +46,7 @@
 									<div class="image">
 										<img src="/" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
 										<c:if test="${not empty sessionScope.loginMember}">
-											<c:choose>
-												<c:when test="${memberWishList.productNo eq prod.productNo}">
-												<span class="material-symbols-outlined fill" onclick="delWishList(this, '${loginMember.memberNo}', '${prod.productNo}')">favorite</span>
-												</c:when>
-												<c:otherwise>
-												<span class="material-symbols-outlined" onclick="addWishList(this, '${loginMember.memberNo}', '${prod.productNo}')">favorite</span>
-												</c:otherwise>
-											</c:choose>
+										<span class="material-symbols-outlined" onclick="addWishList(this, '${loginMember.memberNo}', '${prod.productNo}')">favorite</span>
 										</c:if>
 									</div>
 									<div class="image-info">
@@ -115,22 +108,33 @@
 						data : {"memberNo" : memberNo, "productNo" : productNo},
 						type : "get",
 						success : function(res){
-							if(res > 0){
+							if(res > 0){ //찜하기 성공
 								swal({
 									title : "성공",
 									text : "찜하기 리스트에 추가되었습니다.",
 									icon : "success"
 								});
-							}else if(res == 0){
+								
+								//클릭시 스타일 변경
+								$(obj).attr("class", "material-symbols-outlined fill");
+								$(obj).attr("onclick", "delWhishList(this, " + memberNo + ", " + productNo + ")");
+								
+							}else if(res == 0){ //찜하기 실패
 								swal({
 									title : "실패",
 									text : "찜하기 리스트 추가 중 오류가 발생했습니다.",
 									icon : "error"
 								});
-							}else{
+							}else if(res == -1){ //이미 찜한 상품
 								swal({
 									title : "실패",
 									text : "이미 찜한 상품입니다.",
+									icon : "error"
+								});
+							}else{
+								swal({ //내가 등록한 상품
+									title : "실패",
+									text : "내가 등록한 상품입니다.",
 									icon : "error"
 								});
 							}
@@ -138,13 +142,9 @@
 						error : function(){
 							console.log("ajax 통신 오류");
 						}
-					})
+					});
 				}
-			})
-			
-			//클릭시 스타일 변경
-			$(obj).attr("class", "material-symbols-outlined fill");
-			$(obj).attr("onclick", "delWhishList(this, " + memberNo + ", " + productNo + ")");
+			});
 		}
 		
 		//찜하기 삭제

@@ -187,13 +187,13 @@ public class ProductDao {
 		return productList;
 	}
 
-	public ArrayList<Product> selectAllList(Connection conn) {
+	public ArrayList<Product> selectAllListDesc(Connection conn) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String qeury = "select * from tbl_prod";
+		String qeury = "select * from tbl_prod order by enroll_date desc";
 		
-		ArrayList<Product> productAllList = new ArrayList<Product>();
+		ArrayList<Product> productList = new ArrayList<Product>();
 		
 		try {
 			pstmt = conn.prepareStatement(qeury);
@@ -206,7 +206,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				
-				productAllList.add(p);
+				productList.add(p);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -216,7 +216,7 @@ public class ProductDao {
 			JDBCTemplate.close(pstmt);
 		}
 		
-		return productAllList;
+		return productList;
 	}
 
 	public ArrayList<Product> selectCategoryList(Connection conn, String category) {
@@ -312,41 +312,6 @@ public class ProductDao {
 		return wishList;
 	}
 
-	public ArrayList<WishList> selectMemberWishList(Connection conn, String memberNo) {
-		PreparedStatement pstmt = null;
-		ResultSet rset = null;
-		
-		String query = "select * form tbl_wishlist where member_no = ?";
-		
-		ArrayList<WishList> memberWishList = new ArrayList<WishList>();
-		
-		try {
-			pstmt = conn.prepareStatement(query);
-			
-			pstmt.setString(1, memberNo);
-			
-			rset = pstmt.executeQuery();
-			
-			while(rset.next()) {
-				WishList wishList = new WishList();
-				wishList.setWishListNo(rset.getInt("wishlist_no"));
-				wishList.setProductNo(rset.getString("product_no"));
-				wishList.setMemberNo(rset.getString("member_no"));
-				wishList.setWishListDate(rset.getString("wishlist_date"));
-				
-				memberWishList.add(wishList);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			JDBCTemplate.close(rset);
-			JDBCTemplate.close(pstmt);
-		}
-		
-		return memberWishList;
-	}
-
 	public Product selectMyProd(Connection conn, String memberNo, String productNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
@@ -376,6 +341,38 @@ public class ProductDao {
 			JDBCTemplate.close(pstmt);
 		}
 		return prod;
+	}
+
+	public ArrayList<Product> selectAllListAsc(Connection conn) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String qeury = "select * from tbl_prod order by enroll_date asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(qeury);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
 	}
     
 }

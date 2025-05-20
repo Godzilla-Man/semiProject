@@ -66,6 +66,7 @@ public class ProductService {
 		return ctg;
 	}
 
+	//상품명으로 검색 시 상품 리스트
 	public ArrayList<Product> searchProdcutName(String productName) {
 		Connection conn = JDBCTemplate.getConnection();
 		ArrayList<Product> productList = dao.searchProductName(conn, productName);
@@ -74,6 +75,7 @@ public class ProductService {
 		return productList;
 	}
 
+	//작성자 닉네임으로 검색 시 상품 리스트
 	public ArrayList<Product> searchMemberNickname(String memberNickname) {
 		Connection conn = JDBCTemplate.getConnection();
 		ArrayList<Product> productList = dao.searchMemberNickname(conn, memberNickname);
@@ -82,14 +84,16 @@ public class ProductService {
 		return productList;
 	}
 
-	public ArrayList<Product> selectAllList() {
+	//최신순 전체 상품 리스트
+	public ArrayList<Product> selectAllListDesc() {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productAllList = dao.selectAllList(conn);
+		ArrayList<Product> productList = dao.selectAllListDesc(conn);
 		JDBCTemplate.close(conn);
 		
-		return productAllList;
+		return productList;
 	}
 
+	//카테고리별 상품 리스트
 	public ArrayList<Product> selectCategoryList(String category) {
 		Connection conn = JDBCTemplate.getConnection();
 		ArrayList<Product> productCtgList = dao.selectCategoryList(conn, category);
@@ -124,12 +128,13 @@ public class ProductService {
 		return result; //-2 : 내가 등록한 상품, -1 : 이미 찜한 상품, 0 : 리스트에 추가 실패, 1 : 리스트에 추가 성공
 	}
 
-	public ArrayList<WishList> selectMemberWishList(String memberNo) {
+	//오래된순 전체 상품 리스트
+	public ArrayList<Product> selectAllListAsc() {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<WishList> memberWishList = dao.selectMemberWishList(conn, memberNo);
+		ArrayList<Product> productList = dao.selectAllListAsc(conn);
 		JDBCTemplate.close(conn);
 		
-		return memberWishList;
+		return productList;
 	}
 
 }

@@ -12,7 +12,7 @@
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 		<div class="main-wrap">
 			<div class="filter">
-	            <select id="filter" onchange="filterChange()">
+	            <select id="filter" onchange="filterChange(this)">
 	                <option value="newest">최신순</option>
 	                <option value="oldest">오래된순</option>
 	                <option value="popular">인기순</option>
@@ -39,6 +39,7 @@
 								<div class="card">
 									<div class="image">
 										<img src="/" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
+										<%-- 로그인한 상태에서만 찜하기 버튼 활성화 --%>
 										<c:if test="${not empty sessionScope.loginMember}">
 										<span class="material-symbols-outlined" onclick="addWishList(this, '${loginMember.memberNo}', '${prod.productNo}')">favorite</span>
 										</c:if>
@@ -59,16 +60,35 @@
 	</div>
 	
 	<script>
-		//필터 항목에서 가격 설정을 선택하면 가격 입력창이 나오게
-		$(document).ready(function () {
-			$('#filter').on('change', function () {
-				if ($(this).val() === 'setPrice') {
-					$('.price-range').show();  // 가격 설정 영역 표시
-				} else {
-					$('.price-range').hide();  // 그 외에는 숨김
-				}
-			});
-		});
+		//필터 항목에서 설정 변경 시
+		function filterChange(obj){
+			switch($(obj).val()){
+			case "newest" :
+				$(".price-range").hide();
+				location.href="/product/allListDesc";
+				break;
+			case "oldest" :
+				$(".price-range").hide();
+				location.href="/product/allListAsc";
+				break;
+			case "popular" :
+				$(".price-range").hide();
+				console.log("인기");
+				break;
+			case "cheaper" :
+				$(".price-range").hide();
+				console.log("싼");
+				break;
+			case "expensive" :
+				$(".price-range").hide();
+				console.log("비싼");
+				break;
+			case "setPrice" :
+				$(".price-range").show();
+				console.log("가격");
+				break;
+			}
+		}
 	
 		//클릭 시 해당 상품 상세 페이지로 이동
 		function clickProd(productNo) {
