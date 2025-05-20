@@ -56,11 +56,4 @@ public class MemberService {
 		return loginMember;
 	}
 
-	public ArrayList<Member> selectAllMember() {
-		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Member> memberList = dao.selectAllMember(conn);
-		JDBCTemplate.close(conn);
-		
-		return memberList;
-	}
 }

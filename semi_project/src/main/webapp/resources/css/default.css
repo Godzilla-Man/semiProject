@@ -1109,7 +1109,7 @@ hr {
 	margin-bottom: 10px;
 	text-align: center;
 }
-.admin-page a {
+.admin-page>div a {
 	font-size: 30px;
 }
 .admin-page a:hover {
@@ -1136,4 +1136,39 @@ hr {
 .tbl-member td {
 	text-align: center;
 	border-bottom: 1px solid #eee;
+}
+.tbl-member button {
+	display: block;
+	background-color: rgb(41, 64, 246);
+	color: white;
+	border: none;
+	border-radius: 10px;
+	height: 30px;
+	width: 70px;
+	margin: 0 auto
+}
+.tbl-member button:hover {
+	cursor: pointer;
+}
+
+/* 블랙 등록 팝업 */
+.black-wrap {
+	width: 495px;
+	height: 325px;
+}
+.black-wrap>table {
+	width: 100%;
+}
+#blackReason {
+	width: 90%;
+	height: 230px;
+	resize: none;
+	font-size: 18px;
+}
+.black-wrap input {
+	width: 90%;
+	height: 30px;
+	margin: 5px 0;
+	border: none;
+	border-bottom: 1px solid black;
 }
