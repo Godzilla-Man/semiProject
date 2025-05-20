@@ -54,4 +54,30 @@ public class MemberService {
 		
 		return loginMember;
 	}
+	
+	//이름+전화번호로 아이디 찾기
+	public String searchId(String memberName, String memberPhone) {
+		Connection conn = JDBCTemplate.getConnection();
+		String memberId = dao.searchId(conn, memberName, memberPhone);
+		JDBCTemplate.close(conn);
+		
+		return memberId;
+	}
+	
+	//이메일로 아이디 찾기
+	public String searchId(String memberEmail) {
+		Connection conn = JDBCTemplate.getConnection();
+		String memberId = dao.searchId(conn, memberEmail);
+		JDBCTemplate.close(conn);
+		
+		return memberId;
+	}
+	
+	//비밀번호 찾기
+	public String searchPw(String memberId, String memberEmail) {
+		Connection conn = JDBCTemplate.getConnection();
+		String memberPw = dao.searchId(conn, memberId, memberEmail);
+		JDBCTemplate.close(conn);
+		
+		return memberId;
 }
