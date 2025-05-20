@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.member.model.vo.Member;
@@ -143,9 +142,6 @@ public class MemberDao {
 		
 		return loginMember;
 	}
-<<<<<<< HEAD
-
-=======
 	
 	//이름+전화번호로 아이디 찾기
 	public String searchId(Connection conn, String memberName, String memberPhone) {
@@ -235,5 +231,4 @@ public class MemberDao {
 		
 		return memberPw;
 	}
->>>>>>> master
 }
