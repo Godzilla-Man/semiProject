@@ -1,6 +1,8 @@
 package kr.or.iei.member.controller;
 
 import java.io.IOException;
+
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,9 +35,12 @@ public class SearchInfoServlet extends HttpServlet {
 		//2. 클라이언트가 전송한 값 추출
 		String infoOption = request.getParameter("infoOption");
 		String srchIdName = request.getParameter("srchId-name");
-		String srchIdPhone = request.getParameter("srchId-Phone");
+		String srchIdPhone = request.getParameter("srchId-phone");
 		String srchIdEmailId = request.getParameter("srchId-emailId");
 		String srchIdEmailDomain = request.getParameter("srchId-emailDomain");
+		String srchPwId = request.getParameter("srchPw-id");
+		String srchPwEmailId = request.getParameter("srchPw-emailId");
+		String srchPwEmailDomain = request.getParameter("srchPw-emailDomain");
 		
 		String searchInfo = request.getParameter("searchInfo");	// "id" or "pw"
 		
@@ -45,6 +50,7 @@ public class SearchInfoServlet extends HttpServlet {
 		MemberService service = new MemberService();
 		String result = "";
 		String srchIdEmail = srchIdEmailId + "@" + srchIdEmailDomain;
+		String srchPwEmail = srchPwEmailId + "@" + srchPwEmailDomain;
 		
 		if(searchInfo.equals("id")) {
 			//아이디 찾기
@@ -57,13 +63,40 @@ public class SearchInfoServlet extends HttpServlet {
 			}
 		} else {
 			//비밀번호 찾기
-			
+			result = service.searchPw(srchPwId, srchPwEmail);
 		}
 		
 		//4. 결과 처리
 			//4.1 이동할 JSP 페이지 경로 지정
+		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/common/msg.jsp");
 			//4.2 화면 구현에 필요한 데이터 등록
+		if(!result.isEmpty()) {
+			if(searchInfo.equals("id")) {
+				request.setAttribute("title", "아이디 찾기 성공");
+				request.setAttribute("msg", "아이디는 \\\"" + result + "\\\"입니다.");
+				request.setAttribute("icon", "success");
+				request.setAttribute("loc", "/member/loginFrm");				
+			} else {
+				request.setAttribute("title", "비밀번호 찾기 성공");
+				request.setAttribute("msg", "비밀번호는 \\\"" + result + "\\\"입니다.");
+				request.setAttribute("icon", "success");
+				request.setAttribute("loc", "/member/loginFrm");				
+			}
+		} else {
+			if(searchInfo.equals("id")) {
+				request.setAttribute("title", "아이디 찾기 실패");
+				request.setAttribute("msg", "일치하는 회원이 없습니다.");
+				request.setAttribute("icon", "error");
+				request.setAttribute("loc", "/member/searchInfoFrm");
+			} else {
+				request.setAttribute("title", "비밀번호 찾기 실패");
+				request.setAttribute("msg", "일치하는 회원이 없습니다.");
+				request.setAttribute("icon", "error");
+				request.setAttribute("loc", "/member/searchInfoFrm");
+			}
+		}
 			//4.3 페이지 이동
+		view.forward(request, response);
 	}
 
 	/**

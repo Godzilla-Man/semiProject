@@ -16,7 +16,8 @@
 				<div class="page-title">회원 정보 찾기</div>
 				<form action="/member/searchInfo"
 				      method="post" 
-				      autocomplete="off">
+				      autocomplete="off"
+				      onsubmit="">
 					<div class="searchInfo-wrap">
 						<ul class="menu-wrap">
 							<li class="tab-link current" data-tab="tab-searchId">
@@ -32,13 +33,13 @@
 								<div class="content-item" id="item-namePhone">
 									<div class="input-wrap input-wrap-name">
 										<div class="input-item">
-											<input type="text" id="srchId-name" name="searchId-name" placeholder="이름">
+											<input type="text" id="srchId-name" name="srchId-name" placeholder="이름">
 										</div>
 									</div>
 									
 									<div class="input-wrap input-wrap-namePhone">
 										<div class="input-item">
-											<input type="text" id="searchId-phone" name="searchId-phone" placeholder="전화번호">
+											<input type="text" id="srchId-phone" name="srchId-phone" placeholder="전화번호">
 										</div>
 									</div>
 								</div>
@@ -46,9 +47,9 @@
 								<label for="email">이메일로 찾기</label>
 								<div class="content-item" id="item-email">
 									<div class="input-item">
-							      	  	<input type="text" id="srchId-emailId" name="srchId-emailId" disabled>&nbsp;@&nbsp;
-							      	  	<input type="text" id="srchId-emailDomain" name="srchId-emailDomain" disabled>
-							      	  	<select class="select-domain" id="id-selectDomain" disabled>
+							      	  	<input type="text" id="srchId-emailId" name="srchId-emailId" readonly>&nbsp;@&nbsp;
+							      	  	<input type="text" id="srchId-emailDomain" name="srchId-emailDomain" readonly>
+							      	  	<select class="select-domain" id="id-selectDomain">
 							      	  		<option value="text" selected>직접입력</option>
 							      	  		<option value="naver.com">naver.com</option>
 							      	  		<option value="hanmail.net">hanmail.net</option>
@@ -64,12 +65,12 @@
 						<div class="content" id="tab-searchPw">
 							<div class="input-wrap input-warp-pw">
 								<div class="input-item">
-									<input type="text" id="memberId" name="memberId" placeholder="ID" maxlength="12">
+									<input type="text" id="srchPw-id" name="srchPw-id" placeholder="ID" maxlength="12">
 								</div>
 							</div>
 							<div class="input-item">
-					      	  	<input type="text" id="pwEmailId" name="pwEmailId" placeholder="EMAIL">&nbsp;@&nbsp;
-					      	  	<input type="text" id="pwEmailDomain" name="pwEmailDomain">
+					      	  	<input type="text" id="srchPw-emailId" name="srchPw-emailId" placeholder="EMAIL">&nbsp;@&nbsp;
+					      	  	<input type="text" id="srchPw-emailDomain" name="srchPw-emailDomain">
 					      	  	<select class="select-domain" id="pw-selectDomain">
 					      	  		<option value="text" selected>직접입력</option>
 					      	  		<option value="naver.com">naver.com</option>
@@ -116,21 +117,21 @@
 			
 			//이름+전화번호 선택시
 			if($(checkedRadio).val() == 'namePhone') {
-				$(itemNamePhone).find('input').attr('disabled', false)
-				$(itemEmail).find('input').attr('disabled', true)
-				$(itemEmail).find('select').attr('disabled', true)
+				$(itemNamePhone).find('input').attr('readonly', false)
+				$(itemEmail).find('input').attr('readonly', true)
+				$(itemEmail).find('select').attr('readonly', true)
 			}
 			//이메일 선택시
 			if($(checkedRadio).val() == 'email') {
-				$(itemNamePhone).find('input').attr('disabled', true)
-				$(itemEmail).find('input').attr('disabled', false)
-				$(itemEmail).find('select').attr('disabled', false)
+				$(itemNamePhone).find('input').attr('readonly', true)
+				$(itemEmail).find('input').attr('readonly', false)
+				$(itemEmail).find('select').attr('readonly', false)
 			}
 		});
 		
 		//이메일Domain selectbox 기능 (id찾기에서의 selectbox와 pw찾기에서의 selectbox구분)
-		const idEmailDomain = $('#idEmailDomain');
-		const pwEmailDomain = $('#pwEmailDomain');
+		const idEmailDomain = $('#srchId-emailDomain');
+		const pwEmailDomain = $('#srchPw-emailDomain');
 		const idSelectDomain = $('#id-selectDomain');
 		const pwSelectDomain = $('#pw-selectDomain');
 		
@@ -154,6 +155,14 @@
 				$(pwEmailDomain).val($(this).val());
 			}
 		});
+		
+		//값 확인용 테스트 메소드
+		function test() {
+			console.log("#srchId-name : " + $('#srchId-name').val());
+			console.log("#srchId-phone : " + $('#srchId-phone').val());
+			
+			return false;
+		}
 	</script>
 </body>
 </html>

@@ -76,8 +76,9 @@ public class MemberService {
 	//비밀번호 찾기
 	public String searchPw(String memberId, String memberEmail) {
 		Connection conn = JDBCTemplate.getConnection();
-		String memberPw = dao.searchId(conn, memberId, memberEmail);
+		String memberPw = dao.searchPw(conn, memberId, memberEmail);
 		JDBCTemplate.close(conn);
 		
-		return memberId;
+		return memberPw;
+	}
 }

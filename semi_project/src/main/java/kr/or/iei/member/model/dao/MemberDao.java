@@ -30,8 +30,6 @@ public class MemberDao {
 			pstmt.setString(7, member.getMemberAddr());
 			pstmt.setString(8, member.getMemberEmail());
 			
-			System.out.println(member.toString());
-			
 			result = pstmt.executeUpdate();
 			
 		} catch (SQLException e) {
@@ -161,7 +159,9 @@ public class MemberDao {
 			
 			rset = pstmt.executeQuery();
 			
-			memberId = rset.getString("member_id");
+			if(rset.next()) {
+				memberId = rset.getString("member_id");
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -188,7 +188,9 @@ public class MemberDao {
 			
 			rset = pstmt.executeQuery();
 			
-			memberId = rset.getString("member_id");
+			if(rset.next()) {
+				memberId = rset.getString("member_id");
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -216,7 +218,9 @@ public class MemberDao {
 			
 			rset = pstmt.executeQuery();
 			
-			memberPw = rset.getString("member_pw");
+			if(rset.next()) {
+				memberPw = rset.getString("member_pw");
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
