@@ -1,6 +1,7 @@
 package kr.or.iei.member.model.service;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.member.model.dao.MemberDao;
@@ -80,5 +81,18 @@ public class MemberService {
 		JDBCTemplate.close(conn);
 		
 		return memberPw;
+	}
+
+	//회원정보 수정
+	public int updateMember(Member updMember) {
+		Connection conn = JDBCTemplate.getConnection();
+		int result = dao.updateMember(conn, updMember);
+		if(result > 0) {
+			JDBCTemplate.commit(conn);
+		}else {
+			JDBCTemplate.rollback(conn);
+		}
+		JDBCTemplate.close(conn);
+		return result;
 	}
 }

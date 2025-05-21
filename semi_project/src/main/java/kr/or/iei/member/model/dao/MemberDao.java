@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.member.model.vo.Member;
@@ -230,5 +231,43 @@ public class MemberDao {
 		}
 		
 		return memberPw;
+	}
+
+	//회원정보 수정
+	public int updateMember(Connection conn, Member updMember) {
+		PreparedStatement pstmt = null;
+		
+		int result = 0;
+		
+		String query = "update tbl_member set member_pw = ?, member_phone = ?, member_addr = ?, member_email = ? where member_no = ?";
+		String query_noPw = "update tbl_member set member_phone = ?, member_addr = ?, member_email = ? where member_no = ?";
+
+		try {
+			if(updMember.getMemberPw() == "") {
+				pstmt = conn.prepareStatement(query_noPw);
+				
+				pstmt.setString(1, updMember.getMemberPhone());
+				pstmt.setString(2, updMember.getMemberAddr());
+				pstmt.setString(3, updMember.getMemberEmail());
+				pstmt.setString(4, updMember.getMemberNo());
+			} else {
+				pstmt = conn.prepareStatement(query);
+				
+				pstmt.setString(1, updMember.getMemberPw());
+				pstmt.setString(2, updMember.getMemberPhone());
+				pstmt.setString(3, updMember.getMemberAddr());
+				pstmt.setString(4, updMember.getMemberEmail());
+				pstmt.setString(5, updMember.getMemberNo());
+			}
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
 	}
 }
