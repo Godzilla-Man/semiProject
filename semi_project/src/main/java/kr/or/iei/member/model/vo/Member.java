@@ -22,4 +22,6 @@ public class Member {
 	private String member_rate;		//회원 평점
 	
 	private String wishProductNo;	//찜한 상품 번호
+	private int reportedCount;	//신고당한 횟수
+	private int blackCount;		//블랙 여부 확인
 }
