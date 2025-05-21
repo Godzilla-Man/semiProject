@@ -33,7 +33,7 @@
         </ul>
         <div class="logo">
             <a href="/">
-                <img src="/resources/images/KakaoTalk_20250514_101220497.png">
+                <img src="/resources/images/KakaoTalk_20250521_152140105.png">
             </a>
         </div>
     </div>

@@ -1,3 +1,6 @@
+<%@page import="kr.or.iei.file.model.vo.Files"%>
+<%@page import="java.util.List"%>
+<%@page import="kr.or.iei.event.model.service.EventService"%>
 <%@page import="kr.or.iei.reviewNotice.model.vo.ReviewNotice"%>
 <%@page import="kr.or.iei.reviewNotice.model.service.ReviewNoticeService"%>
 <%@page import="kr.or.iei.member.model.vo.Member"%>
@@ -18,15 +21,20 @@
 			memberNo = loginMember.getMemberNo();
 		}
 	}
-
-	ProductService service = new ProductService();
-	ArrayList<Product> productList = service.selectAllListDesc(memberNo);
 	
-	ReviewNoticeService Rservice = new ReviewNoticeService();
-    ArrayList<ReviewNotice> reviewList = Rservice.selectAllReview();
+
+	ProductService pService = new ProductService();
+	ArrayList<Product> productList = pService.selectAllListDesc(memberNo);
+	
+	ReviewNoticeService rService = new ReviewNoticeService();
+    ArrayList<ReviewNotice> reviewList = rService.selectAllReview();
+    
+    EventService eService = new EventService();
+    List<Files> fileList = eService.selectFirstEventFileList();
 	
 	request.setAttribute("productList", productList);
 	request.setAttribute("reviewList", reviewList);
+	request.setAttribute("fileList", fileList);
 %>
 <!DOCTYPE html>
 <html>
@@ -38,7 +46,9 @@
 	<div class="wrap">
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 		<div class="main-wrap">
-	        <img src="/" class="main-image">
+			<c:forEach var="file" items="${fileList}" varStatus="status">
+	        <img src="${file.filePath}" alt="이벤트 이미지 ${status.index+1}" class="main-image" onclick="eventClick('${file.eventNo}')" style="cursor: pointer;">
+	        </c:forEach>
 	        <span><a href="/product/allListDesc">최신 등록 상품</a></span> <%-- 클릭 시 전체 상품 화면으로 이동 --%>
     		<div class="style-review-board">
 				<div class="cards-container">
@@ -52,7 +62,14 @@
 							<div style="color: inherit; text-decoration: none;">
 								<div class="card">
 									<div class="image">
-										<img src="/" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
+										<c:choose>
+										<c:when test="${empty prod.filePath}">
+										<img src="/" alt="해당 상품에 등록된 이미지가 존재하지 않습니다." onclick="clickProd('${prod.productNo}')">
+										</c:when>
+										<c:otherwise>
+										<img src="${prod.filePath}" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
+										</c:otherwise>
+										</c:choose>
 										<c:if test="${not empty sessionScope.loginMember}">
 											<c:if test="${prod.wishYn eq 'Y'}">
 												<span class="material-symbols-outlined fill" onclick="delWhishList(this, '${loginMember.memberNo}', '${prod.productNo}')">favorite</span>
@@ -132,6 +149,11 @@
 	        });
 	    }
 	 	
+	 	//이벤트 사진 클릭시 게시글로 이동
+	 	function eventClick(eventNo){
+	 		location.href="/event/view?eventNo=" + eventNo + "&updChk=true";
+	 	}
+	 	
 		//첫 번째 더보기 클릭 시 전체 판매 상품 페이지로 이동
 		function fullProduct() {
 			location.href="/product/allListDesc";
@@ -141,7 +163,7 @@
 			location.href="/review/list";
 		}
 		//클릭 시 해당 상품 상세 페이지로 이동
-		function clickProd(obj) {
+		function clickProd(productNo) {
 			location.href="/product/detail?no=" + productNo;
 		}
 	

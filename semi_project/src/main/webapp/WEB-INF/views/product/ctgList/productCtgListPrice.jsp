@@ -26,7 +26,7 @@
 	            </select>
 	        	<div class="price-range">
 	        		<input type="number" id="minPrice" placeholder="최소 가격"> ~ 
-	        		<input type="number" id="maxPrice" placeholder="최대 가격">
+	        		<input type="number" id="maxPrice" placeholder="최대 가격" max="1000000000">
 	        		<button id="priceFilter" onclick="priceFilter(this, '${ctg.categoryCode}')">적용</button>
 	        	</div>
         	</div>
@@ -42,7 +42,15 @@
 							<div style="color: inherit; text-decoration: none;">
 								<div class="card">
 									<div class="image">
-										<img src="/" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
+										<%-- 이미지 출력 절차 --%>
+										<c:choose>
+											<c:when test="${empty prod.filePath}">
+											<img src="/" alt="해당 상품에 등록된 이미지가 존재하지 않습니다." onclick="clickProd('${prod.productNo}')">
+											</c:when>
+											<c:otherwise>
+											<img src="${prod.filePath}" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
+											</c:otherwise>
+										</c:choose>
 										<c:if test="${not empty sessionScope.loginMember}">
 											<c:if test="${prod.wishYn eq 'Y'}">
 												<span class="material-symbols-outlined fill" onclick="delWhishList(this, '${loginMember.memberNo}', '${prod.productNo}')">favorite</span>
@@ -121,6 +129,12 @@
 		function priceFilter(obj, ctg){
 			let min = $("#minPrice").val();
 			let max = $("#maxPrice").val();
+			if(min === ""){
+				min = '0';
+			}
+			if(max === ""){
+				max ='0';
+			}
 			location.href="/product/categoryListPrice?min=" + min + "&max=" + max + "&ctg=" + ctg;
 		}
 	

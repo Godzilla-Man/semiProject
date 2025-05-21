@@ -17,7 +17,7 @@ public class MemberDao {
 		
 		int result = 0;
 		
-		String query = "insert into tbl_member values (to_char(sysdate, 'yymmdd') || lpad(seq_member.nextval, 4, '0'), ?, ?, ?, ?, ?, ?, ?, ?, sysdate, default)";
+		String query = "insert into tbl_member values ('M' || to_char(sysdate, 'yymmdd') || lpad(seq_member.nextval, 4, '0'), ?, ?, ?, ?, ?, ?, ?, ?, sysdate, default)";
 		
 		try {
 			pstmt = conn.prepareStatement(query);

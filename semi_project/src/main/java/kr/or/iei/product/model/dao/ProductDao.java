@@ -133,7 +133,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where product_name like ? order by prod.enroll_date desc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 order by prod.enroll_date desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -151,6 +153,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -170,7 +173,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) order by prod.enroll_date desc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 order by prod.enroll_date desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -188,6 +193,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -202,16 +208,19 @@ public class ProductDao {
 		return productList;
 	}
 
+	//최신순 전체 상품 리스트
 	public ArrayList<Product> selectAllListDesc(Connection conn, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String qeury = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod order by enroll_date desc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 order by prod.enroll_date desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
 		try {
-			pstmt = conn.prepareStatement(qeury);
+			pstmt = conn.prepareStatement(query);
 			
 			pstmt.setString(1, memberNo);
 			
@@ -223,6 +232,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -237,11 +247,14 @@ public class ProductDao {
 		return productList;
 	}
 
+	//카테고리별 최신순 상품 리스트
 	public ArrayList<Product> selectCategoryListDesc(Connection conn, String category, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where prod.category_code = ? order by prod.enroll_date desc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 order by prod.enroll_date desc, f.file_no asc";
 		
 		ArrayList<Product> productCtgList = new ArrayList<Product>();
 		
@@ -259,6 +272,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productCtgList.add(p);
 			}
@@ -363,11 +377,14 @@ public class ProductDao {
 		return prod;
 	}
 
+	//오래된순 전체 상품 리스트
 	public ArrayList<Product> selectAllListAsc(Connection conn, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String qeury = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod order by prod.enroll_date asc";
+		String qeury = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 order by prod.enroll_date asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -384,6 +401,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -1015,12 +1033,14 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String qeury = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod order by prod.product_price asc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
 		try {
-			pstmt = conn.prepareStatement(qeury);
+			pstmt = conn.prepareStatement(query);
 			
 			pstmt.setString(1, memberNo);
 			
@@ -1032,6 +1052,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -1051,12 +1072,14 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String qeury = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod order by prod.product_price desc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 order by prod.product_price desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
 		try {
-			pstmt = conn.prepareStatement(qeury);
+			pstmt = conn.prepareStatement(query);
 			
 			pstmt.setString(1, memberNo);
 			
@@ -1068,6 +1091,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -1086,13 +1110,15 @@ public class ProductDao {
 	public ArrayList<Product> selectAllListPrice(Connection conn, String memberNo, String min, String max) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
-		
-		String qeury = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where prod.product_price >= ? and prod.product_price <= ? order by enroll_date desc";
+
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
 		try {
-			pstmt = conn.prepareStatement(qeury);
+			pstmt = conn.prepareStatement(query);
 			
 			pstmt.setString(1, memberNo);
 			pstmt.setString(2, min);
@@ -1106,6 +1132,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -1125,7 +1152,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where prod.category_code = ? order by prod.enroll_date asc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 order by prod.enroll_date asc, f.file_no asc";
 		
 		ArrayList<Product> productCtgList = new ArrayList<Product>();
 		
@@ -1143,6 +1172,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productCtgList.add(p);
 			}
@@ -1162,7 +1192,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where prod.category_code = ? order by prod.product_price asc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productCtgList = new ArrayList<Product>();
 		
@@ -1180,6 +1212,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productCtgList.add(p);
 			}
@@ -1199,7 +1232,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where prod.category_code = ? order by prod.product_price desc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 order by prod.product_price desc, f.file_no asc";
 		
 		ArrayList<Product> productCtgList = new ArrayList<Product>();
 		
@@ -1217,6 +1252,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productCtgList.add(p);
 			}
@@ -1237,7 +1273,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where prod.category_code = ? and prod.product_price >= ? and prod.product_price <= ? order by prod.enroll_date desc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productCtgList = new ArrayList<Product>();
 		
@@ -1257,6 +1295,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productCtgList.add(p);
 			}
@@ -1276,7 +1315,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where product_name like ? order by prod.enroll_date asc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 order by prod.enroll_date asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1294,6 +1335,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -1313,7 +1355,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) order by prod.enroll_date asc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 order by prod.enroll_date asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1331,6 +1375,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -1350,7 +1395,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where product_name like ? order by prod.product_price asc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1368,6 +1415,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -1387,7 +1435,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) order by prod.product_price asc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1405,6 +1455,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -1423,8 +1474,10 @@ public class ProductDao {
 	public ArrayList<Product> searchProductNameExpen(Connection conn, String productName, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
-		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where product_name like ? order by prod.product_price desc";
+
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 order by prod.product_price desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1442,6 +1495,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -1461,7 +1515,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) order by prod.product_price desc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 order by prod.product_price desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1479,6 +1535,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -1498,7 +1555,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where prod.product_name like ? and prod.product_price >= ? and prod.product_price <= ? order by prod.enroll_date desc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1518,6 +1577,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -1537,7 +1597,9 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn from tbl_prod prod where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_price >= ? and prod.product_price <= ? order by prod.enroll_date desc";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1557,6 +1619,7 @@ public class ProductDao {
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
 				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
