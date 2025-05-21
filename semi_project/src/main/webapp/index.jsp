@@ -7,27 +7,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%
-	String memberNo = null;
-	Member loginMember = null;
-	session = request.getSession(false);
-	if(session != null){
-		loginMember = (Member) session.getAttribute("loginMember");
-		
-		if(loginMember != null){			
-			memberNo = loginMember.getMemberNo();
-		}
-	}
 
-	ProductService service = new ProductService();
-	ArrayList<Product> productList = service.selectAllListDesc(memberNo);
-	
-	ReviewNoticeService Rservice = new ReviewNoticeService();
-    ArrayList<ReviewNotice> reviewList = Rservice.selectAllReview();
-	
-	request.setAttribute("productList", productList);
-	request.setAttribute("reviewList", reviewList);
-%>
 <!DOCTYPE html>
 <html>
 <head>

@@ -51,13 +51,6 @@ public class ProductEnrollServlet extends HttpServlet {
         String tradeMethodCode = request.getParameter("tradeMethodCode");
         String categoryCode = request.getParameter("categoryCode");
         
-        Enumeration<String> paramNames = request.getParameterNames();
-        while (paramNames.hasMoreElements()) {
-            String name = paramNames.nextElement();
-            String value = request.getParameter(name);
-            System.out.println("🔍 전달된 파라미터: " + name + " = " + value);
-        }
-        
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loginMember") == null) {
             // 로그인하지 않은 사용자는 로그인 페이지로 리다이렉트
