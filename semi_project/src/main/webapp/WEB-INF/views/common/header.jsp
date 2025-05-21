@@ -172,9 +172,17 @@
             <li><a href="/review/list">스타일 후기</a></li>
             <li><a href="/event/list?reqPage=1">이벤트</a></li>
             <li><a href="/notice/list?reqPage=1">공지사항</a></li>
-            <li><a href="/product/enroll">판매하기</a></li>
+            <%-- 로그인 되어 있지 않을 때 판매하기로 안 넘어가게 하기 위한 작업 --%>
+            <c:choose>
+	            <c:when test="${empty sessionScope.loginMember}"> <%-- 비로그인 --%>
+	            <li><a href="javascript:void(0);" onclick="chkLogin()">판매하기</a></li>
+	            </c:when>
+	            <c:otherwise>
+	            <li><a href="/product/enroll">판매하기</a></li>
+	            </c:otherwise>
+            </c:choose>
         </ul>
-        <form class="search" action="/product/searchList" method="get">
+        <form class="search" action="/product/searchListDesc" method="get">
             <select name="searchOption" id="search-option">
                 <option value="productName">상품명</option>
                 <option value="memberNickname">작성자</option>
@@ -213,4 +221,14 @@
         behavior: 'smooth' // 부드럽게 스크롤
         });
     }
+ 	
+ 	function chkLogin() {
+ 		swal({
+ 			title : "알림",
+ 			text : "로그인이 되어 있지 않습니다.",
+ 			icon : "warning"
+ 		}).then(function(){
+			location.href = "/member/loginFrm"
+ 		});
+ 	}
 </script>
