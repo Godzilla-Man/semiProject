@@ -34,7 +34,7 @@
 	                <tr>
 	                    <th>첨부파일</th>
 	                    <td>
-	                        <input type="file" name="noticeFile" multiple>
+	                        <input type="file" name="noticeFile" accept="image/*">
 	                    </td>
 	                </tr>
 	                <tr>

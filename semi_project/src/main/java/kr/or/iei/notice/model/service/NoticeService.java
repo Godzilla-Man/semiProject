@@ -3,6 +3,7 @@ package kr.or.iei.notice.model.service;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.List;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.common.ListData;
@@ -111,7 +112,7 @@ public class NoticeService {
 		return listData;
 	}
 	
-	public int insertNotice(Notice notice, ArrayList<Files> fileList) {
+	public int insertNotice(Notice notice, List<Files> fileList) {
 		Connection conn = JDBCTemplate.getConnection();
 		
 		/*
@@ -145,7 +146,7 @@ public class NoticeService {
 				file.setNoticeNo(noticeNo); //1)에서 조회한 게시글 번호
 				
 				//3) tbl_file에 insert(게시글에 대한 파일 등록)
-				result = dao.insertNoticeFile(conn, file);
+				result = dao.insertNoticeFile(conn, notice, fileList);
 				
 				//파일 정보 등록 중 정상 수행되지 않았을 경우 모두 롤백처리하고 메소드 종료
 				if(result < 1) {
@@ -192,11 +193,6 @@ public class NoticeService {
 			
 			if(result > 0 || !updChk) {
 				JDBCTemplate.commit(conn);
-				
-				//3) 게시글에 대한 파일 정보 조회
-				ArrayList<Files> fileList = dao.selectNoticeFileList(conn, noticeNo);
-				notice.setFileList(fileList);
-				
 			}else {
 				JDBCTemplate.rollback(conn);
 			}
@@ -207,64 +203,38 @@ public class NoticeService {
 		return notice;
 	}
 
-	public ArrayList<Files> updateNotice(Notice notice, ArrayList<Files> addFileList, String[] delFileNoList) {
+	public int updateNotice(Notice notice, List<Files> fileList) {
 		Connection conn = JDBCTemplate.getConnection();
 		
-		//1) 게시글 정보 업데이트
-		int result = dao.updateNotice(conn, notice);
+		//1) 기존 파일 삭제
+		int dResult = dao.deleteNoticeFile(conn, notice);
 		
-		ArrayList<Files> preFileList = null;
-		
-		if(result > 0) {
-			//2) 게시글에 대한 전체 파일 리스트 조회
-			//리스트에서 삭제 대상 파일 정보만 남기고 remove
-			preFileList = dao.selectNoticeFileList(conn, notice.getNoticeNo());
+		//2) 게시글 정보 업데이트
+		int uResult = dao.updateNotice(conn, notice);
+		if(uResult > 0) {
+			//3) 파일 업데이트
+			int fResult = dao.insertNoticeFile(conn, notice, fileList);
 			
-			if(delFileNoList != null) { //삭제할 파일이 있을 때
-				String delFileNoStr = String.join("|", delFileNoList);
-				
-				//preFileList에서 삭제할 파일 정보만 남기고 remove
-				for(int i=preFileList.size()-1; i>=0; i--) { //뒤에서부터 삭제해야 정상적으로 삭제됨
-					String preFileNo = String.valueOf(preFileList.get(i).getFileNo()); //기존 파일 번호
-					
-					//기존 파일이 삭제 대상인가
-					if(delFileNoStr.indexOf(preFileNo) > -1) {
-						result += dao.deleteNoticeFile(conn, preFileNo); //게시글에 대한 개별 파일 삭제
-					}else {
-						//기존 파일이 삭제 대상 파일이 아닐 때
-						preFileList.remove(i); //서버에서 삭제되지 않도록 리스트에서 제거
-					}
-				}
+			if(fResult > 0) {
+				JDBCTemplate.commit(conn);
+			}else {
+				JDBCTemplate.rollback(conn);
 			}
-			
-			//추가 업로드 한 파일 DB에 insert
-			for(int i=0; i<addFileList.size(); i++) {
-				Files insFile = addFileList.get(i);
-				result = dao.insertNoticeFile(conn, insFile);
-			}
-		}
-		
-		//DML(insert, update, delete)이 수행된 총 행의 갯수
-		int updTotalCnt = delFileNoList == null ? addFileList.size() + 1 : addFileList.size() + delFileNoList.length + 1;
-		
-		if(updTotalCnt == result) {
-			JDBCTemplate.commit(conn);
 			JDBCTemplate.close(conn);
-			
-			return preFileList;
+			return fResult;
 		}else {
 			JDBCTemplate.rollback(conn);
-			JDBCTemplate.close(conn);
-			
-			return null;
 		}
+		JDBCTemplate.close(conn);
+		
+		return uResult;
 	}
 
-	public ArrayList<Files> deleteNotice(String noticeNo) {
+	public List<Files> deleteNotice(String noticeNo) {
 		Connection conn = JDBCTemplate.getConnection();
 		
 		//서버에 있는 파일 삭제
-		ArrayList<Files> delFileList = dao.selectNoticeFileList(conn, noticeNo);
+		List<Files> delFileList = dao.selectNoticeFileList(conn, noticeNo);
 		
 		//DB 게시글 정보 삭제
 		int result = dao.deleteNotice(conn, noticeNo);
@@ -280,5 +250,12 @@ public class NoticeService {
 			
 			return null; //비정상 삭제 시 서버에서 파일이 삭제되지 않도록 null 리턴
 		}
+	}
+
+	public List<Files> selectNoticeFileList(String noticeNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		List<Files> fileList = dao.selectNoticeFileList(conn, noticeNo);
+		JDBCTemplate.close(conn);
+		return fileList;
 	}
 }

@@ -302,6 +302,10 @@ main.container {
   padding: 2px 6px;
   border-radius: 4px;
   text-align: center;
+  height: 42px;
+  overflow: hidden;
+  line-height: 1.3;
+  word-break: break-word;
 }
 
 .related-price {
@@ -743,6 +747,18 @@ textarea::placeholder {
   border-radius: 10px;
 }
 
+/* 기존 .product-status와 동일한 모양을 유지하되 색상만 다름 */
+.product-status.delivery-included {
+  background-color: #e1f7e3;  /* 연한 초록 */
+  color: #237a3b;
+}
+
+.product-status.delivery-excluded {
+  background-color: #ffe8ec;  /* 연한 분홍 */
+  color: #9d3b50;
+}
+
+
 
 </style>
 
@@ -811,15 +827,33 @@ textarea::placeholder {
   </div>
 </c:if>
 
-<%-- 상품 상태 박스 --%>
-<c:choose>
-  <c:when test="${product.statusCode eq 'S99'}">
-    <div class="product-status deleted">${product.productStatus}</div>
-  </c:when>
-  <c:otherwise>
-    <div class="product-status">${product.productStatus}</div>
-  </c:otherwise>
-</c:choose>
+<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 25px;">
+  <c:choose>
+    <c:when test="${product.statusCode eq 'S99'}">
+      <div class="product-status deleted">${product.productStatus}</div>
+    </c:when>
+    <c:otherwise>
+      <div class="product-status">${product.productStatus}</div>
+    </c:otherwise>
+  </c:choose>
+
+  <!-- 배송비 조건별 스타일 표시 -->
+  <c:choose>
+    <c:when test="${product.tradeMethodCode eq 'M1'}">
+      <div class="product-status delivery-included">배송비 포함</div>
+    </c:when>
+    <c:otherwise>
+      <div class="product-status delivery-excluded">
+        <c:choose>
+          <c:when test="${product.tradeMethodCode eq 'M2'}">배송비 별도</c:when>
+          <c:otherwise>배송비 착불</c:otherwise>
+        </c:choose>
+      </div>
+    </c:otherwise>
+  </c:choose>
+</div>
+
+
 
   <!-- 상품명 -->
   <h2 class="product-title">${product.productName}</h2>
@@ -871,11 +905,12 @@ textarea::placeholder {
 
 
     <button class="btn-warning">신고하기</button>
+
     
     <!-- ★동주 : 바로구매 시 결제 페이지 연동/하단에 해당 스크립트도 추가!!★ 시작 -->    
     <button class="btn-primary" onclick="goToOrderPage('${product.productNo}')">바로구매</button>
     <!-- ★동주 : 바로구매 시 결제 페이지 연동/하단에 해당 스크립트도 추가!!★  끝 -->
-    
+
  
   </div>
 </div>
@@ -956,7 +991,8 @@ textarea::placeholder {
 
     <!-- 판매자 링크 영역 - 항상 하단에 위치 -->
     <div class="seller-links">
-      <a href="/product/sellerProfile?memberNo=${product.memberNo}">판매자의 다른 상품 보기</a><br>
+      <a href="/product/seller?memberNo=${not empty product.memberNo ? product.memberNo : 'M00000001'}">판매자의 다른 상품 보기</a>
+		<br>
       <a href="#">판매자 후기 작성하기</a>
     </div>
   </aside>
@@ -1037,9 +1073,6 @@ textarea::placeholder {
 				 </button>
 				</c:if>
               <button class="comment-box-reply-btn" onclick="openReplyModal(${comment.commentNo})">답글</button>
-              <button class="comment-box-report-btn">
-                <span class="material-icons">block</span>신고하기
-              </button>
             </div>
           </div>
         </div>
@@ -1072,9 +1105,6 @@ textarea::placeholder {
 					    삭제
 					  </button>
 				  </c:if>
-                    <button class="comment-box-report-btn">
-                      <span class="material-icons">block</span>신고하기
-                    </button>
                   </div>
                 </div>
               </div>
@@ -1221,14 +1251,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const textareas = document.querySelectorAll('.comment-textarea');
 
   textareas.forEach(textarea => {
-    const countSpan = textarea
-      .closest('.comment-input-wrap, .comment-box-reply-form')
-      .querySelector('.current-count');
+    const container = textarea.closest('.comment-input-wrap, .comment-box-reply-form');
 
-    if (countSpan) {
-      textarea.addEventListener('input', () => {
-        countSpan.textContent = textarea.value.length;
-      });
+    // 보호 조건: container가 존재할 때만 querySelector 실행
+    if (container) {
+      const countSpan = container.querySelector('.current-count');
+      if (countSpan) {
+        textarea.addEventListener('input', () => {
+          countSpan.textContent = textarea.value.length;
+        });
+      }
     }
   });
 });
@@ -1242,23 +1274,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const replyForm = commentItem.querySelector('.comment-box-reply-form');
     replyForm.style.display = (replyForm.style.display === 'none') ? 'block' : 'none';
   }
-</script>
-
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const textareas = document.querySelectorAll('.comment-textarea');
-  textareas.forEach(textarea => {
-    const countSpan = textarea
-      .closest('.comment-input-wrap, .comment-box-reply-form')
-      .querySelector('.current-count');
-    if (countSpan) {
-      textarea.addEventListener('input', () => {
-        countSpan.textContent = textarea.value.length;
-      });
-    }
-  });
-});
 </script>
 
 <script>

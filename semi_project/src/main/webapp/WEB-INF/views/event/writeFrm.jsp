@@ -34,7 +34,7 @@
 	                <tr>
 	                    <th>첨부파일</th>
 	                    <td>
-	                        <input type="file" name="eventFile" multiple>
+	                        <input type="file" name="eventFile">
 	                    </td>
 	                </tr>
 	                <tr>

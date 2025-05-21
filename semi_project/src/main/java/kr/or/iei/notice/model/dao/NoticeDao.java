@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.file.model.vo.Files;
@@ -133,7 +134,7 @@ public class NoticeDao {
 		return result;
 	}
 	
-	public int insertNoticeFile(Connection conn, Files file) {
+	public int insertNoticeFile(Connection conn, Notice notice, List<Files> fileList) {
 		PreparedStatement pstmt = null;
 		
 		int result = 0;
@@ -143,11 +144,12 @@ public class NoticeDao {
 		try {
 			pstmt = conn.prepareStatement(qeury);
 			
-			pstmt.setString(1, file.getNoticeNo());
-			pstmt.setString(2, file.getFileName());
-			pstmt.setString(3, file.getFilePath());
-			
-			result = pstmt.executeUpdate();
+			for(Files f : fileList) {				
+				pstmt.setString(1, notice.getNoticeNo());
+				pstmt.setString(2, f.getFileName());
+				pstmt.setString(3, f.getFilePath());
+				result += pstmt.executeUpdate(); //한 건씩 처리
+			}
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -219,13 +221,13 @@ public class NoticeDao {
 		return result;
 	}
 
-	public ArrayList<Files> selectNoticeFileList(Connection conn, String noticeNo) {
+	public List<Files> selectNoticeFileList(Connection conn, String noticeNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		ArrayList<Files> fileList = new ArrayList<Files>();
+		List<Files> fileList = new ArrayList<>();
 		
-		String query = "select file_no, file_name, file_path from tbl_file where notice_no = ?";
+		String query = "select file_no, file_name, file_path from tbl_file where notice_no = ? order by file_no";
 		
 		try {
 			pstmt = conn.prepareStatement(query);
@@ -279,17 +281,17 @@ public class NoticeDao {
 		return result;
 	}
 
-	public int deleteNoticeFile(Connection conn, String preFileNo) {
+	public int deleteNoticeFile(Connection conn, Notice notice) {
 		PreparedStatement pstmt = null;
 		
-		String query = "delete from tbl_file where file_no = ?";
+		String query = "delete from tbl_file where notice_no = ?";
 		
 		int result = 0;
 		
 		try {
 			pstmt = conn.prepareStatement(query);
 			
-			pstmt.setString(1, preFileNo);
+			pstmt.setString(1, notice.getNoticeNo());
 			
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
