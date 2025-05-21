@@ -1003,6 +1003,27 @@ public class ProductDao {
 		return result;
 	}
 
+	public static int updateProductStatusQuantity(Connection conn, String productNo, String string, int i) {
+		PreparedStatement pstmt = null;
+		int result = 0;
+		String query = "UPDATE TBL_PROD SET STATUS_CODE = ?, PRODUCT_QUANTITY = ? WHERE PRODUCT_NO = ?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, "S02");
+			pstmt.setInt(2, 0);
+			pstmt.setString(3, productNo);
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
 
 }
    
