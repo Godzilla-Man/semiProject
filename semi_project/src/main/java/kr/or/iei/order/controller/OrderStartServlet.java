@@ -31,10 +31,7 @@ public class OrderStartServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		
-		//1. 인코딩 설정 - 필터에서 진행
-		
+		//1. 인코딩 설정 - 인코딩 필터로 설정 완료		
 		
 		//2. 값 추출
 		String productId = request.getParameter("productId");
@@ -44,7 +41,7 @@ public class OrderStartServlet extends HttpServlet {
 		OrderService service = new OrderService();
 		Product p = service.selectOrderProduct(productId);
 		
-			//3.1 에러 발생 시 안ㅇ내페이지 생성
+			//3.1 에러 발생 시 안내페이지 생성
 	     	if (p == null) {	            
 	            // 사용자에게 보여줄 오류 메시지 설정
 	            request.setAttribute("errorTitle", "상품 정보 조회 실패");

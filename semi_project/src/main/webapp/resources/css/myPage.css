@@ -1,0 +1,83 @@
+.myPage-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.myPage-wrap {
+	width: 1100px;
+	height: 100%;
+}
+
+.page-title {
+	display: none;
+}
+
+.info-wrap {
+	height: 200px;
+	display: flex;
+	position: relative;
+	margin-bottom: 20px;
+}
+.info-wrap>div {
+	height: 100%;
+	flex-grow:1;
+	padding-right : 10px;
+	padding-left : 10px;
+}
+
+.info-wrap-right {
+	display : flex;
+	align-items : center;
+}
+
+.info-item-left {
+	text-align: right;
+}
+.memberNickname {
+	font-size: 48px;
+	font-weight: bold;
+}
+
+.info-warp-center {
+	align-items: left;
+}
+.info-item-center {
+	margin-top: 20px;
+}
+
+.info-wrap-center {
+	align-items: left;
+}
+
+.menu-wrap {
+	height : 50px;
+	display: flex;
+	position: relative;
+	justify-content: space-between;	
+}
+
+.tab-link {
+	width: 100%;
+	height: 100%;
+	list-style: none;
+	text-align: center;
+	border-bottom: 1px solid #d9d9d9;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.current {
+	font-weight: bold;
+	border-bottom: 3px solid #d9d9d9;
+}
+
+.content {
+	display: none;
+}
+
+.content.on {
+	display: block;
+	height: 1000px;
+}

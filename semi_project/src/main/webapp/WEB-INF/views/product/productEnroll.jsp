@@ -573,12 +573,26 @@
 </div>
     </form>
   </main>
+	<div class="fixed" style="right: 280px;">
+		<div class="top" onclick="scrollToTop()">
+			<span class="material-symbols-outlined">arrow_upward</span>
+		</div>
+	</div>
   <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   
     <!-- 카테고리 히든 필드 (소분류 코드) -->
   <input type="hidden" name="categoryCode" id="categoryCode"
          value="<c:out value='${product.categoryCode}' default=''/>">
-  
+
+<script>
+	//우측 하단 ↑ 버튼 클릭 시 상단으로 스크롤 이동
+    function scrollToTop() {
+        window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // 부드럽게 스크롤
+        });
+    }
+</script>
 <script>
 
 // 카테고리 선택 관련 스크립트 (대분류 - 중분류 - 소분류)

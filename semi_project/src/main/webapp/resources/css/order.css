@@ -470,6 +470,7 @@ body.page-index3 .order-completed-summary .product-details {
 body.page-index2 .action-buttons-fixed > .payment-button { /* order_pay.html '결제하기' 버튼 */
     display: block; /* button 기본 inline 해제 */
     width: 100%;
+    max-width: 440px; 
     background-color: #0064FF;
     color: #FFFFFF;
     border: none;

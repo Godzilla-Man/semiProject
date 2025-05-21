@@ -20,6 +20,7 @@ public class Product {
     private String statusCode;         // 상품 상태 코드 (S01~S12)
     private Date enrollDate;           // 등록일
     private int readCount;             // 조회수
+    private String wishYn;				//찜하기 여부
 
     // 25-05-20 이후로 추가된 속성
     private String productStatus;      // 상품판매상태 (임시저장, 이후 삭제 예정)

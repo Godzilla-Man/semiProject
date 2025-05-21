@@ -15,7 +15,7 @@
 
 <body>
 
-	<form action="/order/orderPay" method="post">	
+	<form action="/order/orderPay" method="get">	
     <div class="container">
         <div class="header">
             <a href="javascript:history.back();" class="back-button">&lt;</a>
@@ -30,14 +30,16 @@
 		
         <div class="section product-info-section">
             <p class="section-title">주문 상품 정보</p>
+            
+            <input type="hidden" name="productId" value="${product.productNo}"> <%-- productNo 넘기는 용도 히든 값 --%>
+            
             <div class="product-details">
                 <div class="product-image-placeholder">
                     <span>상품 이미지</span> <%-- 상품 이미지: <img src="${product.imagePath}" alt="${product.name}"> --%>
                 </div>
                 <div class="product-text-details">
                     <div class="product-name">${product.productName}</div> <!-- 상품명 정보 로드 -->
-                    <div class="product-price"><fmt:formatNumber value="${product.productPrice}" type="number"/> 원<!-- 상품가격 정보 로드 -->
-                    </div>
+                    <div class="product-price"><fmt:formatNumber value="${product.productPrice}" type="number"/> 원</div><!-- 상품가격 정보 로드 -->                    
                 </div>
             </div>
         </div>

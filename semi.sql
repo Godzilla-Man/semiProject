@@ -193,6 +193,9 @@ CREATE TABLE TBL_PURCHASE (
     UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL                   -- 상품 상태 갱신 일시 
 );
 
+select * from tbl_purchase;
+
+
 -- 주문 번호 생성 시 사용할 시퀀스
 CREATE SEQUENCE SEQ_PURCHASE
 MAXVALUE 9999
@@ -457,4 +460,97 @@ ALTER TABLE TBL_PROD
 COMMENT ON COLUMN TBL_PROD.PRODUCT_QUANTITY IS '상품 재고 수량(1: 재고 있음 / 0:판매 완료)';
 
 COMMIT;
-  
+
+-- -----------------------------------------------------------
+-- SQL문 수정이 좀 있었습니다. 나중에 상품상세 페이지 들어가기 전, SQL문에 다음 명령어들 그대로 실행하시면 됩니다.
+
+-- 가격 제안 여부를 저장할 컬럼 추가
+-- 'Y' = 가격 제안 받기, 'N' = 받지 않음
+ALTER TABLE TBL_PROD
+ADD PRICE_OFFER_YN VARCHAR2(1) DEFAULT 'N' CHECK (PRICE_OFFER_YN IN ('Y', 'N'));
+--2.
+
+-- 대댓글 구현을 위한 부모 댓글 번호 컬럼 추가
+ALTER TABLE TBL_COMMENT
+ADD PARENT_COMMENT_NO NUMBER REFERENCES TBL_COMMENT(COMMENT_NO);
+
+-- 상품 가격 최대치 구현
+ALTER TABLE TBL_PROD
+ADD CONSTRAINT CK_PROD_PRICE_RANGE
+CHECK (PRODUCT_PRICE >= 0 AND PRODUCT_PRICE <= 1000000000);
+
+commit;
+
+
+
+
+
+-- ---------------------------------------------------------------
+-- 20250520 화요일 SQL 변경 사항 공유
+-- ★참조하는 외래 키(FK) 제약조건 삭제
+ALTER TABLE TBL_USER_RATING
+DROP CONSTRAINT SYS_C007425;
+
+ALTER TABLE TBL_STYLE_POST
+DROP CONSTRAINT SYS_C007415;
+
+-- ★기존 TBL_PURCHASE 테이블 삭제
+DROP TABLE TBL_PURCHASE;
+
+-- 주문 상태 코드 테이블 추가
+CREATE TABLE TBL_PURCHASE_STATUS (
+    PURCHASE_STATUS_CODE VARCHAR2(4) PRIMARY KEY,
+    STATUS_NAME VARCHAR2(30) NOT NULL
+);
+
+-- 예시 상태 추가
+INSERT INTO TBL_PURCHASE_STATUS (PURCHASE_STATUS_CODE, STATUS_NAME) VALUES ('PS00', '결제대기');
+INSERT INTO TBL_PURCHASE_STATUS (PURCHASE_STATUS_CODE, STATUS_NAME) VALUES ('PS01', '결제완료');
+-- ... 기타 필요한 상태들 차후 추가 예정...
+
+-- 상품 주문 정보 테이블(TBL_PURCHASE)
+CREATE TABLE TBL_PURCHASE (
+    ORDER_NO VARCHAR2(11) PRIMARY KEY,                          -- 주문 번호 : O + yymmdd + 0001 형식
+    PRODUCT_NO VARCHAR2(11) REFERENCES TBL_PROD(PRODUCT_NO),    -- 상품 번호 (상품 정보 테이블)
+    SELLER_MEMBER_NO VARCHAR2(11) REFERENCES TBL_MEMBER(MEMBER_NO), -- 판매자 번호(회원 정보 테이블)
+    BUYER_MEMBER_NO VARCHAR2(11) REFERENCES TBL_MEMBER(MEMBER_NO),  -- 구매자 번호(회원 정보 테이블)
+    DELIVERY_ADDR VARCHAR2(300),                       -- 배송 주소
+    DELIVERY_FEE NUMBER DEFAULT 0 NOT NULL,                               -- 배송비
+    ORDER_AMOUNT NUMBER NOT NULL,                              -- 총 구매 금액
+    PG_PROVIDER VARCHAR2(20),                                   -- PG사 정보
+    PG_TRANSACTION_ID VARCHAR2(100),                             -- PG사 거래 ID 값    
+    DEAL_DATE DATE DEFAULT SYSDATE NOT NULL,                    -- 거래 일시    
+    PURCHASE_STATUS_CODE VARCHAR2(4) REFERENCES TBL_PURCHASE_STATUS(PURCHASE_STATUS_CODE) -- 주문 상태 코드
+);
+
+-- TBL_USER_RATING 테이블에 FK 다시 추가 (컬럼명과 제약조건명은 실제 사용하는 것으로 변경)
+ALTER TABLE TBL_USER_RATING
+ADD CONSTRAINT FK_USER_RATING_ORDER_NO -- 새로운 FK 제약조건 이름 (예시)
+FOREIGN KEY (ORDER_NO) -- TBL_USER_RATING 테이블의 ORDER_NO 컬럼 (또는 다른 이름일 수 있음)
+REFERENCES TBL_PURCHASE(ORDER_NO);
+
+-- TBL_STYLE_POST 테이블에 FK 다시 추가 (컬럼명과 제약조건명은 실제 사용하는 것으로 변경)
+ALTER TABLE TBL_STYLE_POST
+ADD CONSTRAINT FK_STYLE_POST_ORDER_NO -- 새로운 FK 제약조건 이름 (예시)
+FOREIGN KEY (ORDER_NO) -- TBL_STYLE_POST 테이블의 ORDER_NO 컬럼 (또는 다른 이름일 수 있음)
+REFERENCES TBL_PURCHASE(ORDER_NO);
+
+-- 주문 번호 생성 시 사용할 시퀀스(이미 생성되어 있으면 추가 생성 할 필요 없음!!)
+CREATE SEQUENCE SEQ_PURCHASE
+MAXVALUE 9999
+CYCLE;
+
+COMMIT;
+
+select * from TBL_PURCHASE;
+select * from tbl_prod;
+select * from tbl_member;
+SELECT * FROM TBL_PURCHASE_STATUS;
+
+SELECT * FROM TBL_PROD WHERE PRODUCT_NO = 'P2505120001';
+
+delete from tbl_purchase;
+commit;
+
+select*from tbl_purchase_status;
+SELECT * FROM TBL_PROD_STATUS WHERE STATUS_CODE = 'S02';

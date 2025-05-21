@@ -82,6 +82,7 @@ public class MemberService {
 		
 		return memberPw;
 	}
+
 	
 	// 회원번호로 판매자 조회
 	public Member selectMemberByNo(String memberNo) {

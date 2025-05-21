@@ -17,7 +17,6 @@
 				</tr>
 				<tr>
 					<th>신고 당한 횟수</th>
-					<th>아이디</th>
 					<th>닉네임</th>
 					<th>이름</th>
 					<th>생년월일</th>
@@ -29,7 +28,6 @@
 				</tr>
 				<tr>
 					<th>${member.reportedCount}</th>
-					<td>${member.memberId}</td>
 					<td>${member.memberNickname}</td>
 					<td>${member.memberName}</td>
 					<td>${member.memberBirth}</td>
