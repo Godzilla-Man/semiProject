@@ -270,6 +270,7 @@ body .payment-notice-text p {
     color: #AAAAAA;
     font-size: 12px; /* 이미지 대체 텍스트 크기 */
     flex-shrink: 0;
+    overflow: hidden;
 }
 .product-text-details {
     flex-grow: 1;

@@ -34,36 +34,26 @@ public class OrderPayServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//1. 인코딩 설정 - 인코딩 필터로 설정 완료
+		//1. 인코딩 설정 - 인코딩 필터로 설정 완료	
 		
-		//2. 값 추출
+		//1.2 로그인 확인 로직
+		HttpSession session = request.getSession(false); // 세션이 없으면 새로 생성하지 않음.
+		Member loginMember = null;
 		
-		//[회원 정보 갖고오기]
-		HttpSession session = request.getSession(); //로그인 세션 갖고 오기
-		Member buyer = (Member) session.getAttribute("m"); // 세션에서 기존 구매자 로그인 정보 확인
-		
-		if(buyer == null) { // 세션에 구매자 정보가 없으면 가상 구매자 정보 생성(★테스트용이며 로그인&상품상세페이지 완료 되면 삭제할것!1)
-			System.out.println("OrderPayServlet: 해당 서블릿의 구매자 로그인 세션에 정보가 없어, 테스트용 가상 구매자 정보 생성");
-			buyer = new Member();
-			// Member VO의 실제 필드명과 타입에 맞게 테스트 데이터 설정
-			buyer.setMemberNo("2505200026"); // 예시: 가상 회원 번호 (실제 DB에 없어도 테스트 가능, 또는 DB에 테스트용 계정 만들어두고 사용)
-            buyer.setMemberId("aaaaaaaa");
-            buyer.setMemberNickname("사카유리메카");
-            buyer.setMemberName("미카");           
-            buyer.setMemberPhone("010-1111-1111");		
-            buyer.setMemberAddr("[25952]강원특별자치도 삼척시 도계읍 심포남길 99, 123");
-            
-            session.setAttribute("m", buyer);
-		} else {
-			System.out.println("OrderPayServlet : 세션에서 구매자 정보 로드됨 - " + buyer.getMemberId());
+		if(session != null) {
+			loginMember = (Member) session.getAttribute("loginMember"); //"m"으로 세션에 저장된 Member 객체를 가져옴.
 		}
+		System.out.println("OrderPayServlet : 세션에서 구매자 정보 로드됨 - " + loginMember.getMemberId());
 		
-		//[상품 정보 갖고오기]
+		
+		//2. 값 추출		
 		String productNo = request.getParameter("productId");
+		
 		
 		//3. 로직 -> 주문 상품의 상품 번호(productNo)와 일치하는 상품 조회
 		OrderService orderservice = new OrderService();
 		Product p = orderservice.selectOrderProduct(productNo);
+		
 			
 		//3.1 에러 발생 시 안내페이지 생성
      	if (p == null) {	            
@@ -93,11 +83,11 @@ public class OrderPayServlet extends HttpServlet {
 		Purchase readyOrder = new Purchase();  
 		
 		readyOrder.setProductNo(p.getProductNo());
-		readyOrder.setBuyerMemberNo(buyer.getMemberNo());
+		readyOrder.setBuyerMemberNo(loginMember.getMemberNo());
 		readyOrder.setSellerMemberNo(p.getMemberNo());
 		readyOrder.setOrderAmount(totalProductAmount);
 		readyOrder.setDeliveryFee(deliveryFee);
-		readyOrder.setDeliveryAddr(buyer.getMemberAddr());
+		readyOrder.setDeliveryAddr(loginMember.getMemberAddr());
 		readyOrder.setPurchaseStatusCode("PS00");
 		readyOrder.setPgProvider(null);
 		readyOrder.setPgTransactionId(null);

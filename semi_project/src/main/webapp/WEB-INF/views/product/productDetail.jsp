@@ -871,7 +871,10 @@ textarea::placeholder {
 
 
     <button class="btn-warning">신고하기</button>
-    <button class="btn-primary">바로구매</button>
+    
+    <!-- ★동주 : 바로구매 시 결제 페이지 연동/하단에 해당 스크립트도 추가!!★ 시작 -->    
+    <button class="btn-primary" onclick="goToOrderPage('${product.productNo}')">바로구매</button>
+    <!-- ★동주 : 바로구매 시 결제 페이지 연동/하단에 해당 스크립트도 추가!!★  끝 -->
     
  
   </div>
@@ -1310,5 +1313,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 </script>
+
+<!-- ★동주 : 바로구매 버튼 클릭 시 결제 페이지 이동 연결 스크립트★ 시작-->
+<script>
+function goToOrderPage(productId) {
+  if (productId) {
+    // 구매 페이지 URL (OrderStartServlet의 매핑된 주소)
+    const orderStartPageUrl = "${pageContext.request.contextPath}/order/orderStart?productId=" + productId;
+    window.location.href = orderStartPageUrl;
+  } else {
+    alert("상품 정보를 가져올 수 없습니다.");
+  }
+}
+</script>
+<!-- ★동주 : 바로구매 버튼 클릭 시 결제 페이지 이동 연결 스크립트★ 끝-->
+
 </body>
 </html>
+
+
+
