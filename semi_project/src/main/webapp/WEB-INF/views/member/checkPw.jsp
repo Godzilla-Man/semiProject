@@ -14,17 +14,17 @@
 		<main class="contents checkPw-container">
 			<section class="section checkPw-wrap">
 				<div class="page-title">비밀번호 확인</div>
-				<form action="/member/update"
-				      method="post" 
+				<form action="/member/updateFrm"
+				      method="post"
 				      autocomplete="off"
 				      onsubmit="return validateForm()">
 					<div class="input-wrap">
 						<div class="input-msg">
 							<p>${loginMember.memberName } 님의 회원정보를 안전하게 보하기 위해<br>
-							비밀번호를 한번 더 확인해 주세요.</p>
+							비밀번호를 한번 더 확인해 주세요.</p><br>
 						</div>
 						<div class="input-item">
-							<input type="text" id="checkPw" name="checkPw" maxlength="20">
+							<input type="password" id="checkPw" name="checkPw" maxlength="20">
 						</div>
 						<div class="checkPw-button-box">
 							<button type="submit" class="btn-primary">확 인</button>
@@ -39,10 +39,11 @@
 	function validateForm() {
 		const checkPw = $('#checkPw');
 		
-		if($(checkPw).val() != ${loginMember.memberPw }) {
+		if($(checkPw).val() != `${loginMember.memberPw}`) {
+			
 			swal({
 				title : '실패',
-				text : 비밀번호가 일치하지 않습니다.,
+				text : '비밀번호가 일치하지 않습니다.',
 				icon : 'warning'
 			});
 		
