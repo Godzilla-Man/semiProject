@@ -11,7 +11,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%	
-	//메인 화면에서 DB에 있는 정보 가져오기 위한 작업
+	//메인 화면에서 서블릿을 거치지 않고 DB에 있는 정보 가져오기 위한 작업
 	String memberNo = null;
 	Member loginMember = null;
 	session = request.getSession(false);
