@@ -3,6 +3,7 @@ package kr.or.iei.event.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -38,7 +39,7 @@ public class EventDeleteServlet extends HttpServlet {
 		
 		//로직 - 게시글 삭제
 		EventService service = new EventService();
-		ArrayList<Files> delFileList = service.deleteEvent(eventNo);
+		List<Files> delFileList = service.deleteEvent(eventNo);
 		
 		//4. 결과 처리
 		//4.1 이동할 페이지 경로
