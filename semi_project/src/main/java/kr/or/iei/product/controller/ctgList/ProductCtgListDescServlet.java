@@ -1,4 +1,4 @@
-package kr.or.iei.product.controller;
+package kr.or.iei.product.controller.ctgList;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,21 +11,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.product.model.service.ProductService;
 import kr.or.iei.product.model.vo.Product;
 
 /**
- * Servlet implementation class ProductSearchListServlet
+ * Servlet implementation class ProductCategoryListServlet
  */
-@WebServlet("/product/searchList")
-public class ProductSearchListServlet extends HttpServlet {
+@WebServlet("/product/categoryListDesc")
+public class ProductCtgListDescServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ProductSearchListServlet() {
+    public ProductCtgListDescServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -34,9 +35,7 @@ public class ProductSearchListServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//값 추출
-		String searchOption = request.getParameter("searchOption");
-		String search = request.getParameter("search");
+		String category = request.getParameter("ctg");
 		
 		String memberNo = null;
 		Member loginMember = null;
@@ -48,21 +47,17 @@ public class ProductSearchListServlet extends HttpServlet {
 			}
 		}
 		
-		//로직 - 검색한 상품명 또는 작성자와 같은지
 		ProductService service = new ProductService();
-		ArrayList<Product> productList = new ArrayList<Product>();
-		if(searchOption.equals("productName")) { //상품명으로 검색시
-			productList = service.searchProdcutName(search, memberNo);
-		}else { //작성자로 검색 시
-			productList = service.searchMemberNickname(search, memberNo);
-		}
+		Category ctg = service.selectCategory(category); //카테고리명 가져오기
+		ArrayList<Product> productCtgList = service.selectCategoryListDesc(category, memberNo); //카테고리랑 일치하는 상품 리스트 가져오기
 		
-		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/productSearchList.jsp");
+		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/ctgList/productCtgListDesc.jsp");
 		
-		request.setAttribute("productList", productList);
-		request.setAttribute("search", search);
+		request.setAttribute("ctg", ctg);
+		request.setAttribute("productList", productCtgList);
 		
 		view.forward(request, response);
+		
 	}
 
 	/**

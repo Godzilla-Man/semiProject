@@ -15,18 +15,17 @@
 				<span>'${search}'로 검색하신 결과입니다.</span>
 			</div>
 			<div class="filter">
-	            <select id="filter" onchange="filterChange()">
+	            <select id="filter" onchange="filterChange(this, '${search}', '${searchOption}')">
 	                <option value="newest">최신순</option>
 	                <option value="oldest">오래된순</option>
-	                <option value="popular">인기순</option>
 	                <option value="cheaper">최저가순</option>
-	                <option value="expensive">최고가순</option>
+	                <option value="expensive" selected>최고가순</option>
 	                <option value="setPrice">가격설정</option>
 	            </select>
 	        	<div class="price-range" style="display: none;">
 	        		<input type="number" id="minPrice" placeholder="최소 가격"> ~ 
 	        		<input type="number" id="maxPrice" placeholder="최대 가격">
-	        		<button id="priceFilter">적용</button>
+	        		<button id="priceFilter" onclick="priceFilter(this, '${search}', '${searchOption}')">적용</button>
 	        	</div>
         	</div>
     		<div class="style-review-board">
@@ -92,16 +91,36 @@
 	        behavior: 'smooth' // 부드럽게 스크롤
 	        });
 	    }
-		//필터 항목에서 가격 설정을 선택하면 가격 입력창이 나오게
-		$(document).ready(function () {
-			$('#filter').on('change', function () {
-				if ($(this).val() === 'setPrice') {
-					$('.price-range').show();  // 가격 설정 영역 표시
-				} else {
-					$('.price-range').hide();  // 그 외에는 숨김
-				}
-			});
-		});
+		//필터 항목에서 설정 변경 시
+		function filterChange(obj, search, searchOption){
+			switch($(obj).val()){
+			case "newest" :
+				$(".price-range").hide();
+				location.href="/product/searchListDesc?search=" + search + "&searchOption=" + searchOption;
+				break;
+			case "oldest" :
+				$(".price-range").hide();
+				location.href="/product/searchListAsc?search=" + search + "&searchOption=" + searchOption;
+				break;
+			case "cheaper" :
+				$(".price-range").hide();
+				location.href="/product/searchListCheap?search=" + search + "&searchOption=" + searchOption;
+				break;
+			case "expensive" :
+				$(".price-range").hide();
+				location.href="/product/searchListExpen?search=" + search + "&searchOption=" + searchOption;
+				break;
+			case "setPrice" :
+				$(".price-range").show();
+				break;
+			}
+		}
+		//가격설정 필터
+		function priceFilter(obj, search, searchOption){
+			let min = $("#minPrice").val();
+			let max = $("#maxPrice").val();
+			location.href="/product/searchListPrice?min=" + min + "&max=" + max + "&search=" + search + "&searchOption=" + searchOption;
+		}
 	
 		//클릭 시 해당 상품 상세 페이지로 이동
 		function clickProd(productNo) {

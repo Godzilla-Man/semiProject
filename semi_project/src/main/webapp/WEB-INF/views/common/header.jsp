@@ -182,7 +182,7 @@
 	            </c:otherwise>
             </c:choose>
         </ul>
-        <form class="search" action="/product/searchList" method="get">
+        <form class="search" action="/product/searchListDesc" method="get">
             <select name="searchOption" id="search-option">
                 <option value="productName">상품명</option>
                 <option value="memberNickname">작성자</option>

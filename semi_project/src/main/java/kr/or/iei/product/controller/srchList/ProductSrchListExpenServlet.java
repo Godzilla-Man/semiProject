@@ -1,4 +1,4 @@
-package kr.or.iei.product.controller;
+package kr.or.iei.product.controller.srchList;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,16 +16,16 @@ import kr.or.iei.product.model.service.ProductService;
 import kr.or.iei.product.model.vo.Product;
 
 /**
- * Servlet implementation class ProductAllList
+ * Servlet implementation class ProductSrchListExpenServlet
  */
-@WebServlet("/product/allListDesc")
-public class ProductAllListDescServlet extends HttpServlet {
+@WebServlet("/product/searchListExpen")
+public class ProductSrchListExpenServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ProductAllListDescServlet() {
+    public ProductSrchListExpenServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -34,6 +34,10 @@ public class ProductAllListDescServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//값 추출
+		String searchOption = request.getParameter("searchOption");
+		String search = request.getParameter("search");
+		
 		String memberNo = null;
 		Member loginMember = null;
 		HttpSession session = request.getSession(false); //세션 있으면 존재, 없으면 null (로그인 되어 있으면 존재, 비로그인 시 null)
@@ -44,12 +48,20 @@ public class ProductAllListDescServlet extends HttpServlet {
 			}
 		}
 		
+		//로직 - 검색한 상품명 또는 작성자와 같은지
 		ProductService service = new ProductService();
-		ArrayList<Product> productList = service.selectAllListDesc(memberNo);
+		ArrayList<Product> productList = new ArrayList<Product>();
+		if(searchOption.equals("productName")) { //상품명으로 검색시
+			productList = service.searchProdcutNameExpen(search, memberNo);
+		}else { //작성자로 검색 시
+			productList = service.searchMemberNicknameExpen(search, memberNo);
+		}
 		
-		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/productAllList.jsp");
+		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/srchList/productSrchListExpen.jsp");
 		
 		request.setAttribute("productList", productList);
+		request.setAttribute("searchOption", searchOption);
+		request.setAttribute("search", search);
 		
 		view.forward(request, response);
 	}

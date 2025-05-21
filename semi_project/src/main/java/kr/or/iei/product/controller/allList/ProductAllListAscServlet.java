@@ -1,4 +1,4 @@
-package kr.or.iei.product.controller;
+package kr.or.iei.product.controller.allList;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,7 +9,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.product.model.service.ProductService;
 import kr.or.iei.product.model.vo.Product;
 
@@ -32,10 +34,20 @@ public class ProductAllListAscServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ProductService service = new ProductService();
-		ArrayList<Product> productList = service.selectAllListAsc();
+		String memberNo = null;
+		Member loginMember = null;
+		HttpSession session = request.getSession(false); //세션 있으면 존재, 없으면 null (로그인 되어 있으면 존재, 비로그인 시 null)
+		if(session != null) {
+			loginMember = (Member) session.getAttribute("loginMember");
+			if(loginMember != null) {
+				memberNo = loginMember.getMemberNo();				
+			}
+		}
 		
-		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/productAllList.jsp");
+		ProductService service = new ProductService();
+		ArrayList<Product> productList = service.selectAllListAsc(memberNo);
+		
+		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/allList/productAllListAsc.jsp");
 		
 		request.setAttribute("productList", productList);
 		
