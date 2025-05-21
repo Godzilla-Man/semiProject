@@ -41,10 +41,12 @@
 	                </tr>
 	                <tr>
 	                    <td colspan="6" style="border-bottom: none;">
-	                    	<div style="height: 400px;">
-		                        <img src="/">
-								${event.eventContent}
-	                    	</div>
+	                        <div style="height: 400px;">
+	                        	<c:forEach var="file" items="${fileList}" varStatus="status">                        
+		                        <img src="${file.filePath}" alt="상품 이미지 ${status.index + 1}">
+		                        </c:forEach>
+		                        <br>${event.eventContent}
+	                        </div>
 	                    </td>
 	                </tr>
 	            </table>

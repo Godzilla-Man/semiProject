@@ -21,7 +21,7 @@
 	            </select>
 	        	<div class="price-range" style="display: none;">
 	        		<input type="number" id="minPrice" placeholder="최소 가격"> ~ 
-	        		<input type="number" id="maxPrice" placeholder="최대 가격">
+	        		<input type="number" id="maxPrice" placeholder="최대 가격" max="1000000000">
 	        		<button id="priceFilter" onclick="priceFilter(this)">적용</button>
 	        	</div>
         	</div>
@@ -37,7 +37,15 @@
 							<div style="color: inherit; text-decoration: none;">
 								<div class="card">
 									<div class="image">
-										<img src="/" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
+										<%-- 이미지 출력 절차 --%>
+										<c:choose>
+											<c:when test="${empty prod.filePath}">
+											<img src="/" alt="해당 상품에 등록된 이미지가 존재하지 않습니다." onclick="clickProd('${prod.productNo}')">
+											</c:when>
+											<c:otherwise>
+											<img src="${prod.filePath}" alt="${prod.productName}" onclick="clickProd('${prod.productNo}')">
+											</c:otherwise>
+										</c:choose>
 										<%-- 로그인한 상태에서만 찜하기 버튼 활성화 --%>
 										<c:if test="${not empty sessionScope.loginMember}">
 											<c:if test="${prod.wishYn eq 'Y'}">
@@ -117,6 +125,12 @@
 		function priceFilter(obj){
 			let min = $("#minPrice").val();
 			let max = $("#maxPrice").val();
+			if(min === ""){
+				min = '0';
+			}
+			if(max === ""){
+				max ='0';
+			}
 			location.href="/product/allListPrice?min=" + min + "&max=" + max;
 		}
 	

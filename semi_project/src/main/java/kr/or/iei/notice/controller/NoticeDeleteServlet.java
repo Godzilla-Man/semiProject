@@ -3,6 +3,7 @@ package kr.or.iei.notice.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -37,7 +38,7 @@ public class NoticeDeleteServlet extends HttpServlet {
 		
 		//로직 - 게시글 삭제
 		NoticeService service = new NoticeService();
-		ArrayList<Files> delFileList = service.deleteNotice(noticeNo);
+		List<Files> delFileList = service.deleteNotice(noticeNo);
 		
 		//4. 결과 처리
 		//4.1 이동할 페이지 경로

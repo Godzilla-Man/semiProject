@@ -134,6 +134,7 @@ INSERT INTO TBL_DELIVERY_FEE VALUES ('M1', '배송비 포함');
 INSERT INTO TBL_DELIVERY_FEE VALUES ('M2', '배송비 미포함');
 INSERT INTO TBL_DELIVERY_FEE VALUES ('M3', '배송비 착불');
 
+select * from tbl_delivery_fee;
 
 -- 상품상태 테이블(TBL_PROD_STATUS)
 CREATE TABLE TBL_PROD_STATUS (
@@ -554,3 +555,45 @@ commit;
 
 select*from tbl_purchase_status;
 SELECT * FROM TBL_PROD_STATUS WHERE STATUS_CODE = 'S02';
+
+select*from tbl_file;
+
+-- ------------------------------------------------------------------------------
+--좋아요/싫어요 기능 구현하면서 테이블을 하나 더 만들었습니다. 작성해놨으니까, 그대로 명령어 실행하시면 됩니다.
+
+-- [좋아요 / 싫어요 반응 기록 테이블 생성]
+-- 판매자에게 반응(좋아요/싫어요)을 누른 회원 기록을 저장
+-- 좋아요 = 'L', 싫어요 = 'D'로 구분하며, 두 반응은 서로 독립적임
+CREATE TABLE TBL_MEMBER_REACTION (
+    REACTION_NO        NUMBER             PRIMARY KEY,                      -- 반응 고유 번호 (시퀀스 기반 PK)
+    TARGET_MEMBER_NO   VARCHAR2(11)       NOT NULL,                         -- 반응을 받는 회원 번호 (판매자)
+    REACT_MEMBER_NO    VARCHAR2(11)       NOT NULL,                         -- 반응을 누른 회원 번호 (구매자)
+    REACTION_TYPE      CHAR(1)            CHECK (REACTION_TYPE IN ('L', 'D')),  -- 반응 유형: 'L' = 좋아요, 'D' = 싫어요
+    REACTION_DATE      DATE               DEFAULT SYSDATE                   -- 반응 등록일
+);
+
+-- 하나의 회원이 동일 대상에게 동일 반응을 1번만 누를 수 있도록 제약
+ALTER TABLE TBL_MEMBER_REACTION
+ADD CONSTRAINT UQ_REACTION_UNIQUE
+UNIQUE (TARGET_MEMBER_NO, REACT_MEMBER_NO, REACTION_TYPE);
+
+-- 대상 회원 외래키 제약 (TBL_MEMBER.MEMBER_NO 참조)
+ALTER TABLE TBL_MEMBER_REACTION
+ADD CONSTRAINT FK_REACTION_TARGET_MEMBER
+FOREIGN KEY (TARGET_MEMBER_NO)
+REFERENCES TBL_MEMBER(MEMBER_NO);
+
+-- 반응 누른 회원 외래키 제약 (TBL_MEMBER.MEMBER_NO 참조)
+ALTER TABLE TBL_MEMBER_REACTION
+ADD CONSTRAINT FK_REACTION_REACT_MEMBER
+FOREIGN KEY (REACT_MEMBER_NO)
+REFERENCES TBL_MEMBER(MEMBER_NO);
+
+-- 시퀀스 생성 (반응 번호 자동 증가용)
+CREATE SEQUENCE SEQ_MEMBER_REACTION
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
+
+commit;

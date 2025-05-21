@@ -35,7 +35,7 @@
             
             <div class="product-details">
                 <div class="product-image-placeholder">
-                    <span>상품 이미지</span> <%-- 상품 이미지: <img src="${product.imagePath}" alt="${product.name}"> --%>
+                    <img src="${product.thumbnailPath}" style="width: 100px; height: 100px; object-fit: cover;"> <%-- 썸네일 이미지 --%>
                 </div>
                 <div class="product-text-details">
                     <div class="product-name">${product.productName}</div> <!-- 상품명 정보 로드 -->

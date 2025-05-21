@@ -1,10 +1,10 @@
 package kr.or.iei.order.model.service;
 
 import java.sql.Connection;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import kr.or.iei.common.JDBCTemplate;
+import kr.or.iei.file.model.dao.FileDao;
 import kr.or.iei.order.model.dao.OrderDao;
 import kr.or.iei.order.model.vo.Purchase;
 import kr.or.iei.product.model.dao.ProductDao;
@@ -14,15 +14,21 @@ public class OrderService {
 	
 	private OrderDao dao;
 	private ProductDao productDao;
+	private FileDao filedao;
 	
 	public OrderService() {
 		dao = new OrderDao();	
 		this.productDao = new ProductDao();
+		this.filedao = new FileDao();
 	}
 
 	public Product selectOrderProduct(String productId) {
 		Connection conn = JDBCTemplate.getConnection();
-		Product p = dao.selectOrderProduct(conn, productId);
+		Product p = dao.selectOrderProduct(conn, productId);		
+		
+        String thumbnailPath = filedao.selectThumbnail(conn, productId);
+        p.setThumbnailPath(thumbnailPath);
+		
 		JDBCTemplate.close(conn);
 		return p;		
 	}

@@ -55,8 +55,7 @@
                 <h3 class="summary-group-title">주문상품 정보</h3>           
                 <div class="product-details">
                     <div class="product-image-placeholder">
-                    	<!-- 이미지 연동하면 아래 내용 수정 해야 함!! -->
-                        <span>상품 이미지</span>
+                    	<img src="${product.thumbnailPath}" style="width: 100px; height: 100px; object-fit: cover;"> <%-- 썸네일 이미지 --%>                        
                     </div>
                     <div class="product-text-details">
                         <div class="product-name">${product.productName}</div>
