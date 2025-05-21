@@ -36,6 +36,8 @@ public class OrderDao {
 			
 			//결과 처리
 			if(rset.next()) {
+				p = new Product(); // prodcdut 객체 인스턴스화 > 안하면 p는 null 에러 발생!!
+				
 				p.setProductNo(rset.getString("product_no"));
 				p.setMemberNo(rset.getString("member_no"));
 				p.setProductName(rset.getString("product_name"));
@@ -132,6 +134,72 @@ public class OrderDao {
             JDBCTemplate.close(pstmt);
         }
     }
+
+	public static Purchase selectOnePurchase(Connection conn, String orderId) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		Purchase purchase = null;
+		
+		String query = "select * from tbl_purchase where order_no = ?"; //주문번호로 구매 정보 조회
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, orderId);
+			rset = pstmt.executeQuery();
+						
+			if (rset.next()) {
+				purchase = new Purchase();
+				purchase.setOrderNo(rset.getString("ORDER_NO"));
+				purchase.setProductNo(rset.getString("PRODUCT_NO"));
+				purchase.setSellerMemberNo(rset.getString("SELLER_MEMBER_NO"));
+				purchase.setBuyerMemberNo(rset.getString("BUYER_MEMBER_NO"));
+				purchase.setDeliveryAddr(rset.getString("DELIVERY_ADDR"));
+				purchase.setDeliveryFee(rset.getInt("DELIVERY_FEE"));
+				purchase.setOrderAmount(rset.getInt("ORDER_AMOUNT"));
+				purchase.setPgProvider(rset.getString("PG_PROVIDER"));
+				purchase.setPgTransactionId(rset.getString("PG_TRANSACTION_ID"));
+				purchase.setDealDate(rset.getDate("DEAL_DATE"));
+				purchase.setPurchaseStatusCode(rset.getString("PURCHASE_STATUS_CODE"));				
+			}			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}		
+		
+		return purchase;
+	}
+
+	public static int updatePurcahseStatusInfo(Connection conn, String orderId, String pgProvider, String paymentKey,
+			String string, int paidAmount) {
+		
+		PreparedStatement pstmt = null;
+		int result = 0;
+		
+		String query = "UPDATE TBL_PURCHASE SET PG_PROVIDER = ?, PG_TRANSACTION_ID = ?, PURCHASE_STATUS_CODE = ? WHERE ORDER_NO = ? AND ORDER_AMOUNT = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, pgProvider);
+			pstmt.setString(2, paymentKey);
+			pstmt.setString(3, "PS01");
+			pstmt.setString(4, orderId);
+			pstmt.setInt(5, paidAmount);
+			
+			result = pstmt.executeUpdate();		
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
 	
 	
 	/*

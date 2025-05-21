@@ -534,13 +534,14 @@
 
   <div class="delivery-box">
   
-  <!-- 배송방법 라디오 버튼 -->
-  <input type="radio" name="tradeMethodCode" value="M1"
-    <c:if test="${not empty product && product.tradeMethodCode eq 'M1'}">checked</c:if>> 배송비 포함
-  <input type="radio" name="tradeMethodCode" value="M2"
-    <c:if test="${not empty product && product.tradeMethodCode eq 'M2'}">checked</c:if>> 배송비 미포함
-  <input type="radio" name="tradeMethodCode" value="M3"
-    <c:if test="${not empty product && product.tradeMethodCode eq 'M3'}">checked</c:if>> 배송비 착불
+ <!-- 배송방법 라디오 버튼 -->
+<input type="radio" name="tradeMethodCode" value="M1"
+  <c:if test="${empty product || product.tradeMethodCode eq 'M1'}">checked</c:if>> 배송비 포함
+<input type="radio" name="tradeMethodCode" value="M2"
+  <c:if test="${not empty product && product.tradeMethodCode eq 'M2'}">checked</c:if>> 배송비 미포함
+<input type="radio" name="tradeMethodCode" value="M3"
+  <c:if test="${not empty product && product.tradeMethodCode eq 'M3'}">checked</c:if>> 배송비 착불
+
 
     <!-- 안내 문구 -->
     <p class="delivery-hint">

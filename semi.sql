@@ -461,6 +461,28 @@ COMMENT ON COLUMN TBL_PROD.PRODUCT_QUANTITY IS '상품 재고 수량(1: 재고 있음 / 0:
 
 COMMIT;
 
+-- -----------------------------------------------------------
+-- SQL문 수정이 좀 있었습니다. 나중에 상품상세 페이지 들어가기 전, SQL문에 다음 명령어들 그대로 실행하시면 됩니다.
+
+-- 가격 제안 여부를 저장할 컬럼 추가
+-- 'Y' = 가격 제안 받기, 'N' = 받지 않음
+ALTER TABLE TBL_PROD
+ADD PRICE_OFFER_YN VARCHAR2(1) DEFAULT 'N' CHECK (PRICE_OFFER_YN IN ('Y', 'N'));
+--2.
+
+-- 대댓글 구현을 위한 부모 댓글 번호 컬럼 추가
+ALTER TABLE TBL_COMMENT
+ADD PARENT_COMMENT_NO NUMBER REFERENCES TBL_COMMENT(COMMENT_NO);
+
+-- 상품 가격 최대치 구현
+ALTER TABLE TBL_PROD
+ADD CONSTRAINT CK_PROD_PRICE_RANGE
+CHECK (PRODUCT_PRICE >= 0 AND PRODUCT_PRICE <= 1000000000);
+
+commit;
+
+
+
 
 
 -- ---------------------------------------------------------------
@@ -525,4 +547,10 @@ select * from tbl_prod;
 select * from tbl_member;
 SELECT * FROM TBL_PURCHASE_STATUS;
 
+SELECT * FROM TBL_PROD WHERE PRODUCT_NO = 'P2505120001';
 
+delete from tbl_purchase;
+commit;
+
+select*from tbl_purchase_status;
+SELECT * FROM TBL_PROD_STATUS WHERE STATUS_CODE = 'S02';

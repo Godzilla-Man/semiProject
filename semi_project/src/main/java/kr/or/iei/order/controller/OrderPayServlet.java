@@ -91,6 +91,7 @@ public class OrderPayServlet extends HttpServlet {
 		
 		//3.3 ★주문 정보 객체 생성 및 값 설정(결제 준비(대기) 생성)
 		Purchase readyOrder = new Purchase();  
+		
 		readyOrder.setProductNo(p.getProductNo());
 		readyOrder.setBuyerMemberNo(buyer.getMemberNo());
 		readyOrder.setSellerMemberNo(p.getMemberNo());

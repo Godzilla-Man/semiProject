@@ -1,14 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>줍줍 - 결제 완료</title>
-    <link rel="stylesheet" href="order_style.css">
+    <link rel="stylesheet" href="/resources/css/order.css">
 </head>
 <body class="page-index3"> 
+	<form action="#" method="post">
+
     <div class="container">
         <div class="header">
             <a href="order_pay.html" class="back-button">&lt;</a>
@@ -35,28 +39,28 @@
 
             <div class="info-row">
                 <span class="label">주문번호</span>
-                <span class="value order-number">2025050715080001</span>
+                <span class="value order-number">${purchase.orderNo}</span>
             </div>
 
             <div class="info-row">
                 <span class="label">주문일자</span>
-                <span class="value order-date">2025.05.02</span>
+                <span class="value order-date">${purchase.dealDate}</span>
             </div>
 
             <div class="info-row">
                 <span class="label">판매자</span>
-                <span class="value order-seller">우즈마키 나루토 상점</span>
+                <span class="value order-seller">우즈마키 나루토 상점</span> <!-- 수정 필요!! -->
             </div>
 
             <hr class="content-divider"> 
          
             <div class="product-details">
                 <div class="product-image-placeholder">
-                    <span>상품 이미지</span>
+                    <span>상품 이미지</span>  <!-- 수정 필요!! -->
                 </div>
                 <div class="product-text-details">
-                    <div class="product-name">나이키 반팔 티셔츠</div>
-                    <div class="product-price">500,000 원</div>
+                    <div class="product-name">${product.productName}</div>
+                    <div class="product-price"><fmt:formatNumber value="${product.productPrice}" type="number"/> 원</div>
                 </div>
             </div>
             <button type="button" class="change-button-style">거래 취소</button>
@@ -68,16 +72,16 @@
                 
                 <div class="summary-item"> 
                     <span class="summary-label">결제수단</span>
-                    <span class="summary-value">토스페이</span>
+                    <span class="summary-value">${purchase.pgProvider}</span>
                 </div>                
                 
                 <div class="summary-item">
                     <span class="summary-label">상품금액</span>
-                    <span class="summary-value">500,000원</span>
+                    <span class="summary-value"><fmt:formatNumber value="${product.productPrice}" type="number"/> 원</span>
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">배송비</span>
-                    <span class="summary-value">5,000원</span>
+                    <span class="summary-value"><fmt:formatNumber value="${purchase.deliveryFee}" type="number"/> 원</span>
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">줍줍 판매 수수료</span>
@@ -88,7 +92,7 @@
 
                 <div class="summary-item total">
                     <span class="summary-label total-label">총 결제금액</span>
-                    <span class="summary-amount total-amount">505,000원</span>
+                    <span class="summary-amount total-amount"><fmt:formatNumber value="${purchase.orderAmount}" type="number"/> 원</span>
                 </div>
               
             </div>
@@ -202,6 +206,6 @@
         });
     </script>
 
-
+	</form>
 </body>
 </html>

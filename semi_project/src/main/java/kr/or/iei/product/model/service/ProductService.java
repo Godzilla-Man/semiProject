@@ -582,6 +582,75 @@ public class ProductService {
 		
 		return productList;
 	}
+
+	// 현재 판매중인 상품 연동
+	public List<Product> selectSellingProductByMember(String memberNo) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    List<Product> list = new ProductDao().selectSellingProductByMember(conn, memberNo);
+	    JDBCTemplate.close(conn);
+	    return list;
+	}
+
+	// 특정 판매자의 거래 완료(S07 상태) 상품 수를 조회하는 서비스 메서드
+	public int countCompletedSalesByMember(String memberNo) {
+	    Connection conn = JDBCTemplate.getConnection();
+
+	    // DAO 메서드 호출하여 거래 완료 수 조회
+	    int count = dao.countCompletedSalesByMember(conn, memberNo);
+
+	    JDBCTemplate.close(conn);
+	    return count;
+	}
+
+	//특정 회원(판매자)의 좋아요 또는 싫어요 개수를 조회하는 서비스 메서드
+	public int countReactionsByMember(String memberNo, char type) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    
+	    // DAO 메서드 호출하여 반응 수 조회
+	    int count = dao.countReactionsByMember(conn, memberNo, type);
+	    
+	    JDBCTemplate.close(conn);
+	    return count;
+	}
+
+	// 해당 회원이 특정 대상에게 특정 반응을 이미 했는지 확인
+	public boolean hasReaction(String reactMemberNo, String targetMemberNo, char type) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    boolean exists = dao.hasReaction(conn, reactMemberNo, targetMemberNo, type);
+	    JDBCTemplate.close(conn);
+	    return exists;
+	}
+
+	//반응 기록을 새로 추가 (좋아요 또는 싫어요)
+	public int insertReaction(String reactMemberNo, String targetMemberNo, char type) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    int result = dao.insertReaction(conn, reactMemberNo, targetMemberNo, type);
+
+	    if (result > 0) {
+	        JDBCTemplate.commit(conn);
+	    } else {
+	        JDBCTemplate.rollback(conn);
+	    }
+
+	    JDBCTemplate.close(conn);
+	    return result;
+	}
+
+		//기존 반응 기록을 삭제 (좋아요 또는 싫어요 취소)
+	public int deleteReaction(String reactMemberNo, String targetMemberNo, char type) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    int result = dao.deleteReaction(conn, reactMemberNo, targetMemberNo, type);
+
+	    if (result > 0) {
+	        JDBCTemplate.commit(conn);
+	    } else {
+	        JDBCTemplate.rollback(conn);
+	    }
+
+	    JDBCTemplate.close(conn);
+	    return result;
+	}
+
 }
 
 

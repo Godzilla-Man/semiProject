@@ -250,8 +250,8 @@
                 customerName: customerName, 
                 // successUrl, failUrl은 현재창(window.location.origin) 기준으로 설정하거나, 전체 URL을 명시해야 합니다.
                 // 실제 서비스에서는 이 URL에 해당하는 서블릿이나 컨트롤러를 구현하여 결제 성공/실패 로직을 처리해야 합니다.
-                successUrl: window.location.origin + '/order/paymentSuccess?orderId=' + orderId, // 예시: 성공 시 이동할 URL (실제 프로젝트에 맞게 수정)
-                failUrl: window.location.origin + '/order/paymentFail?orderId=' + orderId,     // 예시: 실패 시 이동할 URL (실제 프로젝트에 맞게 수정)
+                successUrl: window.location.origin + '/order/paySuccess?orderId=' + orderId, // 예시: 성공 시 이동할 URL (실제 프로젝트에 맞게 수정)
+                failUrl: window.location.origin + '/order/payFail?orderId=' + orderId,     // 예시: 실패 시 이동할 URL (실제 프로젝트에 맞게 수정)
             })
             .catch(function (error) {
                 if (error.code === 'USER_CANCEL') {
