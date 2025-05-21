@@ -3,6 +3,7 @@ package kr.or.iei.product.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -50,6 +51,12 @@ public class ProductEnrollServlet extends HttpServlet {
         String tradeMethodCode = request.getParameter("tradeMethodCode");
         String categoryCode = request.getParameter("categoryCode");
         
+        Enumeration<String> paramNames = request.getParameterNames();
+        while (paramNames.hasMoreElements()) {
+            String name = paramNames.nextElement();
+            String value = request.getParameter(name);
+            System.out.println("🔍 전달된 파라미터: " + name + " = " + value);
+        }
         
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loginMember") == null) {
@@ -105,7 +112,8 @@ public class ProductEnrollServlet extends HttpServlet {
         //enrollDate, readCount는 기본값 처리
 
         int result = new ProductService().insertProduct(p, fileList);
-
+  
+        
         // 4. 결과 처리
         // 4.1 이동할 JSP 페이지 경로 지정
         // 4.2 화면 구현에 필요한 데이터 등록
@@ -113,10 +121,13 @@ public class ProductEnrollServlet extends HttpServlet {
             // 등록 성공 시 상세페이지로 리다이렉트
         	String priceOffer = request.getParameter("priceOffer") != null ? "true" : "false";
         	response.sendRedirect(request.getContextPath() + "/product/detail?no=" + p.getProductNo() + "&priceOffer=" + priceOffer);
+
+            
         } else {
             // 등록 실패 시 실패 페이지로 포워드
             request.setAttribute("msg", "상품 등록에 실패했습니다.");
             request.getRequestDispatcher("/WEB-INF/views/product/enrollFail.jsp").forward(request, response);
+
         }
 
     }

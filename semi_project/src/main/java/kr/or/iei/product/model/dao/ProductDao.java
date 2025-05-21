@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import kr.or.iei.comment.model.vo.Comment;
 import kr.or.iei.category.model.vo.Category;
@@ -22,50 +24,51 @@ public class ProductDao {
      * 상품 등록 DAO 메서드
      * 상품 번호는 시퀀스 + 날짜 조합으로 직접 생성
      */
-    public int insertProduct(Connection conn, Product p) {
-        int result = 0;
+	public int insertProduct(Connection conn, Product p) {
+	    int result = 0;
+	    PreparedStatement pstmt = null;
+	    ResultSet rset = null;
 
-        PreparedStatement pstmt = null;
-        ResultSet rset = null;
+	    try {
+	        // 1. 상품번호 생성 (P + yymmdd + 시퀀스 4자리)
+	        String query1 = "SELECT 'P' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD(SEQ_PROD.NEXTVAL, 4, '0') FROM DUAL";
+	        pstmt = conn.prepareStatement(query1);
+	        rset = pstmt.executeQuery();
+	        if (rset.next()) {
+	            p.setProductNo(rset.getString(1));
+	        }
+	        JDBCTemplate.close(pstmt);
+	        JDBCTemplate.close(rset);
 
-        try {
-            // 1. 상품번호 생성 (P + yymmdd + 시퀀스 4자리)
-            String query1 = "SELECT 'P' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD(SEQ_PROD.NEXTVAL, 4, '0') FROM DUAL";
-            pstmt = conn.prepareStatement(query1);
-            rset = pstmt.executeQuery();
-            if (rset.next()) {
-                p.setProductNo(rset.getString(1)); // 상품 VO에 번호 설정
-            }
-            JDBCTemplate.close(pstmt);
-            JDBCTemplate.close(rset);
+	        // 2. 상품 INSERT
+	        String query2 = "INSERT INTO TBL_PROD ( " +
+	                        "PRODUCT_NO, MEMBER_NO, PRODUCT_NAME, PRODUCT_INTROD, PRODUCT_PRICE, " +
+	                        "CATEGORY_CODE, TRADE_METHOD_CODE, STATUS_CODE, ENROLL_DATE, READ_COUNT, " +
+	                        "PRICE_OFFER_YN " +
+	                        ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, DEFAULT, DEFAULT, ?)";
 
-            // 2. 상품 정보 INSERT
-            String query2 = "INSERT INTO TBL_PROD (" +
-            	    "PRODUCT_NO, MEMBER_NO, PRODUCT_NAME, PRODUCT_INTROD, PRODUCT_PRICE, " +
-            	    "CATEGORY_CODE, TRADE_METHOD_CODE, STATUS_CODE, ENROLL_DATE, READ_COUNT, " +
-            	    "PRICE_OFFER_YN" +
-            	    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, DEFAULT, DEFAULT, ?)";
-            pstmt = conn.prepareStatement(query2);
-            pstmt.setString(1, p.getProductNo());
-            pstmt.setString(2, p.getMemberNo());
-            pstmt.setString(3, p.getProductName());
-            pstmt.setString(4, p.getProductIntrod());
-            pstmt.setInt(5, p.getProductPrice());
-            pstmt.setString(6, p.getCategoryCode());
-            pstmt.setString(7, p.getTradeMethodCode());
-            pstmt.setString(8, "S01"); // 기본 상태코드: 판매중
-            pstmt.setString(9, p.getPriceOfferYn());
+	        pstmt = conn.prepareStatement(query2);
+	        pstmt.setString(1, p.getProductNo());
+	        pstmt.setString(2, p.getMemberNo());
+	        pstmt.setString(3, p.getProductName());
+	        pstmt.setString(4, p.getProductIntrod());
+	        pstmt.setInt(5, p.getProductPrice());
+	        pstmt.setString(6, p.getCategoryCode());
+	        pstmt.setString(7, p.getTradeMethodCode());
+	        pstmt.setString(8, p.getStatusCode()); // 일반적으로 "S01"
+	        pstmt.setString(9, p.getPriceOfferYn());
 
-            result = pstmt.executeUpdate();
+	        result = pstmt.executeUpdate();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            JDBCTemplate.close(pstmt);
-        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(pstmt);
+	    }
 
-        return result;
-    }
+	    return result;
+	}
+
 
     // 여러개의 첨부 파일을 DB에 저장하는 DAO 메서드
     // 첨부파일 리스트를 반복문으로 저장
@@ -973,6 +976,183 @@ public class ProductDao {
         return result;
     }
 
+    
+ // 판매자가 등록한 '판매중' 상품 목록 조회 (상품별 썸네일 1장만 설정)
+    public List<Product> selectSellingProductByMember(Connection conn, String memberNo) {
+        List<Product> list = new ArrayList<>();
+        Map<String, Product> productMap = new LinkedHashMap<>();
+
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+
+        String query =
+            "SELECT P.PRODUCT_NO, P.PRODUCT_NAME, P.PRODUCT_PRICE, " +
+            "       P.PRICE_OFFER_YN, P.PRODUCT_QUANTITY, F.FILE_PATH,P.TRADE_METHOD_CODE, P.ENROLL_DATE " +
+            "FROM TBL_PROD P " +
+            "LEFT JOIN ( " +
+            "    SELECT PRODUCT_NO, MIN(FILE_PATH) AS FILE_PATH " +
+            "    FROM TBL_FILE GROUP BY PRODUCT_NO " +
+            ") F ON P.PRODUCT_NO = F.PRODUCT_NO " +
+            "WHERE P.MEMBER_NO = ? AND P.STATUS_CODE = 'S01' " +
+            "ORDER BY P.ENROLL_DATE DESC";
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, memberNo);
+            rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                Product p = new Product();
+                p.setProductNo(rset.getString("PRODUCT_NO"));
+                p.setProductName(rset.getString("PRODUCT_NAME"));
+                p.setProductPrice(rset.getInt("PRODUCT_PRICE"));
+                p.setPriceOfferYn(rset.getString("PRICE_OFFER_YN"));
+                p.setProductQuantity(rset.getInt("PRODUCT_QUANTITY"));
+                p.setThumbnailPath(rset.getString("FILE_PATH"));  // 썸네일 1장
+                p.setTradeMethodCode(rset.getString("TRADE_METHOD_CODE")); 
+                p.setEnrollDate(rset.getDate("ENROLL_DATE"));
+                
+                list.add(p);
+            
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+
+        return list;
+    }
+
+
+    // 특정 판매자의 거래 완료(S07 상태) 상품 수를 조회하는 DAO 메서드
+    public int countCompletedSalesByMember(Connection conn, String memberNo) {
+        int count = 0;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+
+        String query = "SELECT COUNT(*) FROM TBL_PROD WHERE MEMBER_NO = ? AND STATUS_CODE = 'S07'";
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, memberNo);
+            rset = pstmt.executeQuery();
+
+            if (rset.next()) {
+                count = rset.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+
+        return count;
+    }
+
+
+    // 판매자에 대한 좋아요 또는 싫어요 개수를 조회하는 DAO 메서드
+    public int countReactionsByMember(Connection conn, String memberNo, char type) {
+        int count = 0;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+
+        String query = "SELECT COUNT(*) FROM TBL_MEMBER_REACTION WHERE TARGET_MEMBER_NO = ? AND REACTION_TYPE = ?";
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, memberNo);
+            pstmt.setString(2, String.valueOf(type));
+            rset = pstmt.executeQuery();
+
+            if (rset.next()) {
+                count = rset.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+
+        return count;
+    }
+    
+ // 해당 회원이 특정 대상에게 특정 반응을 했는지 여부 확인
+    public boolean hasReaction(Connection conn, String reactMemberNo, String targetMemberNo, char type) {
+        boolean exists = false;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+
+        String query = "SELECT COUNT(*) FROM TBL_MEMBER_REACTION WHERE REACT_MEMBER_NO = ? AND TARGET_MEMBER_NO = ? AND REACTION_TYPE = ?";
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, reactMemberNo);
+            pstmt.setString(2, targetMemberNo);
+            pstmt.setString(3, String.valueOf(type));
+            rset = pstmt.executeQuery();
+
+            if (rset.next() && rset.getInt(1) > 0) {
+                exists = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+
+        return exists;
+    }
+
+    // 반응(좋아요/싫어요) 기록 삽입
+    public int insertReaction(Connection conn, String reactMemberNo, String targetMemberNo, char type) {
+        int result = 0;
+        PreparedStatement pstmt = null;
+
+        String query = "INSERT INTO TBL_MEMBER_REACTION (REACTION_NO, REACT_MEMBER_NO, TARGET_MEMBER_NO, REACTION_TYPE, REACTION_DATE) "
+                     + "VALUES (SEQ_MEMBER_REACTION.NEXTVAL, ?, ?, ?, SYSDATE)";
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, reactMemberNo);
+            pstmt.setString(2, targetMemberNo);
+            pstmt.setString(3, String.valueOf(type));
+            result = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(pstmt);
+        }
+
+        return result;
+    }
+
+    // 반응(좋아요/싫어요) 기록 삭제
+    public int deleteReaction(Connection conn, String reactMemberNo, String targetMemberNo, char type) {
+        int result = 0;
+        PreparedStatement pstmt = null;
+
+        String query = "DELETE FROM TBL_MEMBER_REACTION WHERE REACT_MEMBER_NO = ? AND TARGET_MEMBER_NO = ? AND REACTION_TYPE = ?";
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, reactMemberNo);
+            pstmt.setString(2, targetMemberNo);
+            pstmt.setString(3, String.valueOf(type));
+            result = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(pstmt);
+        }
+
+        return result;
+    }
 
 }
    
