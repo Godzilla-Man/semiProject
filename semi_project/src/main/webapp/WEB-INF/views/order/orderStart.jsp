@@ -48,16 +48,30 @@
             <p class="section-title">배송 방법(선택 불가)</p>
             <div class="method-options">
             	            
-              	<%-- 선불 택배 옵션 (M1) --%>
+              	<%-- 배송비 무료 옵션 (M1) --%>
                 <label class="method-option <c:if test="${product.tradeMethodCode != 'M1'}">disabled-option</c:if>">
                     <input type="radio" name="displayedDeliveryMethod" value="M1" 
                            <c:if test="${product.tradeMethodCode == 'M1'}">checked</c:if> 
                            disabled> <%-- 모든 옵션의 라디오 버튼은 disabled로 변경 불가 명시 --%>
-                    <span class="option-text">선불</span> 
+                    <span class="option-text">무료</span> 
                     <c:if test="${product.tradeMethodCode  == 'M1'}">
-                        <span class="option-price"><fmt:formatNumber value="${deliveryFee}" type="number"/>원</span>
+                        <span class="option-description">배송비 무료</span>
                     </c:if>
                     <c:if test="${product.tradeMethodCode != 'M1'}"><%-- M1이 선택되지 않았을 때(흐리게) --%>
+                        <span class="option-description">배송비 무료</span>
+                    </c:if>
+                </label>
+                
+                <%-- 선불 택배 옵션 (M2) --%>
+                <label class="method-option <c:if test="${product.tradeMethodCode != 'M2'}">disabled-option</c:if>">
+                    <input type="radio" name="displayedDeliveryMethod" value="M2" 
+                           <c:if test="${product.tradeMethodCode == 'M2'}">checked</c:if> 
+                           disabled> <%-- 모든 옵션의 라디오 버튼은 disabled로 변경 불가 명시 --%>
+                    <span class="option-text">선불</span> 
+                    <c:if test="${product.tradeMethodCode  == 'M2'}">
+                        <span class="option-price"><fmt:formatNumber value="${deliveryFee}" type="number"/>원</span>
+                    </c:if>
+                    <c:if test="${product.tradeMethodCode != 'M2'}"><%-- M1이 선택되지 않았을 때(흐리게) --%>
                         <span class="option-price"><fmt:formatNumber value="${deliveryFee}" type="number"/>원</span>
                     </c:if>
                 </label>

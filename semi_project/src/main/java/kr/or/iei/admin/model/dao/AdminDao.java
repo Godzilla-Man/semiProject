@@ -18,7 +18,7 @@ public class AdminDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select member_no, member_id, member_nickname, member_name, trunc(member_birth) as member_birth, member_phone, member_addr, member_email, trunc(join_date) as join_date from tbl_member";
+		String query = "select member_no, member_id, member_nickname, member_name, to_char(member_birth, 'yyyy-mm-dd') as member_birth, member_phone, member_addr, member_email, to_char(join_date, 'yyyy-mm-dd') as join_date from tbl_member";
 		
 		ArrayList<Member> memberList = new ArrayList<Member>();
 		
@@ -57,7 +57,7 @@ public class AdminDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select report_no, b.report_reason as report_reason, reported_member_no, a.product_no as product_no, c.member_no as product_member_no, trunc(report_date) as report_date from tbl_report_post a join tbl_report b on (a.report_code = b.report_code) join tbl_prod c on (a.product_no = c.product_no)";
+		String query = "select report_no, b.report_reason as report_reason, reported_member_no, a.product_no as product_no, c.member_no as product_member_no, to_char(report_date, 'yyyy-mm-dd') as report_date from tbl_report_post a join tbl_report b on (a.report_code = b.report_code) join tbl_prod c on (a.product_no = c.product_no)";
 		
 		ArrayList<ReportPost> reportList = new ArrayList<ReportPost>();
 		
@@ -93,7 +93,7 @@ public class AdminDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String qeury = "select member_no, member_id, member_nickname, member_name, trunc(member_birth), member_phone, member_addr, member_email, trunc(join_date) from tbl_member where member_no = ?";
+		String qeury = "select member_no, member_id, member_nickname, member_name, to_char(member_birth, 'yyyy-mm-dd') as member_birth, member_phone, member_addr, member_email, to_char(join_date, 'yyyy-mm-dd') as join_date from tbl_member where member_no = ?";
 		
 		Member member = null;
 		
@@ -162,7 +162,7 @@ public class AdminDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select a.black_no as black_no, c.member_no as black_member_no, a.black_reason as black_reason, trunc(a.black_date) as black_date from tbl_blacklist a join tbl_report_post b on (a.report_no = b.report_no) join tbl_prod c on (b.product_no = c.product_no)";
+		String query = "select a.black_no as black_no, c.member_no as black_member_no, a.black_reason as black_reason, to_char(a.black_date, 'yyyy-mm-dd') as black_date from tbl_blacklist a join tbl_report_post b on (a.report_no = b.report_no) join tbl_prod c on (b.product_no = c.product_no)";
 		
 		ArrayList<BlackList> blackList = new ArrayList<BlackList>();
 		

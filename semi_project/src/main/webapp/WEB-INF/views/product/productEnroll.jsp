@@ -130,7 +130,7 @@
   color: #fff;
   padding: 2px 6px;
   border-radius: 10px;
-  z-index: 9999;
+  z-index: 50;
   white-space: nowrap;
   pointer-events: none; /* 클릭 방해 방지 */
 }

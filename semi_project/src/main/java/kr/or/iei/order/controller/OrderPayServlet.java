@@ -71,11 +71,9 @@ public class OrderPayServlet extends HttpServlet {
 		String trdadeMethodCode = p.getTradeMethodCode(); //DB에서 조회한 택배 코드 
 		
 		int deliveryFee = 0;
-		if("M1".equals(trdadeMethodCode)) { //M1 = 선불, M3 = 후불
+		if("M2".equals(trdadeMethodCode)) { //M1 = 선불, M3 = 후불
 			deliveryFee = 5000; // 일반 택배
-		}else if ("M3".equals(trdadeMethodCode))
-			deliveryFee = 0;
-		
+		}
 		int totalProductAmount = productPrice + deliveryFee;
 		
 		
@@ -101,6 +99,7 @@ public class OrderPayServlet extends HttpServlet {
 		
 		//4.2 화면 구현에 필요한 데이터 등록
 		request.setAttribute("product", p);
+		request.setAttribute("loginMember", loginMember);		
 			
 		//4.2.1 배송 방법 및 총 결제 상품 금액			
 		request.setAttribute("totalProductAmount", totalProductAmount); // 총 상품 금액

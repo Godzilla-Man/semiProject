@@ -1,70 +1,192 @@
-package kr.or.iei.reviewNotice.model.service;
+package kr.or.iei.reviewnotice.model.service;
+
+import static kr.or.iei.common.JDBCTemplate.*;
 
 import java.sql.Connection;
+import java.sql.JDBCType;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date; 
 
+import kr.or.iei.file.model.vo.Files; 
 import kr.or.iei.comment.model.vo.Comment;
 import kr.or.iei.common.JDBCTemplate;
-import kr.or.iei.file.model.vo.Files;
-import kr.or.iei.reviewNotice.model.dao.ReviewNoticeDao;
-import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
+import kr.or.iei.reviewnotice.model.dao.ReviewNoticeDao;
+import kr.or.iei.reviewnotice.model.vo.ReviewNotice;
 
 public class ReviewNoticeService {
+    private ReviewNoticeDao reviewNoticeDao = new ReviewNoticeDao();
 
-    private ReviewNoticeDao dao = new ReviewNoticeDao();
-
-
-    public ReviewNotice selectOneReview(String stylePostNo, boolean updChk) {
-        Connection conn = JDBCTemplate.getConnection();
-        ReviewNotice reviewnotice = dao.selectOneReviewNotice(conn, stylePostNo);
-        JDBCTemplate.close(conn);
-        return reviewnotice;
-    }
-
-    public int insertReviewPost(ReviewNotice rn, ArrayList<Files> fileList, String gender, String middle, String small, String commentFlag) {
-        Connection conn = JDBCTemplate.getConnection();
-
-        int result = dao.insertReview(conn, rn, gender, middle, small, commentFlag);
-        if (result > 0 && fileList != null) {
-            for (Files file : fileList) {
-                result += dao.insertFile(conn, file);
+    public ArrayList<ReviewNotice> selectAllReview(String categoryCode) {
+        Connection conn = getConnection();
+        ArrayList<ReviewNotice> reviewList = null;
+        try {
+            if (categoryCode != null && (categoryCode.equalsIgnoreCase("all") || categoryCode.isEmpty())) {
+                categoryCode = null;
             }
+            reviewList = reviewNoticeDao.selectAllReview(conn, categoryCode);
+        } catch (SQLException e) {
+            e.printStackTrace(); 
+        } finally {
+            close(conn);
         }
-
-        if (result > 0) {
-            JDBCTemplate.commit(conn);
-        } else {
-            JDBCTemplate.rollback(conn);
-        }
-
-        JDBCTemplate.close(conn);
-        return result;
+        return reviewList; 
     }
 
-	public ReviewNotice selectReviewDetail(String stylePostNo) {
-		Connection conn = JDBCTemplate.getConnection();
-
-        // 게시글 조회
-        ReviewNotice review = dao.selectReviewDetail(conn, stylePostNo);
-
-        if (review != null) {
-            // 첨부 이미지 목록
-            ArrayList<Files> fileList = dao.selectFileList(conn, stylePostNo);
-            review.setFileList(fileList);
-
-            // 댓글 목록
-            ArrayList<Comment> commentList = dao.selectCommentList(conn, stylePostNo);
-            review.setCommentList(commentList);
+    public ReviewNotice selectReviewDetail(String stylePostNo) {
+        Connection conn = getConnection();
+        ReviewNotice review = null;
+        try {
+            int result = reviewNoticeDao.increaseReadCount(conn, stylePostNo);
+            if (result > 0) {
+                commit(conn); 
+            }
+            review = reviewNoticeDao.selectReviewNoticeDetail(conn, stylePostNo); 
+            if (review != null) {
+                review.setFileList(reviewNoticeDao.selectFileList(conn, stylePostNo));
+                review.setCommentList(reviewNoticeDao.selectCommentList(conn, stylePostNo));
+            } else {
+                 if (result > 0) { 
+                    rollback(conn); 
+                }
+            }
+        } catch (SQLException e) { 
+            rollback(conn); 
+            e.printStackTrace();
+        } finally {
+            close(conn);
         }
-
-        JDBCTemplate.close(conn);
         return review;
     }
 
-	public ArrayList<ReviewNotice> selectAllReview() {
-		Connection conn = JDBCTemplate.getConnection();
-        ArrayList<ReviewNotice> reviewList = dao.selectAllReview(conn);
-        JDBCTemplate.close(conn);
-        return reviewList;
+    public int insertComment(Comment comment) {
+        Connection conn = getConnection();
+        int result = 0;
+        try {
+            result = reviewNoticeDao.insertComment(conn, comment);
+            if (result > 0) {
+                commit(conn);
+            } else {
+                rollback(conn);
+            }
+        } catch (SQLException e) {
+            rollback(conn);
+            e.printStackTrace();
+        } finally {
+            close(conn);
+        }
+        return result;
+    }
+
+    public int updateComment(int commentNo, String content, String memberNoInSession) {
+        Connection conn = getConnection();
+        int result = 0;
+        try {
+            Comment originalComment = reviewNoticeDao.selectOneComment(conn, commentNo);
+            if (originalComment != null && originalComment.getMemberNo().equals(memberNoInSession)) {
+                result = reviewNoticeDao.updateComment(conn, commentNo, content);
+                if (result > 0) {
+                    commit(conn);
+                } else {
+                    rollback(conn);
+                }
+            } else {
+                result = -1; 
+            }
+        } catch (SQLException e) {
+            rollback(conn);
+            e.printStackTrace();
+        } finally {
+            close(conn);
+        }
+        return result;
+    }
+
+    public int deleteComment(int commentNo, String memberNoInSession) {
+        Connection conn = getConnection();
+        int result = 0;
+        try {
+            Comment originalComment = reviewNoticeDao.selectOneComment(conn, commentNo);
+             if (originalComment != null && originalComment.getMemberNo().equals(memberNoInSession)) {
+                result = reviewNoticeDao.deleteComment(conn, commentNo);
+                if (result > 0) {
+                    commit(conn);
+                } else {
+                    rollback(conn);
+                }
+            } else {
+                result = -1; 
+            }
+        } catch (SQLException e) {
+            rollback(conn);
+            e.printStackTrace();
+        } finally {
+            close(conn);
+        }
+        return result;
+    }
+
+    public int insertReviewNotice(ReviewNotice reviewNotice, ArrayList<Files> fileInfoList) {
+        Connection conn = getConnection();
+        int result = 0; 
+        String generatedStylePostNo = null;
+        try {
+            int sequenceNumber = reviewNoticeDao.getNextStyleSequence(conn);
+            if (sequenceNumber == 0) { 
+                rollback(conn);
+                return 0;
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
+            String currentDate = sdf.format(new Date()); 
+            generatedStylePostNo = "S" + currentDate + String.format("%04d", sequenceNumber);
+            reviewNotice.setStylePostNo(generatedStylePostNo); 
+
+            int postInsertResult = reviewNoticeDao.insertReviewNotice(conn, reviewNotice);
+            if (postInsertResult > 0) { 
+                if (fileInfoList != null && !fileInfoList.isEmpty()) {
+                    boolean allFilesSaved = true;
+                    for (Files fileVo : fileInfoList) { 
+                        int nextFileNo = reviewNoticeDao.getNextFileNo(conn);
+                        if (nextFileNo == 0 && fileInfoList.indexOf(fileVo) == 0) { 
+                            allFilesSaved = false; 
+                            break;
+                        }
+                        fileVo.setFileNo(nextFileNo); 
+                        fileVo.setStylePostNo(generatedStylePostNo); 
+                        int fileInsertResult = reviewNoticeDao.insertFile(conn, fileVo);
+                        if (fileInsertResult == 0) {
+                            allFilesSaved = false; 
+                            break; 
+                        }
+                    }
+                    result = allFilesSaved ? 1 : 0; 
+                } else {
+                    result = 1; 
+                }
+            } else {
+                result = 0; 
+            }
+
+            if (result == 1) {
+                commit(conn);
+            } else {
+                rollback(conn); 
+            }
+        } catch (SQLException e) { 
+            rollback(conn); 
+            e.printStackTrace(); 
+            result = 0; 
+        } finally {
+            close(conn);
+        }
+        return result; 
+    }
+    
+    public ArrayList<ReviewNotice> selectAllReviewList() {
+    	Connection conn = JDBCTemplate.getConnection();
+    	ArrayList<ReviewNotice> reviewList = reviewNoticeDao.selectAllReviewList(conn);
+    	JDBCTemplate.close(conn);
+    	return reviewList;
     }
 }

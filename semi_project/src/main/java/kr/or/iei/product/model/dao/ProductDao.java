@@ -1833,6 +1833,25 @@ public class ProductDao {
 		
 		return productList;
 	}
+
+	// ★ 동주 : 거래 후 거래 취소 시 tbl_prod 상태 값 & 수량 값 업데이트
+	public static int updateProductStatusAndQuantity(Connection conn, String productNo, String string, int i) {
+		PreparedStatement pstmt = null;
+		int result = 0;
+		String query = "UPDATE TBL_PROD SET STATUS_CODE = ?, PRODUCT_QUANTITY = ? WHERE PRODUCT_NO = ?";
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, "S01");
+	        pstmt.setInt(2, 1);
+	        pstmt.setString(3, productNo);
+	        result = pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(pstmt);
+	    }
+	    return result;
+	}
 }
    
 

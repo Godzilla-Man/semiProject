@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.order.model.vo.Purchase;
@@ -19,7 +21,10 @@ public class OrderDao {
 		ResultSet rset = null;
 		
 		//수행할 SQL 작성
-		String query = "select * from TBL_PROD where PRODUCT_NO = ?"; // ? = 위치 홀더
+		String query = "SELECT P.*, M.MEMBER_NICKNAME AS SELLER_NICKNAME " +
+                "FROM TBL_PROD P " +
+                "JOIN TBL_MEMBER M ON P.MEMBER_NO = M.MEMBER_NO " +
+                "WHERE P.PRODUCT_NO = ?";		
 		
 		//결과를 관리할 자바 객체
 		Product p = null;
@@ -49,6 +54,8 @@ public class OrderDao {
 				p.setEnrollDate(rset.getDate("enroll_date"));
 				p.setReadCount(rset.getInt("read_count"));
 				p.setProductQuantity(rset.getInt("product_quantity"));
+				//조인시킨 판매자 닉넴!
+				p.setSellerNickname(rset.getString("seller_nickname"));
 			}
 			
 		} catch (SQLException e) {
@@ -200,40 +207,117 @@ public class OrderDao {
 		
 		return result;
 	}
-	
-	
-	/*
-	public int createOrderId(Connection conn, Purchase readyOrder) {
+
+	public Purchase selectOnePurchaseCancel(Connection conn, String orderId, String memberNo) {
 		PreparedStatement pstmt = null;
-		
-		int result = 0;
-		
-		String query = "insert into TBL_PURCHASE values('O'|| to_char(sysdate, 'yymmdd') || lpad(seq_purchase.nextval, 4, '0'), ?, ?, ?, ?, ?, ?, ?, ?, sysdate, ?)";
-		
-		try {
-			pstmt = conn.prepareStatement(query);
-			
-			pstmt.setString(1, readyOrder.getProductNo());
-			pstmt.setString(2, readyOrder.getSellerMemberNo());
-			pstmt.setString(3, readyOrder.getBuyerMemberNo());
-			pstmt.setString(4, readyOrder.getDeliveryAddr());
-			pstmt.setInt(5, readyOrder.getDeliveryFee());
-			pstmt.setInt(6, readyOrder.getOrderAmount());
-			pstmt.setString(7, readyOrder.getPgProvider());
-			pstmt.setString(8, readyOrder.getPgTransactionId());
-			pstmt.setString(9, readyOrder.getPurchaseStatusCode());				
-			
-			result = pstmt.executeUpdate();
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			JDBCTemplate.close(pstmt);
-		}	 
-		
-		return result;
+	    ResultSet rset = null;
+	    Purchase purchase = null;
+	    // 주문자 본인이고, 특정 상태(예: PS01)일 때만 조회되도록 조건 추가 가능
+	    String query = "SELECT * FROM TBL_PURCHASE WHERE ORDER_NO = ? AND BUYER_MEMBER_NO = ?";
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, orderId);
+	        pstmt.setString(2, memberNo);
+	        rset = pstmt.executeQuery();
+	        if (rset.next()) {
+	            purchase = new Purchase();	            
+	            purchase.setOrderNo(rset.getString("ORDER_NO"));
+	            purchase.setProductNo(rset.getString("PRODUCT_NO"));
+	            purchase.setSellerMemberNo(rset.getString("SELLER_MEMBER_NO"));
+	            purchase.setBuyerMemberNo(rset.getString("BUYER_MEMBER_NO"));
+	            purchase.setDeliveryAddr(rset.getString("DELIVERY_ADDR"));
+	            purchase.setDeliveryFee(rset.getInt("DELIVERY_FEE"));
+	            purchase.setOrderAmount(rset.getInt("ORDER_AMOUNT"));
+	            purchase.setPgProvider(rset.getString("PG_PROVIDER"));
+	            purchase.setPgTransactionId(rset.getString("PG_TRANSACTION_ID"));
+	            purchase.setDealDate(rset.getDate("DEAL_DATE"));
+	            purchase.setPurchaseStatusCode(rset.getString("PURCHASE_STATUS_CODE"));
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(rset);
+	        JDBCTemplate.close(pstmt);
+	    }
+	    return purchase;
 	}
-	*/	
+
+	public int updateOrderStatus(Connection conn, String orderId, String string) {
+		PreparedStatement pstmt = null;
+	    int result = 0;
+	    String query = "UPDATE TBL_PURCHASE SET PURCHASE_STATUS_CODE = ? WHERE ORDER_NO = ?";
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, "PS04");
+	        pstmt.setString(2, orderId);
+	        result = pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(pstmt);
+	    }
+	    return result;
+	}
+	
+	// 구매내역 정보룰 갖고 오기 위한 DAO!!
+	public List<Purchase> selectPurchaseListByBuyerNo(Connection conn, String buyerMemberNo) {	
+	    List<Purchase> list = new ArrayList<>();
+	    PreparedStatement pstmt = null;
+	    ResultSet rset = null;
+	    // TBL_PURCHASE를 기준으로 TBL_PROD, TBL_MEMBER(판매자), TBL_FILE(대표이미지), TBL_PURCHASE_STATUS 조인
+	    String query = "SELECT " +
+	                   "    P.ORDER_NO, P.PRODUCT_NO, P.SELLER_MEMBER_NO, P.BUYER_MEMBER_NO, " +
+	                   "    P.DELIVERY_ADDR, P.DELIVERY_FEE, P.ORDER_AMOUNT, " +
+	                   "    P.PG_PROVIDER, P.PG_TRANSACTION_ID, P.DEAL_DATE, P.PURCHASE_STATUS_CODE, " +
+	                   "    PROD.PRODUCT_NAME, PROD.PRODUCT_PRICE, " + // 상품명, 상품 가격
+	                   "    SELLER.MEMBER_NICKNAME AS SELLER_NICKNAME, " + // 판매자 닉네임
+	                   "    PS.STATUS_NAME AS PURCHASE_STATUS_NAME, " +   // 주문 상태명
+	                   "    (SELECT FL.FILE_PATH FROM (SELECT F.FILE_PATH, F.FILE_NO FROM TBL_FILE F WHERE F.PRODUCT_NO = PRODUCT_NO ORDER BY F.FILE_NO ASC) FL WHERE ROWNUM = 1) AS THUMBNAIL_PATH " + // 대표 이미지 경로
+	                   "FROM TBL_PURCHASE P " +
+	                   "JOIN TBL_PROD PROD ON P.PRODUCT_NO = PROD.PRODUCT_NO " +
+	                   "JOIN TBL_MEMBER SELLER ON P.SELLER_MEMBER_NO = SELLER.MEMBER_NO " +
+	                   "JOIN TBL_PURCHASE_STATUS PS ON P.PURCHASE_STATUS_CODE = PS.PURCHASE_STATUS_CODE " +
+	                   "WHERE P.BUYER_MEMBER_NO = ? " +
+	                   "ORDER BY P.DEAL_DATE DESC"; // 최근 구매 순으로 정렬
+
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, buyerMemberNo);
+	        rset = pstmt.executeQuery();
+
+	        while (rset.next()) {
+	            Purchase p = new Purchase();
+	            p.setOrderNo(rset.getString("ORDER_NO"));
+	            p.setProductNo(rset.getString("PRODUCT_NO"));
+	            p.setSellerMemberNo(rset.getString("SELLER_MEMBER_NO"));
+	            p.setBuyerMemberNo(rset.getString("BUYER_MEMBER_NO"));
+	            p.setDeliveryAddr(rset.getString("DELIVERY_ADDR"));
+	            p.setDeliveryFee(rset.getInt("DELIVERY_FEE"));
+	            p.setOrderAmount(rset.getInt("ORDER_AMOUNT"));
+	            p.setPgProvider(rset.getString("PG_PROVIDER"));
+	            p.setPgTransactionId(rset.getString("PG_TRANSACTION_ID"));
+	            p.setDealDate(rset.getDate("DEAL_DATE"));
+	            p.setPurchaseStatusCode(rset.getString("PURCHASE_STATUS_CODE"));
+
+	            // 조인된 추가 정보 설정 
+	            p.setProductName(rset.getString("PRODUCT_NAME"));
+	            p.setProductPrice(rset.getInt("PRODUCT_PRICE")); // 상품 원가
+	            p.setSellerNickname(rset.getString("SELLER_NICKNAME"));
+	            p.setPurchaseStatusName(rset.getString("PURCHASE_STATUS_NAME"));
+	            p.setThumbnailPath(rset.getString("THUMBNAIL_PATH"));
+
+	            list.add(p);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(rset);
+	        JDBCTemplate.close(pstmt);
+	    }
+	    return list;
+	}
+	
+	
+	
 	
 }

@@ -723,8 +723,11 @@ section.section.bg-section {
 }
 
 .main-image {
-  width: 100%;
+  width: 1000px;
   height: 400px;
+  display: block;
+  margin: 0 auto;
+  cursor: pointer;
 }
 
 .main-wrap>span>a:hover {
@@ -1094,6 +1097,18 @@ hr {
 	min-height: 52.2vh;
 	margin: 0 auto;
 }
+.admin-menu {
+	display: flex;
+	justify-content: space-around;
+	margin-bottom: 10px;
+}
+.admin-menu a {
+	font-size: 20px;
+}
+.admin-menu a:hover {
+	font-weight: bold;
+	text-decoration: underline;
+}
 .admin-page-sub {
 	width: 1000px;
 	margin: 0 auto;
@@ -1115,7 +1130,7 @@ hr {
 	margin-bottom: 10px;
 	text-align: center;
 }
-.admin-page>div a {
+.admin-page-sub a {
 	font-size: 30px;
 }
 .admin-page a:hover {

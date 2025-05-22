@@ -5,106 +5,45 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>줍줍 - 결제 완료</title>
-    
+    <title>줍줍 - 주문 상세 내역</title>
     <%-- Google Material Symbols 추가 --%>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link rel="stylesheet" href="/resources/css/order.css">   
-       
-    
-    <style>
-        /* SweetAlert2 스타일 */
-        .swal2-popup {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            border-radius: 12px !important; /* 기존 .section의 border-radius와 유사하게 */
-        }
-        .swal2-title {
-            font-size: 20px !important;
-            font-weight: bold !important;
-            color: #333333 !important;
-        }
-        .swal2-html-container {
-            font-size: 15px !important;
-            color: #555555 !important;
-        }
-        .swal2-confirm { /* 확인 버튼 */
-            background-color: #0064FF !important; /* 기본 버튼 색상 */
-            border-radius: 8px !important;
-            font-size: 16px !important;
-            padding: 10px 20px !important;
-        }
-        .swal2-confirm:hover {
-            background-color: #0052CC !important;
-        }
-        .swal2-cancel { /* 취소 버튼 */
-            background-color: #FFFFFF !important;
-            color: #888888 !important;
-            border: 1.5px solid #DDDDDD !important;
-            border-radius: 8px !important;
-            font-size: 16px !important;
-            padding: 10px 20px !important;
-        }
-        .swal2-cancel:hover {
-            background-color: #f8f8f8 !important;
-        }
-        .swal2-icon.swal2-warning {
-            /* 아이콘 크기를 font-size로 조절 (폰트 기반 아이콘일 경우) */
-            font-size: 50px !important; /* 기본값은 보통 더 큽니다. 원하는 크기로 조절 */
-            /* 또는 width/height로 직접 조절 (SVG 또는 특정 구조의 아이콘일 경우) */
-            width: 50px !important;
-            height: 50px !important;
-            /* 아이콘 내부의 선 두께 등도 조절해야 할 수 있습니다. */
-            border-width: 3px !important; /* 예시: 느낌표 선 두께 조절 */
-            /* 필요에 따라 margin, padding 등도 조절하여 레이아웃을 맞춥니다. */
-            margin-top: 10px !important;
-            margin-bottom: 10px !important;
-            
-            border-color: #888888 !important;  /* 테두리 색 */
-    		color: #888888 !important;         /* 아이콘 내부 색 */
-        }
-
-        /* 경고 아이콘 내부의 느낌표(!) 부분 크기 조절 (만약 별도 요소로 있다면) */
-        .swal2-icon.swal2-warning .swal2-icon-content {
-            font-size: 30px !important; /* 예시: 느낌표 자체의 크기 */
-        }
-       
-    </style>
-    
-   
+    <link rel="stylesheet" href="/resources/css/order.css">
 </head>
 <body class="page-index3"> 
 	<form action="#" method="post">
 
     <div class="container">
         <div class="header">
-        
+                
             <a href="${pageContext.request.contextPath}/" class="home-button-style">
                 <span class="material-symbols-outlined">home</span>
             </a>
-            
-            <h1 class="page-title-centered">결제 완료</h1>
-        </div>
 
+            <h1 class="page-title-centered">주문 상세 내역</h1>
+        </div>
+		
+		<!-- 주문 취소 완료 페이지여서 해당 페이지에는 상단 제목 없음  
         <div class="payment-flow-indicator">
             <span class="step">1. 주문</span>
             <span class="step">2. 결제</span>
             <span class="step current">3. 완료</span>
         </div>
+        -->
 
         <div class="section order-thank-you-message">
-            <h2>주문해주셔서 감사합니다.</h2>
-            <p>고객님의 주문이 정상적으로 완료되었습니다.</p>
-            <a href="${pageContext.request.contextPath}/" class="continueShopping-button-style">쇼핑 계속하기</a>
+            <h2>주문 취소 완료</h2>
+            <p>고객님의 주문이 정상적으로 취소되었습니다.</p>
+            <a href="${pageContext.request.contextPath}/" class="continueShopping-button-style">다른 상품 보러가기</a>
         </div>
 
         <div class="section order-completed-summary">
-            <h3 class="summary-group-title">주문 내역</h3>
+            <h3 class="summary-group-title">주문 취소 내역</h3>
             <div class="info-row">
                 <span class="label">주문상태</span>
-                <span class="value order-status">결제완료</span>
+                <span class="value order-status">취소완료</span>
             </div>
 
             <div class="info-row">
@@ -114,7 +53,7 @@
 
             <div class="info-row">
                 <span class="label">주문일자</span>
-                <span class="value order-date">${purchase.dealDate}</span>
+                <span class="value order-date"><fmt:formatDate value="${purchase.dealDate}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
             </div>
 
             <div class="info-row">
@@ -133,7 +72,7 @@
                     <div class="product-price"><fmt:formatNumber value="${product.productPrice}" type="number"/> 원</div>
                 </div>
             </div>
-            <button type="button" class="change-button-style" onclick="confirmCancelOrder('${purchase.orderNo}')">거래 취소</button>
+            
         </div>
 
         <div class="section payment-info-completed"> 
@@ -152,11 +91,7 @@
                 <div class="summary-item">
                     <span class="summary-label">배송비</span>
                     <span class="summary-value"><fmt:formatNumber value="${purchase.deliveryFee}" type="number"/> 원</span>
-                </div>
-                <div class="summary-item">
-                    <span class="summary-label">줍줍 판매 수수료</span>
-                    <span class="summary-value">무료 이벤트 진행 중</span>
-                </div>                
+                </div>                       
            
                 <hr class="summary-divider">
 
@@ -248,9 +183,7 @@
         </div>
     </div>
 
-	
-    <!-- <script src="${pageContext.request.contextPath}/resources/js/sweetalert.min.js"></script> ★SWAL JS파일 상단에 두면 오류나서 여기에 둠!! --> 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     
     <script>
     	<!-- FAQ JS -->
@@ -281,24 +214,11 @@
         
         <!-- 주문 취소 버튼 JS -->
         function confirmCancelOrder(orderNo) {
-            Swal.fire({
-                title: '주문 취소 확인',
-                text: "주문 취소를 진행하시겠습니까?",
-                icon: 'warning', // 아이콘 타입 (warning, error, success, info, question)
-                showCancelButton: true, // 취소 버튼 표시
-                confirmButtonColor: '#0064FF', // 확인 버튼 색상 (프로젝트 주요 색상)
-                cancelButtonColor: '#DDDDDD',   // 취소 버튼 색상
-                confirmButtonText: '네, 취소할게요', // 확인 버튼 텍스트
-                cancelButtonText: '아니요',     // 취소 버튼 텍스트
-                reverseButtons: true // 버튼 순서 바꾸기 (취소-확인 순으로)
-            }).then((result) => {
-                if (result.isConfirmed) { // 사용자가 '확인' 버튼을 눌렀을 때
-                    // 거래 취소 처리 서블릿으로 이동
-                    location.href = "${pageContext.request.contextPath}/order/cancelOrder?orderId=" + orderNo;
-                }
-            });
+            if (confirm("정말 거래를 취소하시겠습니까? 취소 후에는 복구할 수 없습니다.")) {
+                // 거래 취소 처리 서블릿으로 이동
+                location.href = "${pageContext.request.contextPath}/order/cancelOrder?orderId=" + orderNo;
+            }
         }
-        
     </script>
 
 	</form>
