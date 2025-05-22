@@ -179,7 +179,7 @@
 								
 								//클릭시 스타일 변경
 								$(obj).attr("class", "material-symbols-outlined fill");
-								$(obj).attr("onclick", "delWhishList(this, " + memberNo + ", " + productNo + ")");
+								$(obj).attr("onclick", "delWhishList(this, '" + memberNo + "', '" + productNo + "')");
 								
 							}else if(res == 0){ //찜하기 실패
 								swal({
@@ -245,7 +245,7 @@
 								
 								//클릭시 스타일 변경
 								$(obj).attr("class", "material-symbols-outlined");
-								$(obj).attr("onclick", "addWishList(this, " + memberNo + ", " + productNo + ")");
+								$(obj).attr("onclick", "addWishList(this, '" + memberNo + "', '" + productNo + "')");
 								
 							}else{ //찜하기 삭제 실패
 								swal({

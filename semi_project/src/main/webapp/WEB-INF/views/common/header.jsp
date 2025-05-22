@@ -185,7 +185,7 @@
         <form class="search" action="/product/searchListDesc" method="get">
             <select name="searchOption" id="search-option">
                 <option value="productName">상품명</option>
-                <option value="memberNickname">작성자</option>
+                <option value="memberNickname">닉네임</option>
             </select>
             <input type="text" name="search">
             <button type="submit">검색</button>

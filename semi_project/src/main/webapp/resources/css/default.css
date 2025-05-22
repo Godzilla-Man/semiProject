@@ -723,8 +723,11 @@ section.section.bg-section {
 }
 
 .main-image {
-  width: 100%;
+  width: 1000px;
   height: 400px;
+  display: block;
+  margin: 0 auto;
+  cursor: pointer;
 }
 
 .main-wrap>span>a:hover {
