@@ -39,52 +39,62 @@ form {
 
 /* 2. 헤더 */
 .header {
-    position: relative;
+    position: relative; /* 필요하다면 유지 (다른 absolute 자식 요소가 있을 경우) */
     display: flex;
-    align-items: center;
+    align-items: center; /* 모든 flex 아이템을 세로 중앙 정렬 */
     height: 40px;
     margin-bottom: 20px;
-    
+    padding: 0 10px; /* 헤더 좌우에 약간의 여백을 주어 버튼이 너무 붙지 않도록 */
 }
 
 .header .page-title-centered {
-	position: absolute; 
-    left: 0;
-    right: 0;    
-    width: 100%; /* 부모(.header) 너비 전체를 기준으로 함 */
-    text-align: center; /* 텍스트 자체를 중앙 정렬 */
+    position: absolute; /* ★★★ 변경: absolute로 설정하여 독립적인 위치 지정 ★★★ */
+    left: 50%;          /* ★★★ 추가: 왼쪽에서 50% 지점 ★★★ */
+    transform: translateX(-50%); /* ★★★ 추가: 자신의 너비의 50%만큼 왼쪽으로 이동하여 정확히 중앙 ★★★ */
+    /* width: 100%; 제거 또는 width: auto; 로 변경.
+       absolute 상태에서는 left, right, width를 모두 100%로 하면
+       내부 text-align:center가 부모 기준 중앙이 됩니다.
+       하지만 left:50%, transform:translateX(-50%) 조합이 더 명확한 중앙 정렬입니다. */
+    width: auto; /* 내용에 맞게 너비 자동 조절 */
+    text-align: center;
     font-size: 18px;
     font-weight: bold;
     color: #000000;
-    margin: 0; 
-    padding: 0;    
-    top: 50%;
-    transform: translateY(-50%);    
+    margin: 0;
+    padding: 0;
+    /* 세로 중앙 정렬은 top: 50%; transform: translateY(-50%); 조합을 사용하거나,
+       부모 .header의 align-items: center 효과를 받지 않으므로 line-height로 맞출 수 있습니다. */
+    line-height: 40px; /* 헤더 높이와 동일하게 설정하여 세로 중앙 정렬 */
+    /* z-index: 0; /* 홈 버튼이나 뒤로가기 버튼보다 뒤에 오도록 (필요시) */
 }
 
 .back-button {
-    position: absolute;
+    /* position: absolute; 유지 */
     top: 50%;
-    left: 0;
+    left: 10px; /* 헤더 왼쪽에 명확한 위치 지정 (padding 대신) */
     transform: translateY(-50%);
     font-size: 28px;
     font-weight: bold;
     color: #333333;
     text-decoration: none;
     padding: 0 5px;
-    line-height: 1;
+    line-height: 1; /* 아이콘 폰트나 글자 '<'의 수직 정렬을 위해 */
+    z-index: 1;   /* 제목보다 위에 오도록 설정 */
 }
 
-.home-button-style {        	
-	color: #333; /* 아이콘 색상 */
-	text-decoration: none;
-	font-size: 24px; /* 아이콘 크기, 기존 꺽쇠와 유사하게 */
-	padding: 0 10px; /* 아이콘 좌우 클릭 영역 및 헤더 가장자리로부터의 간격 */	       	
-	display: inline-flex; /* 내부 span 아이콘을 정렬하기 위해 */
-	align-items: center;  /* 내부 span 아이콘을 수직 중앙 정렬 */
-  	height: 100%;
-z-index: 1; /* 제목보다 뒤에 오도록 (필요시) */
+.home-button-style {
+    /* position: absolute; 만약 홈버튼도 absolute로 할거면 left, top, transform 설정 필요 */
+    /* 여기서는 flex 아이템으로 가정하고 이전 CSS 유지 */
+    color: #333;
+    text-decoration: none;
+    font-size: 24px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    z-index: 1; /* 제목보다 위에 오도록 설정 */
 }
+
 /* Material Symbols 아이콘 기본 스타일 (선택적) */
 .material-symbols-outlined {
 	font-variation-settings:

@@ -81,3 +81,133 @@
 	display: block;
 	height: 1000px;
 }
+
+
+
+/* ★동주★ 구매 내역 관련 CSS 시작 */
+#tab-purchaseList {
+    padding-top: 20px;
+}
+
+.purchase-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 0; /* 내부 패딩은 각 섹션에서 조절 */
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.purchase-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #f9f9f9; /* 헤더 배경색 */
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.purchase-date {
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+}
+
+.purchase-status {
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+/* 주문 상태별 색상 (예시) */
+.status-PS00 { background-color: #ffc107; color: #fff; } /* 결제대기 - 노란색 계열 */
+.status-PS01 { background-color: #28a745; color: #fff; } /* 결제완료 - 초록색 계열 */
+.status-shipping { background-color: #17a2b8; color: #fff; } /* 배송중 - 청록색 계열 */
+.status-delivered { background-color: #007bff; color: #fff; } /* 배송완료 - 파란색 계열 */
+.status-canceled { background-color: #dc3545; color: #fff; } /* 취소 - 빨간색 계열 */
+.status-default { background-color: #6c757d; color: #fff; } /* 기타 - 회색 계열 */
+
+
+.purchase-item-content {
+    display: flex;
+    padding: 20px;
+    gap: 20px; /* 이미지와 정보 사이 간격 */
+    align-items: flex-start; /* 상단 정렬 */
+}
+
+.purchase-product-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: #f0f0f0; /* 이미지 없을 경우 배경 */
+}
+
+.purchase-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.purchase-product-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* 정보들 사이 간격 */
+}
+
+.purchase-product-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    /* 한 줄로 표시하고 넘치면 ... 처리 (선택 사항) */
+    /* white-space: nowrap; */
+    /* overflow: hidden; */
+    /* text-overflow: ellipsis; */
+}
+
+.purchase-product-price {
+    font-size: 15px;
+    color: #555;
+}
+
+.purchase-seller-info {
+    font-size: 13px;
+    color: #777;
+}
+
+.purchase-actions {
+    display: flex;
+    flex-direction: column; /* 버튼 세로 정렬 */
+    align-items: flex-end; /* 오른쪽 정렬 */
+    gap: 8px;
+    min-width: 100px; /* 버튼 영역 최소 너비 */
+}
+
+.purchase-actions .btn-action {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    color: #555;
+    min-width: 90px; /* 버튼 최소 너비 */
+}
+
+.purchase-actions .btn-action:hover {
+    background-color: #f5f5f5;
+}
+
+/* 점선 버튼 스타일 (예: 배송조회) */
+.btn-action.dotted {
+    border-style: dashed;
+    background-color: transparent;
+}
+/* ★동주★ 구매 내역 관련 CSS 끝 */ 
+

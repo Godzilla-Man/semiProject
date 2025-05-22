@@ -261,7 +261,7 @@ public class OrderDao {
 	
 	// 구매내역 정보룰 갖고 오기 위한 DAO!!
 	public List<Purchase> selectPurchaseListByBuyerNo(Connection conn, String buyerMemberNo) {	
-	    List<Purchase> list = new ArrayList();
+	    List<Purchase> list = new ArrayList<>();
 	    PreparedStatement pstmt = null;
 	    ResultSet rset = null;
 	    // TBL_PURCHASE를 기준으로 TBL_PROD, TBL_MEMBER(판매자), TBL_FILE(대표이미지), TBL_PURCHASE_STATUS 조인
@@ -272,7 +272,7 @@ public class OrderDao {
 	                   "    PROD.PRODUCT_NAME, PROD.PRODUCT_PRICE, " + // 상품명, 상품 가격
 	                   "    SELLER.MEMBER_NICKNAME AS SELLER_NICKNAME, " + // 판매자 닉네임
 	                   "    PS.STATUS_NAME AS PURCHASE_STATUS_NAME, " +   // 주문 상태명
-	                   "    (SELECT FILE_PATH FROM (SELECT FILE_PATH FROM TBL_FILE F WHERE F.PRODUCT_NO = P.PRODUCT_NO ORDER BY F.FILE_NO ASC) WHERE ROWNUM = 1) AS THUMBNAIL_PATH " + // 대표 이미지 경로
+	                   "    (SELECT FL.FILE_PATH FROM (SELECT F.FILE_PATH, F.FILE_NO FROM TBL_FILE F WHERE F.PRODUCT_NO = PRODUCT_NO ORDER BY F.FILE_NO ASC) FL WHERE ROWNUM = 1) AS THUMBNAIL_PATH " + // 대표 이미지 경로
 	                   "FROM TBL_PURCHASE P " +
 	                   "JOIN TBL_PROD PROD ON P.PRODUCT_NO = PROD.PRODUCT_NO " +
 	                   "JOIN TBL_MEMBER SELLER ON P.SELLER_MEMBER_NO = SELLER.MEMBER_NO " +
