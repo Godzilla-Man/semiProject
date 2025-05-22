@@ -49,6 +49,7 @@ public class PaySuccessServlet extends HttpServlet {
         if (purchase != null) {
             // 결제 및 주문 처리 성공
         	System.out.println("PaySuccessServlet - purchase.getProductNo(): " + purchase.getProductNo());
+        	
             Product product = orderService.selectOrderProduct(purchase.getProductNo()); // 상품 정보 조회
             System.out.println("PaySuccessServlet - product 객체: " + product); // 
             

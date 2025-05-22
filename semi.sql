@@ -491,12 +491,18 @@ commit;
 -- ★참조하는 외래 키(FK) 제약조건 삭제
 ALTER TABLE TBL_USER_RATING
 DROP CONSTRAINT SYS_C007425;
-
+select*from tbl_user_rating;
 ALTER TABLE TBL_STYLE_POST
 DROP CONSTRAINT SYS_C007415;
 
 -- ★기존 TBL_PURCHASE 테이블 삭제
-DROP TABLE TBL_PURCHASE;
+DROP TABLE TBL_prod;
+
+select * from tbl_member;
+select * from tbl_prod;
+select * from tbl_purchase;
+select * from tbl_purchase_status;
+select * from tbl_prod_status;
 
 -- 주문 상태 코드 테이블 추가
 CREATE TABLE TBL_PURCHASE_STATUS (
@@ -571,11 +577,12 @@ CREATE TABLE TBL_MEMBER_REACTION (
     REACTION_TYPE      CHAR(1)            CHECK (REACTION_TYPE IN ('L', 'D')),  -- 반응 유형: 'L' = 좋아요, 'D' = 싫어요
     REACTION_DATE      DATE               DEFAULT SYSDATE                   -- 반응 등록일
 );
-
+select * from tbl_member_reaction;
 -- 하나의 회원이 동일 대상에게 동일 반응을 1번만 누를 수 있도록 제약
 ALTER TABLE TBL_MEMBER_REACTION
 ADD CONSTRAINT UQ_REACTION_UNIQUE
 UNIQUE (TARGET_MEMBER_NO, REACT_MEMBER_NO, REACTION_TYPE);
+
 
 -- 대상 회원 외래키 제약 (TBL_MEMBER.MEMBER_NO 참조)
 ALTER TABLE TBL_MEMBER_REACTION
@@ -595,5 +602,25 @@ START WITH 1
 INCREMENT BY 1
 NOCACHE;
 
+INSERT INTO TBL_PROD_STATUS (STATUS_CODE, STATUS_NAME)
+VALUES ('S99', '삭제됨');
+
+commit;
+
+select * from tbl_prod;
+select * from tbl_prod_status;
+
+-- 20250521 위 내용까지 반영 완료
+
+-- 20250522 SQL 테이블 수정 사항
+-- purchase_status_code, status_name 추가 
+-- PS03 취소 완료 내용 추가
+select*from tbl_purchase_status;
+
+insert into tbl_purchase_status (purchase_status_code, status_name)
+values('PS03', '취소신청');
+
+insert into tbl_purchase_status (purchase_status_code, status_name)
+values('PS04', '취소완료');
 
 commit;
