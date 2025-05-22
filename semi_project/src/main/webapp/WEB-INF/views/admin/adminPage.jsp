@@ -28,7 +28,7 @@
 						</div>
 					</div>
 					<div class="search-black">
-						<a href="/admin/blackList">블랙 회원 조회</a>
+						<a href="/admin/blackList">블랙 리스트 조회</a>
 						<div class="count">
 							<span>금일 블랙 건수</span>
 							<div>${bCnt}건</div>

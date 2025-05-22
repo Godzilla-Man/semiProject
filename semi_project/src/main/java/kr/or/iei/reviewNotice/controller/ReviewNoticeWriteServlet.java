@@ -1,103 +1,132 @@
-package kr.or.iei.reviewNotice.controller;
+package kr.or.iei.reviewnotice.controller;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.UUID;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-
 import kr.or.iei.file.model.vo.Files;
-import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
-import kr.or.iei.category.model.vo.Category;
+import kr.or.iei.member.model.vo.Member;
+import kr.or.iei.reviewnotice.model.service.ReviewNoticeService;
+import kr.or.iei.reviewnotice.model.vo.ReviewNotice;
 
 @WebServlet("/review/write")
 @MultipartConfig(
-    maxFileSize = 1024 * 1024 * 5, // 개별 파일 최대 5MB
-    maxRequestSize = 1024 * 1024 * 30 // 전체 요청 최대 30MB
+    fileSizeThreshold = 1024 * 1024 * 1,
+    maxFileSize = 1024 * 1024 * 10,
+    maxRequestSize = 1024 * 1024 * 55
 )
 public class ReviewNoticeWriteServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        
-        request.setCharacterEncoding("UTF-8");
+    private static final long serialVersionUID = 1L;
 
-        // 1. 기본 파라미터
-        String title = request.getParameter("title");
-        String content = request.getParameter("content");
-        String commentEnabled = request.getParameter("commentEnabled");
-        String gender = request.getParameter("genderCategory");
-        String middle = request.getParameter("middleCategory");
-        String small = request.getParameter("smallCategory");
-
-        // 2. 업로드 파일 처리
-        ArrayList<Files> fileList = new ArrayList<>();
-        String uploadPath = getServletContext().getRealPath("/upload/review/");
-        File dir = new File(uploadPath);
-        if (!dir.exists()) dir.mkdirs();
-
-        for (Part part : request.getParts()) {
-            if (part.getName().equals("images") && part.getSize() > 0) {
-                String original = part.getSubmittedFileName();
-                String ext = original.substring(original.lastIndexOf("."));
-                String renamed = UUID.randomUUID().toString() + ext;
-
-                part.write(uploadPath + File.separator + renamed);
-
-                Files file = new Files();
-                file.setFileName(original);
-                file.setFilePath("/upload/review/" + renamed);
-                fileList.add(file);
-            }
-        }
-
-        // 3. 카테고리 객체 리스트 생성
-        ArrayList<Category> categoryList = new ArrayList<>();
-
-        if (gender != null && !gender.isEmpty()) {
-            Category c = new Category();
-            c.setCategoryCode(gender);
-            c.setLarCategoryName("대분류");
-            categoryList.add(c);
-        }
-        if (middle != null && !middle.isEmpty()) {
-            Category c = new Category();
-            c.setCategoryCode(middle);
-            c.setMidCategoryName("중분류");
-            categoryList.add(c);
-        }
-        if (small != null && !small.isEmpty()) {
-            Category c = new Category();
-            c.setCategoryCode(small);
-            c.setCategoryName("소분류");
-            categoryList.add(c);
-        }
-
-        // 4. VO에 세팅
-        ReviewNotice rn = new ReviewNotice();
-        rn.setPostTitle(title);
-        rn.setPostContent(content);
-        rn.setReadCount(0);
-        rn.setOrderNo(null); // 주문번호 연동 시 사용
-        rn.setFileList(fileList);
-        rn.setCategoryList(categoryList);
-
-        // 5. request에 저장 후 JSP 포워딩
-        request.setAttribute("reviewNotice", rn);
-        request.setAttribute("commentEnabled", commentEnabled);
-
-        request.getRequestDispatcher("/WEB-INF/views/reviewnotice/reviewWrite.jsp").forward(request, response);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.sendRedirect(request.getContextPath() + "/review/writeFrm");
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED); // GET 차단
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("loginMember") == null) {
+            request.setAttribute("errorMsg", "로그인이 필요한 서비스입니다.");
+            request.getRequestDispatcher("/WEB-INF/views/member/login.jsp").forward(request, response); // 실제 로그인 페이지
+            return;
+        }
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        String postTitle = request.getParameter("postTitle");
+        String postContent = request.getParameter("postContent");
+        String orderNo = request.getParameter("orderNo");
+        String categoryCodeFromForm = request.getParameter("categoryCode");
+
+        ReviewNotice rn = new ReviewNotice();
+        rn.setPostTitle(postTitle);
+        rn.setPostContent(postContent);
+        rn.setOrderNo(orderNo);
+        rn.setMemberNo(loginMember.getMemberNo());
+        rn.setCategoryCode(categoryCodeFromForm);
+
+        if (orderNo == null || orderNo.trim().isEmpty()) {
+            request.setAttribute("errorMsg", "주문번호는 필수입니다. 리뷰를 작성할 주문을 선택(입력)해주세요.");
+            request.setAttribute("reviewNotice", rn);
+            request.getRequestDispatcher("/WEB-INF/views/reviewnotice/reviewWrite.jsp").forward(request, response);
+            return;
+        }
+
+        ArrayList<Files> fileList = new ArrayList<>();
+        String root = getServletContext().getRealPath("/"); 
+        String saveDirectory = root + "resources/upload" + File.separator + "reviewnotice"; 
+
+        File directory = new File(saveDirectory);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        boolean fileProcessingError = false;
+        try {
+            for (Part part : request.getParts()) {
+                if (part.getName().equals("files") && part.getSize() > 0) {
+                    String originalFileName = part.getSubmittedFileName();
+                    if (originalFileName != null && !originalFileName.isEmpty()) {
+                        String extension = "";
+                        int dotIndex = originalFileName.lastIndexOf(".");
+                        if (dotIndex > -1 && dotIndex < originalFileName.length() - 1) {
+                            extension = originalFileName.substring(dotIndex); 
+                        }
+                        String newFileName = "review_" + System.currentTimeMillis() + "_" + (int)(Math.random()*10000) + extension;
+                        part.write(saveDirectory + File.separator + newFileName);
+
+                        Files fileVo = new Files();
+                        fileVo.setFileName(originalFileName); 
+                        fileVo.setFilePath("/resources/upload/reviewnotice/" + newFileName); 
+                        fileList.add(fileVo);
+                    }
+                }
+            }
+        } catch (IOException | ServletException e) {
+            e.printStackTrace();
+            fileProcessingError = true;
+            for(Files fVo : fileList) { 
+                if (fVo.getFilePath() != null) {
+                    String uploadedFileName = fVo.getFilePath().substring(fVo.getFilePath().lastIndexOf("/") + 1);
+                    File createdFile = new File(saveDirectory + File.separator + uploadedFileName);
+                    if(createdFile.exists()) createdFile.delete();
+                }
+            }
+            fileList.clear();
+        }
+
+        if(fileProcessingError){
+            request.setAttribute("errorMsg", "파일 업로드 중 오류가 발생했습니다.");
+            request.setAttribute("reviewNotice", rn);
+            request.getRequestDispatcher("/WEB-INF/views/reviewnotice/reviewWrite.jsp").forward(request, response);
+            return;
+        }
+        
+        ReviewNoticeService service = new ReviewNoticeService();
+        int result = service.insertReviewNotice(rn, fileList); 
+
+        if (result > 0) {
+            response.sendRedirect(request.getContextPath() + "/review/detail?stylePostNo=" + rn.getStylePostNo());
+        } else {
+            for(Files fVo : fileList) {
+                if (fVo.getFilePath() != null) {
+                    String uploadedFileName = fVo.getFilePath().substring(fVo.getFilePath().lastIndexOf("/") + 1);
+                    File failedFile = new File(saveDirectory + File.separator + uploadedFileName);
+                    if(failedFile.exists()) failedFile.delete();
+                }
+            }
+            request.setAttribute("errorMsg", "게시글 등록에 실패했습니다.");
+            request.setAttribute("reviewNotice", rn);
+            RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/reviewnotice/reviewWrite.jsp");
+            view.forward(request, response);
+        }
     }
 }
