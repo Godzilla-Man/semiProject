@@ -76,7 +76,7 @@
 		<div class="fixed" style="right: 280px;">
 			<%-- 로그인 시에만 판매 글을 올릴 수 있는 등록 버튼 표시 --%>
 			<c:if test="${!empty sessionScope.loginMember}">
-			<div class="post" onclick="productEnroll()">
+			<div class="post" onclick="productEnroll()" title="상품 등록">
 				<span class="material-symbols-outlined">add</span>
 			</div>
 			</c:if>

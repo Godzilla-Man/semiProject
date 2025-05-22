@@ -1,8 +1,8 @@
+<%@page import="kr.or.iei.reviewnotice.model.vo.ReviewNotice"%>
+<%@page import="kr.or.iei.reviewnotice.model.service.ReviewNoticeService"%>
 <%@page import="kr.or.iei.file.model.vo.Files"%>
 <%@page import="java.util.List"%>
 <%@page import="kr.or.iei.event.model.service.EventService"%>
-<%@page import="kr.or.iei.reviewNotice.model.vo.ReviewNotice"%>
-<%@page import="kr.or.iei.reviewNotice.model.service.ReviewNoticeService"%>
 <%@page import="kr.or.iei.member.model.vo.Member"%>
 <%@page import="kr.or.iei.product.model.vo.Product"%>
 <%@page import="java.util.ArrayList"%>
@@ -28,7 +28,7 @@
 	ArrayList<Product> productList = pService.selectAllListDesc(memberNo);
 	
 	ReviewNoticeService rService = new ReviewNoticeService();
-    ArrayList<ReviewNotice> reviewList = rService.selectAllReview();
+    ArrayList<ReviewNotice> reviewList = rService.selectAllReviewList();
     
     EventService eService = new EventService();
     List<Files> fileList = eService.selectFirstEventFileList();
@@ -106,10 +106,10 @@
 							<div style="color: inherit; text-decoration: none;">
 								<div class="card">
 									<div class="image">
-										<img src="/" alt="${review.postTitle}" onclick="clickReview('${review.stylePostNo}')">
+										<img src="${review.filePath}" alt="${review.postTitle}" onclick="clickReview('${review.stylePostNo}')">
 									</div>
 									<div class="image-info">
-										<span class="image-prod"><a href="/product/detail?no=${review.stylePostNo}">${review.postTitle}</a></span>
+										<span class="image-prod"><a href="/review/detail?stylePostNo=${review.stylePostNo}">${review.postTitle}</a></span>
 									</div>
 								</div>
 							</div>
@@ -124,7 +124,7 @@
 		<div class="fixed" style="right: 280px;">
 			<%-- 로그인 시에만 판매 글을 올릴 수 있는 등록 버튼 표시 --%>
 			<c:if test="${!empty sessionScope.loginMember}">
-			<div class="post" onclick="productEnroll()">
+			<div class="post" onclick="productEnroll()" title="상품 등록">
 				<span class="material-symbols-outlined">add</span>
 			</div>
 			</c:if>
@@ -168,6 +168,9 @@
 			location.href="/product/detail?no=" + productNo;
 		}
 	
+		function clickReview(reviewNo){
+			location.href="/review/detail?stylePostNo=" + reviewNo;
+		}
 		//찜하기 추가
 		function addWishList(obj, memberNo, productNo) {
 			swal({
@@ -204,7 +207,7 @@
 								
 								//클릭시 스타일 변경
 								$(obj).attr("class", "material-symbols-outlined fill");
-								$(obj).attr("onclick", "delWhishList(this, '" + memberNo + "', '" + productNo + "')");
+								$(obj).attr("onclick", "delWhishList(this, " + memberNo + ", " + productNo + ")");
 								
 							}else if(res == 0){ //찜하기 실패
 								swal({
@@ -270,7 +273,7 @@
 								
 								//클릭시 스타일 변경
 								$(obj).attr("class", "material-symbols-outlined");
-								$(obj).attr("onclick", "addWishList(this, '" + memberNo + "', '" + productNo + "')");
+								$(obj).attr("onclick", "addWishList(this, " + memberNo + ", " + productNo + ")");
 								
 							}else{ //찜하기 삭제 실패
 								swal({
