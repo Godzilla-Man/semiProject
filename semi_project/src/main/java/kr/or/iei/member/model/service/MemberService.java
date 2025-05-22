@@ -55,7 +55,7 @@ public class MemberService {
 		
 		return loginMember;
 	}
-	
+
 	//이름+전화번호로 아이디 찾기
 	public String searchId(String memberName, String memberPhone) {
 		Connection conn = JDBCTemplate.getConnection();
@@ -83,6 +83,15 @@ public class MemberService {
 		return memberPw;
 	}
 
+	
+	// 회원번호로 판매자 조회
+	public Member selectMemberByNo(String memberNo) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    Member m = new MemberDao().selectMemberByNo(conn, memberNo);
+	    JDBCTemplate.close(conn);
+	    return m;
+	}
+
 	//회원정보 수정
 	public int updateMember(Member updMember) {
 		Connection conn = JDBCTemplate.getConnection();
@@ -95,4 +104,5 @@ public class MemberService {
 		JDBCTemplate.close(conn);
 		return result;
 	}
+
 }

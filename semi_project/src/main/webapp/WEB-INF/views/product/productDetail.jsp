@@ -42,30 +42,47 @@ main.container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  
 }
 
 /* 슬라이드 컨테이너 */
 .image-slider {
   width: 100%;
-  height: 100%;             /* ✅ 반드시 높이를 100%로 */
+  height: 100%;             /*  반드시 높이를 100%로 */
   position: relative;
 }
 
-/*  이미지 슬라이드 이미지 */
-/* 슬라이드 이미지 */
+/* 슬라이드 이미지 공통 스타일 - 기존 클래스명을 유지하면서 애니메이션만 추가 */
 .slide-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;        /* ✅ 꽉 채우기 */
-  position: absolute;
+  position: absolute;               /* 겹치도록 배치 */
   top: 0;
   left: 0;
-  display: none;            /* ✅ JS로 block 처리 필요 */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  opacity: 0;                       /* 기본은 보이지 않게 */
+  transform: scale(0.98);           /* 살짝 축소된 상태에서 시작 */
+  transition: 
+    opacity 0.5s ease-in-out,
+    transform 0.5s ease-in-out;     /* 부드러운 페이드 + 확대 전환 */
+  
+  z-index: 0;
+  pointer-events: none;             /* 비활성 상태일 땐 클릭 막기 */
+}
+
+/* 활성화된 이미지 - 자연스럽게 커지고 투명도 증가 */
+.slide-image.active {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 1;
+  pointer-events: auto;
 }
 
 /* 슬라이드 버튼 스타일 개선 */
 .slide-btn {
-  position: absolute;
+  position: absolute;	
+  z-index : 10;
   top: 50%;
   transform: translateY(-50%);
   width: 40px;
@@ -241,6 +258,7 @@ main.container {
   border-bottom: 1px solid var(--gray6);
   padding: 30px 0;
   margin: 40px 0;
+   position: relative;
 }
 
 /* 섹션 제목 */
@@ -250,13 +268,21 @@ main.container {
   margin-bottom: 20px;
 }
 
-/* 상품 카드 리스트 - default의 posting-wrap 재사용 */
+/* 가로 슬라이드 가능한 관련 상품 리스트 */
 .related-list {
   display: flex;
-  gap: 20px;
-  justify-content: center; /* 가운데 정렬 */
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 16px;
+  padding: 10px 0;
+   scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE/Edge */
 }
 
+/* 슬라이더 삭제 */
+.related-list::-webkit-scrollbar {
+  display: none;                /* Chrome, Safari, Opera */
+}
 
 .related-item {
   width: 140px;
@@ -302,6 +328,10 @@ main.container {
   padding: 2px 6px;
   border-radius: 4px;
   text-align: center;
+  height: 42px;
+  overflow: hidden;
+  line-height: 1.3;
+  word-break: break-word;
 }
 
 .related-price {
@@ -312,6 +342,36 @@ main.container {
   padding: 2px 6px;
   border-radius: 4px;
   text-align: center;
+}
+
+/* 관련 상품 슬라이드 버튼 */
+.related-slide-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.8); /* 반투명 흰 배경 */
+  border: 1px solid var(--gray5);
+  border-radius: 50%;
+  font-size: 20px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.related-slide-btn:hover {
+  background-color: rgba(255, 255, 255, 1); /* hover 시 더 선명한 흰색 */
+}
+
+/* 왼쪽/오른쪽 위치 지정 */
+#relatedPrevBtn {
+  left: 4px;
+}
+
+#relatedNextBtn {
+  right: 4px;
 }
 
 /* 상품 설명 + 판매자 정보 영역 전체 컨테이너 */
@@ -410,6 +470,10 @@ main.container {
 
 
 .profile-name {
+  font-size: 16px;               /* 살짝 크게 (기존 대비) */
+  font-family: 'Pretendard', sans-serif;  /* 부드럽고 귀여운 느낌의 글꼴 */
+  font-weight: 500;              /* 너무 두껍지 않은 중간 굵기 */
+  color: var(--gray1);           /* 선명하고 안정된 글자색 */
   margin-bottom: 4px;
 }
 
@@ -743,6 +807,35 @@ textarea::placeholder {
   border-radius: 10px;
 }
 
+/* 기존 .product-status와 동일한 모양을 유지하되 색상만 다름 */
+.product-status.delivery-included {
+  background-color: #e1f7e3;  /* 연한 초록 */
+  color: #237a3b;
+}
+
+.product-status.delivery-excluded {
+  background-color: #ffe8ec;  /* 연한 분홍 */
+  color: #9d3b50;
+}
+
+/* 판매자 정보 프로필 구간 */
+.seller-profile-thumbnail {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--gray6);
+  display: block;              /* 좌측 정렬 유지 */
+  margin-bottom: 10px;         /* 아래 여백 */
+}
+
+.seller-profile-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 
 </style>
 
@@ -768,15 +861,7 @@ textarea::placeholder {
 		    <img src="${file.filePath}" 
 		         alt="상품 이미지 ${status.index + 1}" 
 		         class="slide-image" 
-		         style="
-             ${status.first ? 'display: block;' : 'display: none;'}
-             width: 100%;
-             height: 100%;
-             position: absolute;
-             top: 0;
-             left: 0;
-             object-fit: cover;
-           " />
+		         >
 		  </c:forEach>
 		</div>
 
@@ -811,15 +896,36 @@ textarea::placeholder {
   </div>
 </c:if>
 
-<%-- 상품 상태 박스 --%>
+<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 25px;">
 <c:choose>
   <c:when test="${product.statusCode eq 'S99'}">
-    <div class="product-status deleted">${product.productStatus}</div>
+    <c:if test="${loginMember != null and loginMember.memberId eq 'admin'}">
+      <div class="product-status deleted">${product.productStatus}</div>
+    </c:if>
   </c:when>
   <c:otherwise>
     <div class="product-status">${product.productStatus}</div>
   </c:otherwise>
 </c:choose>
+
+
+  <!-- 배송비 조건별 스타일 표시 -->
+  <c:choose>
+    <c:when test="${product.tradeMethodCode eq 'M1'}">
+      <div class="product-status delivery-included">배송비 포함</div>
+    </c:when>
+    <c:otherwise>
+      <div class="product-status delivery-excluded">
+        <c:choose>
+          <c:when test="${product.tradeMethodCode eq 'M2'}">배송비 별도</c:when>
+          <c:otherwise>배송비 착불</c:otherwise>
+        </c:choose>
+      </div>
+    </c:otherwise>
+  </c:choose>
+</div>
+
+
 
   <!-- 상품명 -->
   <h2 class="product-title">${product.productName}</h2>
@@ -871,8 +977,12 @@ textarea::placeholder {
 
 
     <button class="btn-warning">신고하기</button>
-    <button class="btn-primary">바로구매</button>
+
     
+    <!-- ★동주 : 바로구매 시 결제 페이지 연동/하단에 해당 스크립트도 추가!!★ 시작 -->    
+    <button class="btn-primary" onclick="goToOrderPage('${product.productNo}')">바로구매</button>
+    <!-- ★동주 : 바로구매 시 결제 페이지 연동/하단에 해당 스크립트도 추가!!★  끝 -->
+
  
   </div>
 </div>
@@ -892,30 +1002,33 @@ textarea::placeholder {
 
 <section class="related-products">
   <h3 class="related-title">비슷한 상품을 찾아보세요</h3>
-  <%-- 관련 상품 리스트: 한 줄에 최대 6개 상품이 Flex로 정렬됨 --%>
-  <div class="related-list">
-    <%-- 관련 상품 개별 카드 출력 --%>
-    <c:forEach var="prod" items="${relatedProducts}">  
-      <%-- 카드 전체를 <a>로 감싸 클릭 시 상세 페이지 이동 --%>
-      <a href="${pageContext.request.contextPath}/product/detail?no=${prod.productNo}" class="related-item-link">        
-        <%-- 개별 카드 박스 --%>
-        <div class="related-item">
-          <%-- 썸네일 이미지 영역 --%>
-          <div class="related-img">
-            <img src="${prod.thumbnailPath}" alt="${prod.productName}">
-          </div>
-          <%-- 상품명 출력 --%>
-          <div class="related-name">${prod.productName}</div>
-          <%-- 가격 출력 --%>
-          <div class="related-price">
-            ₩<fmt:formatNumber value="${prod.productPrice}" pattern="#,###"/>
-          </div>
 
-        </div>
-      </a>
+  <!-- 관련 상품 슬라이드 좌우 버튼: 고유 id/class 사용 -->
+  <button type="button" class="related-slide-btn left" id="relatedPrevBtn">&#10094;</button>
+  <button type="button" class="related-slide-btn right" id="relatedNextBtn">&#10095;</button>
+
+  <!-- 슬라이드 가능한 관련 상품 리스트 -->
+  <div class="related-list" id="relatedListSlider">
+    <c:forEach var="prod" items="${relatedProducts}">
+      <c:if test="${prod.statusCode ne 'S99'}">
+        <a href="${pageContext.request.contextPath}/product/detail?no=${prod.productNo}" class="related-item-link">
+          <div class="related-item">
+            <div class="related-img">
+              <img src="${prod.thumbnailPath}" alt="${prod.productName}">
+            </div>
+            <div class="related-name">${prod.productName}</div>
+            <div class="related-price">
+              ₩<fmt:formatNumber value="${prod.productPrice}" pattern="#,###"/>
+            </div>
+          </div>
+        </a>
+      </c:if>
     </c:forEach>
   </div>
 </section>
+
+
+
 
 
 
@@ -934,26 +1047,29 @@ textarea::placeholder {
 	</div>
   </div>
 
-  <!-- 우측: 판매자 정보 영역 -->
-  <aside class="seller-info-box">
-    <div class="seller-title">판매자 정보</div>
+<!-- 우측: 판매자 정보 영역 -->
+<aside class="seller-info-box">
+  <div class="seller-title">판매자 정보</div>
 
-<div class="seller-profile">
-  <!--  정사각형 프로필 사진 공간 -->
-  <div class="profile-image">판매자 프로필</div>
-  
-  <!-- 판매자 이름 출력 -->
-  <div class="profile-name"> <strong>${seller.memberName}</strong></div>
-  
-	<!-- 판매중인 상품 수 표시 -->
-	<div class="product-count" id="productCount">판매중인 상품갯수: ${sellingCount}개</div>
-</div>
+  <div class="seller-profile">
+    <!-- 프로필 이미지 -->
+		  <div class="seller-profile-thumbnail">
+		    <img 
+		      src="${empty seller.profileImgPath ? '/resources/images/default.jpg' : seller.profileImgPath}" 
+		      alt="판매자 프로필 이미지" />
+		  </div>
 
+    <!-- 판매자 이름 출력 -->
+    <div class="profile-name">
+      <strong>${seller.memberName}</strong>
+    </div>
+  </div>
 
 
     <!-- 판매자 링크 영역 - 항상 하단에 위치 -->
     <div class="seller-links">
-      <a href="/product/sellerProfile?memberNo=${product.memberNo}">판매자의 다른 상품 보기</a><br>
+      <a href="/product/seller?memberNo=${not empty product.memberNo ? product.memberNo : 'M00000001'}">판매자의 다른 상품 보기</a>
+		<br>
       <a href="#">판매자 후기 작성하기</a>
     </div>
   </aside>
@@ -1034,9 +1150,6 @@ textarea::placeholder {
 				 </button>
 				</c:if>
               <button class="comment-box-reply-btn" onclick="openReplyModal(${comment.commentNo})">답글</button>
-              <button class="comment-box-report-btn">
-                <span class="material-icons">block</span>신고하기
-              </button>
             </div>
           </div>
         </div>
@@ -1058,20 +1171,17 @@ textarea::placeholder {
                     <fmt:formatDate value="${reply.createdDate}" pattern="yyyy-MM-dd" />
                   </span>
                   <div class="comment-box-actions">
-                  <c:if test="${loginMember.memberNo == comment.memberNo}">
-					<button class="comment-box-edit-btn"
-					        onclick="openEditModal(${comment.commentNo}, '${fn:replace(fn:replace(comment.content, '\'', '\\\'') , '&#10;', '')}')">
-					  수정
-					</button>
-				</c:if>
+					 <c:if test="${loginMember.memberNo == reply.memberNo}">
+					  <button class="comment-box-edit-btn"
+					          onclick="openEditModal(${reply.commentNo}, '${fn:replace(fn:replace(reply.content, '\'', '\\\'') , '&#10;', '')}')">
+					    수정
+					  </button>
+					</c:if>
                   <c:if test="${loginMember.memberNo == reply.memberNo or loginMember.memberNickname eq 'admin'}">
 					  <button class="comment-box-delete-btn" onclick="deleteComment(${reply.commentNo}, '${reply.productNo}')">
 					    삭제
 					  </button>
 				  </c:if>
-                    <button class="comment-box-report-btn">
-                      <span class="material-icons">block</span>신고하기
-                    </button>
                   </div>
                 </div>
               </div>
@@ -1148,52 +1258,107 @@ textarea::placeholder {
 </div>
 
 
-
-
-
     </main>
+		<div class="fixed" style="right: 280px;">
+			<div class="top" onclick="scrollToTop()">
+				<span class="material-symbols-outlined">arrow_upward</span>
+			</div>
+		</div>
     <jsp:include page="/WEB-INF/views/common/footer.jsp"/>
     
+
 <script>
+	//우측 하단 ↑ 버튼 클릭 시 상단으로 스크롤 이동
+    function scrollToTop() {
+        window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // 부드럽게 스크롤
+        });
+    }
+</script>
+
+<script>
+// DOM 로드 후 슬라이드 관련 로직 실행
 document.addEventListener("DOMContentLoaded", function () {
   const images = document.querySelectorAll(".slide-image");
-  const indicators = document.querySelectorAll(".indicator-dot");
+  const indicators = document.querySelectorAll(".indicator-dot"); // 존재 시 인디케이터도 처리
   const prevBtn = document.querySelector(".slide-btn.left");
   const nextBtn = document.querySelector(".slide-btn.right");
 
   let currentIndex = 0;
 
+  // 현재 인덱스의 이미지와 인디케이터만 'active' 클래스 부여
   function showImage(index) {
-    if (images.length === 0 || indicators.length === 0) return;
+    if (images.length === 0) return;
 
     images.forEach((img, i) => {
-      img.style.display = i === index ? "block" : "none";
-      indicators[i].classList.toggle("active", i === index);
+      img.classList.remove("active");
     });
+    if (indicators.length > 0) {
+      indicators.forEach((dot, i) => {
+        dot.classList.remove("active");
+      });
+    }
+
+    images[index].classList.add("active");
+    if (indicators.length > 0) {
+      indicators[index].classList.add("active");
+    }
 
     currentIndex = index;
   }
 
-  if (prevBtn && nextBtn) {
+  // 버튼 이벤트 - 이전
+  if (prevBtn) {
     prevBtn.addEventListener("click", () => {
       const newIndex = (currentIndex - 1 + images.length) % images.length;
       showImage(newIndex);
     });
+  }
 
+  // 버튼 이벤트 - 다음
+  if (nextBtn) {
     nextBtn.addEventListener("click", () => {
       const newIndex = (currentIndex + 1) % images.length;
       showImage(newIndex);
     });
   }
 
-  indicators.forEach((dot, i) => {
-    dot.addEventListener("click", () => showImage(i));
-  });
+  // 인디케이터 클릭 이동
+  if (indicators.length > 0) {
+    indicators.forEach((dot, i) => {
+      dot.addEventListener("click", () => showImage(i));
+    });
+  }
 
-  showImage(0); // 초기화
+  showImage(0); // 첫 이미지 초기 표시
 });
 </script>
 
+
+
+<script>
+
+	// 비슷한 상품 찾아보기 전용 슬라이더
+document.addEventListener('DOMContentLoaded', () => {
+  const slider = document.getElementById('relatedListSlider');
+  const prevBtn = document.getElementById('relatedPrevBtn');
+  const nextBtn = document.getElementById('relatedNextBtn');
+
+  //  슬라이드 너비 기준 자동 계산
+  const scrollAmount = 600; // 600정도 이동
+
+  if (slider && prevBtn && nextBtn) {
+    prevBtn.addEventListener('click', () => {
+      slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    nextBtn.addEventListener('click', () => {
+      slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+  }
+});
+</script>
 
 
 
@@ -1203,14 +1368,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const textareas = document.querySelectorAll('.comment-textarea');
 
   textareas.forEach(textarea => {
-    const countSpan = textarea
-      .closest('.comment-input-wrap, .comment-box-reply-form')
-      .querySelector('.current-count');
+    const container = textarea.closest('.comment-input-wrap, .comment-box-reply-form');
 
-    if (countSpan) {
-      textarea.addEventListener('input', () => {
-        countSpan.textContent = textarea.value.length;
-      });
+    // 보호 조건: container가 존재할 때만 querySelector 실행
+    if (container) {
+      const countSpan = container.querySelector('.current-count');
+      if (countSpan) {
+        textarea.addEventListener('input', () => {
+          countSpan.textContent = textarea.value.length;
+        });
+      }
     }
   });
 });
@@ -1224,23 +1391,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const replyForm = commentItem.querySelector('.comment-box-reply-form');
     replyForm.style.display = (replyForm.style.display === 'none') ? 'block' : 'none';
   }
-</script>
-
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const textareas = document.querySelectorAll('.comment-textarea');
-  textareas.forEach(textarea => {
-    const countSpan = textarea
-      .closest('.comment-input-wrap, .comment-box-reply-form')
-      .querySelector('.current-count');
-    if (countSpan) {
-      textarea.addEventListener('input', () => {
-        countSpan.textContent = textarea.value.length;
-      });
-    }
-  });
-});
 </script>
 
 <script>
@@ -1295,5 +1445,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 </script>
+
+<!-- ★동주 : 바로구매 버튼 클릭 시 결제 페이지 이동 연결 스크립트★ 시작-->
+<script>
+function goToOrderPage(productId) {
+  if (productId) {
+    // 구매 페이지 URL (OrderStartServlet의 매핑된 주소)
+    const orderStartPageUrl = "${pageContext.request.contextPath}/order/orderStart?productId=" + productId;
+    window.location.href = orderStartPageUrl;
+  } else {
+    alert("상품 정보를 가져올 수 없습니다.");
+  }
+}
+</script>
+<!-- ★동주 : 바로구매 버튼 클릭 시 결제 페이지 이동 연결 스크립트★ 끝-->
+
 </body>
 </html>
+
+
+

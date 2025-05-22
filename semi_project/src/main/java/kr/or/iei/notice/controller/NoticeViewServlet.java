@@ -1,6 +1,7 @@
 package kr.or.iei.notice.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.notice.model.service.NoticeService;
 import kr.or.iei.notice.model.vo.Notice;
 
@@ -35,15 +37,20 @@ public class NoticeViewServlet extends HttpServlet {
 		String noticeNo = request.getParameter("noticeNo");
 		boolean updChk = Boolean.valueOf(request.getParameter("updChk")); //조회수 업데이트 여부
 		
-		//로직 - 상세 정보 조회
+		//로직
 		NoticeService service = new NoticeService();
+		//상세 정보
 		Notice notice = service.selectOneNotice(noticeNo, updChk);
+		//파일 정보
+		List<Files> fileList = service.selectNoticeFileList(noticeNo);
+		
 		
 		//결과 처리
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/notice/view.jsp");
 		
 		//4.2 화면 구현에 필요한 데이터 등록
 		request.setAttribute("notice", notice);
+		request.setAttribute("fileList", fileList);
 		
 		//4.3 페이지 이동
 		view.forward(request, response);

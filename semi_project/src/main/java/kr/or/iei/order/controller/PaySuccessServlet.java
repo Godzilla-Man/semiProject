@@ -1,0 +1,82 @@
+package kr.or.iei.order.controller;
+
+import java.io.IOException;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import kr.or.iei.order.model.service.OrderService;
+import kr.or.iei.order.model.vo.Purchase;
+import kr.or.iei.product.model.vo.Product;
+
+/**
+ * Servlet implementation class PaySuccessServlet
+ */
+@WebServlet("/order/paySuccess")
+public class PaySuccessServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public PaySuccessServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//1. 인코딩 설정 - 필터 처리
+		
+		//2. 값 추출(토스페이먼츠에서 성공 시 전달하는 파라미터)
+		String paymentKey = request.getParameter("paymentKey"); // PG사 거래키
+        String orderId = request.getParameter("orderId");       // 우리 시스템의 주문번호
+        String amountStr = request.getParameter("amount");      // 실제 결제된 금액
+        
+        int amount = 0;
+        amount = Integer.parseInt(amountStr);
+        
+        //3. 비지니스 로직 호출
+        OrderService orderService = new OrderService();
+        Purchase purchase = orderService.processSuccessPay(orderId, paymentKey, "TossPayments", amount);
+        
+        if (purchase != null) {
+            // 결제 및 주문 처리 성공
+        	System.out.println("PaySuccessServlet - purchase.getProductNo(): " + purchase.getProductNo());
+            Product product = orderService.selectOrderProduct(purchase.getProductNo()); // 상품 정보 조회
+            System.out.println("PaySuccessServlet - product 객체: " + product); // 
+            
+            request.setAttribute("purchase", purchase); // 처리된 구매 정보
+            request.setAttribute("product", product);   // 관련 상품 정보
+            
+            RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/order/orderFinish.jsp");
+            view.forward(request, response);
+        } else {
+            // 결제는 PG사에서 성공했을 수 있으나, 우리 시스템 내부 처리 중 오류 발생
+            // (예: DB 업데이트 실패, 금액 불일치 등)
+            // OrderService.processSuccessfulPayment 내부에서 이미 롤백 처리됨
+            request.setAttribute("orderId", orderId);
+            request.setAttribute("errorTitle", "결제 처리 오류");
+            request.setAttribute("errorMessage", "결제는 승인되었으나 주문 처리 중 오류가 발생했습니다. 관리자에게 문의하거나 잠시 후 주문 내역을 확인해주세요. (주문번호: " + orderId + ")");
+            // 이 경우 사용자는 혼란을 겪을 수 있으므로, 실제 서비스에서는 더욱 상세한 오류 처리 및 안내가 필요합니다.
+            RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/order/orderFail.jsp"); // 실패 페이지로 안내
+            view.forward(request, response);
+        }        
+
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}

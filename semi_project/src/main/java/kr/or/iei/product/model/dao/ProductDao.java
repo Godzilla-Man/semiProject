@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import kr.or.iei.comment.model.vo.Comment;
 import kr.or.iei.category.model.vo.Category;
@@ -22,50 +24,51 @@ public class ProductDao {
      * 상품 등록 DAO 메서드
      * 상품 번호는 시퀀스 + 날짜 조합으로 직접 생성
      */
-    public int insertProduct(Connection conn, Product p) {
-        int result = 0;
+	public int insertProduct(Connection conn, Product p) {
+	    int result = 0;
+	    PreparedStatement pstmt = null;
+	    ResultSet rset = null;
 
-        PreparedStatement pstmt = null;
-        ResultSet rset = null;
+	    try {
+	        // 1. 상품번호 생성 (P + yymmdd + 시퀀스 4자리)
+	        String query1 = "SELECT 'P' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD(SEQ_PROD.NEXTVAL, 4, '0') FROM DUAL";
+	        pstmt = conn.prepareStatement(query1);
+	        rset = pstmt.executeQuery();
+	        if (rset.next()) {
+	            p.setProductNo(rset.getString(1));
+	        }
+	        JDBCTemplate.close(pstmt);
+	        JDBCTemplate.close(rset);
 
-        try {
-            // 1. 상품번호 생성 (P + yymmdd + 시퀀스 4자리)
-            String query1 = "SELECT 'P' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD(SEQ_PROD.NEXTVAL, 4, '0') FROM DUAL";
-            pstmt = conn.prepareStatement(query1);
-            rset = pstmt.executeQuery();
-            if (rset.next()) {
-                p.setProductNo(rset.getString(1)); // 상품 VO에 번호 설정
-            }
-            JDBCTemplate.close(pstmt);
-            JDBCTemplate.close(rset);
+	        // 2. 상품 INSERT
+	        String query2 = "INSERT INTO TBL_PROD ( " +
+	                        "PRODUCT_NO, MEMBER_NO, PRODUCT_NAME, PRODUCT_INTROD, PRODUCT_PRICE, " +
+	                        "CATEGORY_CODE, TRADE_METHOD_CODE, STATUS_CODE, ENROLL_DATE, READ_COUNT, " +
+	                        "PRICE_OFFER_YN " +
+	                        ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, DEFAULT, DEFAULT, ?)";
 
-            // 2. 상품 정보 INSERT
-            String query2 = "INSERT INTO TBL_PROD (" +
-            	    "PRODUCT_NO, MEMBER_NO, PRODUCT_NAME, PRODUCT_INTROD, PRODUCT_PRICE, " +
-            	    "CATEGORY_CODE, TRADE_METHOD_CODE, STATUS_CODE, ENROLL_DATE, READ_COUNT, " +
-            	    "PRICE_OFFER_YN" +
-            	    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, DEFAULT, DEFAULT, ?)";
-            pstmt = conn.prepareStatement(query2);
-            pstmt.setString(1, p.getProductNo());
-            pstmt.setString(2, p.getMemberNo());
-            pstmt.setString(3, p.getProductName());
-            pstmt.setString(4, p.getProductIntrod());
-            pstmt.setInt(5, p.getProductPrice());
-            pstmt.setString(6, p.getCategoryCode());
-            pstmt.setString(7, p.getTradeMethodCode());
-            pstmt.setString(8, "S01"); // 기본 상태코드: 판매중
-            pstmt.setString(9, p.getPriceOfferYn());
+	        pstmt = conn.prepareStatement(query2);
+	        pstmt.setString(1, p.getProductNo());
+	        pstmt.setString(2, p.getMemberNo());
+	        pstmt.setString(3, p.getProductName());
+	        pstmt.setString(4, p.getProductIntrod());
+	        pstmt.setInt(5, p.getProductPrice());
+	        pstmt.setString(6, p.getCategoryCode());
+	        pstmt.setString(7, p.getTradeMethodCode());
+	        pstmt.setString(8, p.getStatusCode()); // 일반적으로 "S01"
+	        pstmt.setString(9, p.getPriceOfferYn());
 
-            result = pstmt.executeUpdate();
+	        result = pstmt.executeUpdate();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            JDBCTemplate.close(pstmt);
-        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(pstmt);
+	    }
 
-        return result;
-    }
+	    return result;
+	}
+
 
     // 여러개의 첨부 파일을 DB에 저장하는 DAO 메서드
     // 첨부파일 리스트를 반복문으로 저장
@@ -99,7 +102,7 @@ public class ProductDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select s.category_name as small_ctg_name, m.category_name as mid_ctg_name, l.category_name as lar_ctg_name from tbl_prod_category s join tbl_prod_category m on (s.par_category_code = m.category_code) join tbl_prod_category l on(m.par_category_code = l.category_code) where s.category_code = ?";
+		String query = "select s.category_code as category_code, s.category_name as small_ctg_name, m.category_name as mid_ctg_name, l.category_name as lar_ctg_name from tbl_prod_category s join tbl_prod_category m on (s.par_category_code = m.category_code) join tbl_prod_category l on(m.par_category_code = l.category_code) where s.category_code = ?";
 		
 		Category ctg = null;
 		
@@ -112,6 +115,7 @@ public class ProductDao {
 			
 			if(rset.next()) {
 				ctg = new Category();
+				ctg.setCategoryCode(rset.getString("category_code"));
 				ctg.setCategoryName(rset.getString("small_ctg_name"));
 				ctg.setMidCategoryName(rset.getString("mid_ctg_name"));
 				ctg.setLarCategoryName(rset.getString("lar_ctg_name"));
@@ -127,18 +131,22 @@ public class ProductDao {
 		return ctg;
 	}
 
-	public ArrayList<Product> searchProductName(Connection conn, String productName) {
+	//상품명으로 검색 시 최신순 상품 리스트
+	public ArrayList<Product> searchProductNameDesc(Connection conn, String productName, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select product_no, product_name, product_price from tbl_prod where product_name like ?";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 order by prod.enroll_date desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
 		try {
 			pstmt = conn.prepareStatement(query);
 			
-			pstmt.setString(1, "%" + productName + "%");
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, "%" + productName + "%");
 			
 			rset = pstmt.executeQuery();
 			
@@ -147,6 +155,8 @@ public class ProductDao {
 				p.setProductNo(rset.getString("product_no"));
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -161,18 +171,22 @@ public class ProductDao {
 		return productList;
 	}
 
-	public ArrayList<Product> searchMemberNickname(Connection conn, String memberNickname) {
+	//작성자 닉네임으로 검색 시 최신순 상품 리스트
+	public ArrayList<Product> searchMemberNicknameDesc(Connection conn, String memberNickname, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select product_no, product_name, product_price from tbl_prod where member_no = (select member_no from tbl_member where member_nickname = ?)";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 order by prod.enroll_date desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
 		try {
 			pstmt = conn.prepareStatement(query);
 			
-			pstmt.setString(1, memberNickname);
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, memberNickname);
 			
 			rset = pstmt.executeQuery();
 			
@@ -181,6 +195,8 @@ public class ProductDao {
 				p.setProductNo(rset.getString("product_no"));
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productList.add(p);
 			}
@@ -195,16 +211,21 @@ public class ProductDao {
 		return productList;
 	}
 
-	public ArrayList<Product> selectAllList(Connection conn) {
+	//최신순 전체 상품 리스트
+	public ArrayList<Product> selectAllListDesc(Connection conn, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String qeury = "select * from tbl_prod";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 order by prod.enroll_date desc, f.file_no asc";
 		
-		ArrayList<Product> productAllList = new ArrayList<Product>();
+		ArrayList<Product> productList = new ArrayList<Product>();
 		
 		try {
-			pstmt = conn.prepareStatement(qeury);
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
 			
 			rset = pstmt.executeQuery();
 			
@@ -213,8 +234,10 @@ public class ProductDao {
 				p.setProductNo(rset.getString("product_no"));
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
-				productAllList.add(p);
+				productList.add(p);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -224,21 +247,25 @@ public class ProductDao {
 			JDBCTemplate.close(pstmt);
 		}
 		
-		return productAllList;
+		return productList;
 	}
 
-	public ArrayList<Product> selectCategoryList(Connection conn, String category) {
+	//카테고리별 최신순 상품 리스트
+	public ArrayList<Product> selectCategoryListDesc(Connection conn, String category, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select product_no, product_name, product_price from tbl_prod where category_code = ?";
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 order by prod.enroll_date desc, f.file_no asc";
 		
 		ArrayList<Product> productCtgList = new ArrayList<Product>();
 		
 		try {
 			pstmt = conn.prepareStatement(query);
 			
-			pstmt.setString(1, category);
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, category);
 			
 			rset = pstmt.executeQuery();
 			
@@ -247,6 +274,8 @@ public class ProductDao {
 				p.setProductNo(rset.getString("product_no"));
 				p.setProductName(rset.getString("product_name"));
 				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
 				
 				productCtgList.add(p);
 			}
@@ -320,41 +349,6 @@ public class ProductDao {
 		return wishList;
 	}
 
-	public ArrayList<WishList> selectMemberWishList(Connection conn, String memberNo) {
-		PreparedStatement pstmt = null;
-		ResultSet rset = null;
-		
-		String query = "select * form tbl_wishlist where member_no = ?";
-		
-		ArrayList<WishList> memberWishList = new ArrayList<WishList>();
-		
-		try {
-			pstmt = conn.prepareStatement(query);
-			
-			pstmt.setString(1, memberNo);
-			
-			rset = pstmt.executeQuery();
-			
-			while(rset.next()) {
-				WishList wishList = new WishList();
-				wishList.setWishListNo(rset.getInt("wishlist_no"));
-				wishList.setProductNo(rset.getString("product_no"));
-				wishList.setMemberNo(rset.getString("member_no"));
-				wishList.setWishListDate(rset.getString("wishlist_date"));
-				
-				memberWishList.add(wishList);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			JDBCTemplate.close(rset);
-			JDBCTemplate.close(pstmt);
-		}
-		
-		return memberWishList;
-	}
-
 	public Product selectMyProd(Connection conn, String memberNo, String productNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
@@ -384,6 +378,45 @@ public class ProductDao {
 			JDBCTemplate.close(pstmt);
 		}
 		return prod;
+	}
+
+	//오래된순 전체 상품 리스트
+	public ArrayList<Product> selectAllListAsc(Connection conn, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String qeury = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 order by prod.enroll_date asc, f.file_no asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(qeury);
+			
+			pstmt.setString(1, memberNo);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
 	}
     
     /**
@@ -851,20 +884,18 @@ public class ProductDao {
         ResultSet rset = null;
 
         String query =
-        	    "SELECT * FROM ( " +
-        	    "    SELECT P.PRODUCT_NO, P.PRODUCT_NAME, P.PRODUCT_PRICE, " +
-        	    "           F.FILE_PATH " +
-        	    "    FROM TBL_PROD P " +
-        	    "    LEFT JOIN ( " +
-        	    "        SELECT PRODUCT_NO, MIN(FILE_NO) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_NO, " +
-        	    "               MIN(FILE_PATH) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_PATH " +
-        	    "        FROM TBL_FILE " +
-        	    "        GROUP BY PRODUCT_NO " +
-        	    "    ) F ON P.PRODUCT_NO = F.PRODUCT_NO " +
-        	    "    WHERE P.CATEGORY_CODE = ? AND P.PRODUCT_NO != ? " +
-        	    "    ORDER BY P.ENROLL_DATE DESC " +
-        	    ") WHERE ROWNUM <= 6";
-
+        	    "SELECT P.PRODUCT_NO, P.PRODUCT_NAME, P.PRODUCT_PRICE, P.STATUS_CODE, " +
+        	    "       F.FILE_PATH " +
+        	    "FROM TBL_PROD P " +
+        	    "LEFT JOIN ( " +
+        	    "    SELECT PRODUCT_NO, MIN(FILE_NO) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_NO, " +
+        	    "           MIN(FILE_PATH) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_PATH " +
+        	    "    FROM TBL_FILE " +
+        	    "    GROUP BY PRODUCT_NO " +
+        	    ") F ON P.PRODUCT_NO = F.PRODUCT_NO " +
+        	    "WHERE P.CATEGORY_CODE = ? " +
+        	    "  AND P.PRODUCT_NO != ? " +
+        	    "ORDER BY P.ENROLL_DATE DESC";
 
         try {
             pstmt = conn.prepareStatement(query);
@@ -878,7 +909,7 @@ public class ProductDao {
                 p.setProductName(rset.getString("PRODUCT_NAME"));
                 p.setProductPrice(rset.getInt("PRODUCT_PRICE"));
                 p.setThumbnailPath(rset.getString("FILE_PATH")); // 대표 이미지 경로
-
+                p.setStatusCode(rset.getString("STATUS_CODE"));
                 list.add(p);
             }
 
@@ -973,7 +1004,835 @@ public class ProductDao {
         return result;
     }
 
+    
+ // 판매자가 등록한 '판매중' 상품 목록 조회 (상품별 썸네일 1장만 설정)
+    public List<Product> selectSellingProductByMember(Connection conn, String memberNo) {
+        List<Product> list = new ArrayList<>();
+        Map<String, Product> productMap = new LinkedHashMap<>();
 
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+
+        String query =
+            "SELECT P.PRODUCT_NO, P.PRODUCT_NAME, P.PRODUCT_PRICE, " +
+            "       P.PRICE_OFFER_YN, P.PRODUCT_QUANTITY, F.FILE_PATH,P.TRADE_METHOD_CODE, P.ENROLL_DATE " +
+            "FROM TBL_PROD P " +
+            "LEFT JOIN ( " +
+            "    SELECT PRODUCT_NO, MIN(FILE_PATH) AS FILE_PATH " +
+            "    FROM TBL_FILE GROUP BY PRODUCT_NO " +
+            ") F ON P.PRODUCT_NO = F.PRODUCT_NO " +
+            "WHERE P.MEMBER_NO = ? AND P.STATUS_CODE = 'S01' " +
+            "ORDER BY P.ENROLL_DATE DESC";
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, memberNo);
+            rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                Product p = new Product();
+                p.setProductNo(rset.getString("PRODUCT_NO"));
+                p.setProductName(rset.getString("PRODUCT_NAME"));
+                p.setProductPrice(rset.getInt("PRODUCT_PRICE"));
+                p.setPriceOfferYn(rset.getString("PRICE_OFFER_YN"));
+                p.setProductQuantity(rset.getInt("PRODUCT_QUANTITY"));
+                p.setThumbnailPath(rset.getString("FILE_PATH"));  // 썸네일 1장
+                p.setTradeMethodCode(rset.getString("TRADE_METHOD_CODE")); 
+                p.setEnrollDate(rset.getDate("ENROLL_DATE"));
+                
+                list.add(p);
+            
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+
+        return list;
+    }
+
+
+    // 특정 판매자의 거래 완료(S07 상태) 상품 수를 조회하는 DAO 메서드
+    public int countCompletedSalesByMember(Connection conn, String memberNo) {
+        int count = 0;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+
+        String query = "SELECT COUNT(*) FROM TBL_PROD WHERE MEMBER_NO = ? AND STATUS_CODE = 'S07'";
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, memberNo);
+            rset = pstmt.executeQuery();
+
+            if (rset.next()) {
+                count = rset.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+
+        return count;
+    }
+
+
+    // 판매자에 대한 좋아요 또는 싫어요 개수를 조회하는 DAO 메서드
+    public int countReactionsByMember(Connection conn, String memberNo, char type) {
+        int count = 0;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+
+        String query = "SELECT COUNT(*) FROM TBL_MEMBER_REACTION WHERE TARGET_MEMBER_NO = ? AND REACTION_TYPE = ?";
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, memberNo);
+            pstmt.setString(2, String.valueOf(type));
+            rset = pstmt.executeQuery();
+
+            if (rset.next()) {
+                count = rset.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+
+        return count;
+    }
+    
+ // 해당 회원이 특정 대상에게 특정 반응을 했는지 여부 확인
+    public boolean hasReaction(Connection conn, String reactMemberNo, String targetMemberNo, char type) {
+        boolean exists = false;
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+
+        String query = "SELECT COUNT(*) FROM TBL_MEMBER_REACTION WHERE REACT_MEMBER_NO = ? AND TARGET_MEMBER_NO = ? AND REACTION_TYPE = ?";
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, reactMemberNo);
+            pstmt.setString(2, targetMemberNo);
+            pstmt.setString(3, String.valueOf(type));
+            rset = pstmt.executeQuery();
+
+            if (rset.next() && rset.getInt(1) > 0) {
+                exists = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+
+        return exists;
+    }
+
+    // 반응(좋아요/싫어요) 기록 삽입
+    public int insertReaction(Connection conn, String reactMemberNo, String targetMemberNo, char type) {
+        int result = 0;
+        PreparedStatement pstmt = null;
+
+        String query = "INSERT INTO TBL_MEMBER_REACTION (REACTION_NO, REACT_MEMBER_NO, TARGET_MEMBER_NO, REACTION_TYPE, REACTION_DATE) "
+                     + "VALUES (SEQ_MEMBER_REACTION.NEXTVAL, ?, ?, ?, SYSDATE)";
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, reactMemberNo);
+            pstmt.setString(2, targetMemberNo);
+            pstmt.setString(3, String.valueOf(type));
+            result = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(pstmt);
+        }
+
+        return result;
+    }
+
+    // 반응(좋아요/싫어요) 기록 삭제
+    public int deleteReaction(Connection conn, String reactMemberNo, String targetMemberNo, char type) {
+        int result = 0;
+        PreparedStatement pstmt = null;
+
+        String query = "DELETE FROM TBL_MEMBER_REACTION WHERE REACT_MEMBER_NO = ? AND TARGET_MEMBER_NO = ? AND REACTION_TYPE = ?";
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, reactMemberNo);
+            pstmt.setString(2, targetMemberNo);
+            pstmt.setString(3, String.valueOf(type));
+            result = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(pstmt);
+        }
+
+        return result;
+    }
+
+    //찜하기 삭제
+	public int delWishList(Connection conn, String memberNo, String productNo) {
+		PreparedStatement pstmt = null;
+		
+		String query = "delete from tbl_wishlist where member_no = ? and product_no = ?";
+		
+		int result = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, productNo);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return result;
+	}
+
+
+	public static int updateProductStatusQuantity(Connection conn, String productNo, String string, int i) {
+		PreparedStatement pstmt = null;
+		int result = 0;
+		String query = "UPDATE TBL_PROD SET STATUS_CODE = ?, PRODUCT_QUANTITY = ? WHERE PRODUCT_NO = ?";
+		
+		try {
+			pstmt=conn.prepareStatement(query);
+			pstmt.setString(1, "S02");
+			pstmt.setInt(2, 0);
+			pstmt.setString(3, productNo);
+			result = pstmt.executeUpdate();
+		}catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+		return result;
+}
+
+	//최저가순 전체 상품 리스트
+	public ArrayList<Product> selectAllListCheap(Connection conn, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+
+	//최고가순 전체 상품 리스트
+	public ArrayList<Product> selectAllListExpen(Connection conn, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 order by prod.product_price desc, f.file_no asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+
+	//가격설정 전체 상품 리스트
+	public ArrayList<Product> selectAllListPrice(Connection conn, String memberNo, String min, String max) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, min);
+			pstmt.setString(3, max);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+
+	//카테고리별 오래된순 상품 리스트
+	public ArrayList<Product> selectCategoryListAsc(Connection conn, String category, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 order by prod.enroll_date asc, f.file_no asc";
+		
+		ArrayList<Product> productCtgList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, category);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productCtgList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productCtgList;
+	}
+
+	//카테고리별 최저가순 상품 리스트
+	public ArrayList<Product> selectCategoryListCheap(Connection conn, String category, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+		
+		ArrayList<Product> productCtgList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, category);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productCtgList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productCtgList;
+	}
+
+	//카테고리별 최고가순 상품 리스트
+	public ArrayList<Product> selectCategoryListExpen(Connection conn, String category, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 order by prod.product_price desc, f.file_no asc";
+		
+		ArrayList<Product> productCtgList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, category);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productCtgList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productCtgList;
+	}
+
+	//카테고리별 가격설정 상품 리스트
+	public ArrayList<Product> selectCategoryListPrice(Connection conn, String category, String memberNo, String min,
+			String max) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+		
+		ArrayList<Product> productCtgList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, category);
+			pstmt.setString(3, min);
+			pstmt.setString(4, max);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productCtgList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productCtgList;
+	}
+
+	//상품명으로 검색 시 오래된순 상품 리스트
+	public ArrayList<Product> searchProductNameAsc(Connection conn, String productName, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 order by prod.enroll_date asc, f.file_no asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, "%" + productName + "%");
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+
+	//작성자 닉네임으로 검색 시 오래된순 상품 리스트
+	public ArrayList<Product> searchMemberNicknameAsc(Connection conn, String memberNickname, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 order by prod.enroll_date asc, f.file_no asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, memberNickname);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+
+	//상품명으로 검색 시 최저가순 상품 리스트
+	public ArrayList<Product> searchProductNameCheap(Connection conn, String productName, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, "%" + productName + "%");
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+
+	//작성자 닉네임으로 검색 시 최저가순 상품 리스트
+	public ArrayList<Product> searchMemberNicknameCheap(Connection conn, String memberNickname, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, memberNickname);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+	
+	//상품명으로 검색 시 최고가순 상품 리스트
+	public ArrayList<Product> searchProductNameExpen(Connection conn, String productName, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 order by prod.product_price desc, f.file_no asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, "%" + productName + "%");
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+
+	//작성자 닉네임으로 검색 시 최고가순 상품 리스트
+	public ArrayList<Product> searchMemberNicknameExpen(Connection conn, String memberNickname, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 order by prod.product_price desc, f.file_no asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, memberNickname);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+	
+	//상품명으로 검색 시 가격설정 상품 리스트
+	public ArrayList<Product> searchProductNamePrice(Connection conn, String productName, String memberNo, String min, String max) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, "%" + productName + "%");
+			pstmt.setString(3, min);
+			pstmt.setString(4, max);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
+
+	//작성자 닉네임으로 검색 시 가격설정 상품 리스트
+	public ArrayList<Product> searchMemberNicknamePrice(Connection conn, String memberNickname, String memberNo, String min, String max) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
+				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			pstmt.setString(2, memberNickname);
+			pstmt.setString(3, min);
+			pstmt.setString(4, max);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return productList;
+	}
 }
    
 

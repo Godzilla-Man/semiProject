@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.event.model.vo.Event;
@@ -134,7 +135,7 @@ public class EventDao {
 		return result;
 	}
 
-	public int insertEventFile(Connection conn, Files file) {
+	public int insertEventFile(Connection conn, Event event, List<Files> fileList) {
 		PreparedStatement pstmt = null;
 		
 		int result = 0;
@@ -144,11 +145,12 @@ public class EventDao {
 		try {
 			pstmt = conn.prepareStatement(qeury);
 			
-			pstmt.setString(1, file.getEventNo());
-			pstmt.setString(2, file.getFileName());
-			pstmt.setString(3, file.getFilePath());
-			
-			result = pstmt.executeUpdate();
+			for(Files f : fileList) {			
+				pstmt.setString(1, event.getEventNo());
+				pstmt.setString(2, f.getFileName());
+				pstmt.setString(3, f.getFilePath());
+				result += pstmt.executeUpdate();
+			}
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -220,11 +222,11 @@ public class EventDao {
 		return result;
 	}
 
-	public ArrayList<Files> selectEventFileList(Connection conn, String eventNo) {
+	public List<Files> selectEventFileList(Connection conn, String eventNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		ArrayList<Files> fileList = new ArrayList<Files>();
+		List<Files> fileList = new ArrayList<>();
 		
 		String query = "select file_no, file_name, file_path from tbl_file where event_no = ?";
 		
@@ -276,21 +278,20 @@ public class EventDao {
 		} finally {
 			JDBCTemplate.close(pstmt);
 		}
-		
 		return result;
 	}
 
-	public int deleteEventFile(Connection conn, String preFileNo) {
+	public int deleteEventFile(Connection conn, Event event) {
 		PreparedStatement pstmt = null;
 		
-		String query = "delete from tbl_file where file_no = ?";
+		String query = "delete from tbl_file where event_no = ?";
 		
 		int result = 0;
 		
 		try {
 			pstmt = conn.prepareStatement(query);
 			
-			pstmt.setString(1, preFileNo);
+			pstmt.setString(1, event.getEventNo());
 			
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
@@ -299,7 +300,6 @@ public class EventDao {
 		} finally {
 			JDBCTemplate.close(pstmt);
 		}
-		
 		return result;
 	}
 
@@ -324,6 +324,42 @@ public class EventDao {
 		}
 		
 		return result;
+	}
+
+	public List<Files> selectFirstEventFileList(Connection conn) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		List<Files> fileList = new ArrayList<>();
+		
+		String query = "select file_no, file_name, file_path, event_no from tbl_file where event_no like '%' order by event_no desc";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {				
+				for(int i=0; i<1; i++) {
+					Files file = new Files();
+					file.setFileNo(rset.getInt("file_no"));
+					file.setFileName(rset.getString("file_name"));
+					file.setFilePath(rset.getString("file_path"));
+					file.setEventNo(rset.getString("event_no"));
+					
+					fileList.add(file);
+				}
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return fileList;
 	}
 	
 }

@@ -1,6 +1,6 @@
 package kr.or.iei.event.model.vo;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import kr.or.iei.file.model.vo.Files;
 import lombok.AllArgsConstructor;
@@ -20,5 +20,5 @@ public class Event {
 	private String eventEnrollDate;
 	private int readCount;
 	
-	private ArrayList<Files> fileList;
+	private List<Files> fileList;
 }

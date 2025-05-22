@@ -13,11 +13,12 @@ import kr.or.iei.member.model.vo.Member;
 
 public class AdminDao {
 
+	//전체 회원 조회
 	public ArrayList<Member> selectAllMember(Connection conn) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select * from tbl_member";
+		String query = "select member_no, member_id, member_nickname, member_name, trunc(member_birth) as member_birth, member_phone, member_addr, member_email, trunc(join_date) as join_date from tbl_member";
 		
 		ArrayList<Member> memberList = new ArrayList<Member>();
 		
@@ -51,11 +52,12 @@ public class AdminDao {
 		return memberList;
 	}
 
+	//전체 신고 리스트 조회
 	public ArrayList<ReportPost> selectReportPost(Connection conn) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select report_no, b.report_reason as report_reason, reported_member_no, a.product_no as product_no, c.member_no as product_member_no, report_date from tbl_report_post a join tbl_report b on (a.report_code = b.report_code) join tbl_prod c on (a.product_no = c.product_no)";
+		String query = "select report_no, b.report_reason as report_reason, reported_member_no, a.product_no as product_no, c.member_no as product_member_no, trunc(report_date) as report_date from tbl_report_post a join tbl_report b on (a.report_code = b.report_code) join tbl_prod c on (a.product_no = c.product_no)";
 		
 		ArrayList<ReportPost> reportList = new ArrayList<ReportPost>();
 		
@@ -86,11 +88,12 @@ public class AdminDao {
 		return reportList;
 	}
 
+	//회원 한 명 조회
 	public Member searchOneMember(Connection conn, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String qeury = "select * from tbl_member where member_no = ?";
+		String qeury = "select member_no, member_id, member_nickname, member_name, trunc(member_birth), member_phone, member_addr, member_email, trunc(join_date) from tbl_member where member_no = ?";
 		
 		Member member = null;
 		
@@ -124,6 +127,7 @@ public class AdminDao {
 		return member;
 	}
 
+	//신고당한 횟수
 	public int searchReportedCount(Connection conn, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
@@ -153,11 +157,12 @@ public class AdminDao {
 		return cnt;
 	}
 
+	//블랙 리스트 조회
 	public ArrayList<BlackList> selectBlackList(Connection conn) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		
-		String query = "select a.black_no as black_no, c.member_no as black_member_no, a.black_reason as black_reason, a.black_date as black_date from tbl_blacklist a join tbl_report_post b on (a.report_no = b.report_no) join tbl_prod c on (b.product_no = c.product_no)";
+		String query = "select a.black_no as black_no, c.member_no as black_member_no, a.black_reason as black_reason, trunc(a.black_date) as black_date from tbl_blacklist a join tbl_report_post b on (a.report_no = b.report_no) join tbl_prod c on (b.product_no = c.product_no)";
 		
 		ArrayList<BlackList> blackList = new ArrayList<BlackList>();
 		
@@ -186,6 +191,7 @@ public class AdminDao {
 		return blackList;
 	}
 
+	//블랙 여부
 	public int searchMemberBlack(Connection conn, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
@@ -214,7 +220,8 @@ public class AdminDao {
 		
 		return blackCnt;
 	}
-
+	
+	//블랙 회원 등록
 	public int insertBlackList(Connection conn, int reportNo, String blackReason) {
 		PreparedStatement pstmt = null;
 		
@@ -237,6 +244,86 @@ public class AdminDao {
 		}
 		
 		return result;
+	}
+
+	//오늘 가입한 회원 조회
+	public int countTodayMember(Connection conn) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select count(*) as count from tbl_member where trunc(join_date) = trunc(sysdate)";
+		
+		int mCnt = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {				
+				mCnt = rset.getInt("count");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		return mCnt;
+	}
+
+	//오늘 신고들어온 횟수
+	public int countTodayReport(Connection conn) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select count(*) as count from tbl_report_post where trunc(report_date) = trunc(sysdate)";
+		
+		int rCnt = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {				
+				rCnt = rset.getInt("count");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		return rCnt;
+	}
+
+	public int countTodayBlack(Connection conn) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select count(*) as count from tbl_blacklist where trunc(black_date) = trunc(sysdate)";
+		
+		int bCnt = 0;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {				
+				bCnt = rset.getInt("count");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		return bCnt;
 	}
 
 }

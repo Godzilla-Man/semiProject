@@ -17,7 +17,7 @@ public class MemberDao {
 		
 		int result = 0;
 		
-		String query = "insert into tbl_member values (to_char(sysdate, 'yymmdd') || lpad(seq_member.nextval, 4, '0'), ?, ?, ?, ?, ?, ?, ?, ?, sysdate, default)";
+		String query = "insert into tbl_member values ('M' || to_char(sysdate, 'yymmdd') || lpad(seq_member.nextval, 4, '0'), ?, ?, ?, ?, ?, ?, ?, ?, sysdate, default)";
 		
 		try {
 			pstmt = conn.prepareStatement(query);
@@ -143,7 +143,7 @@ public class MemberDao {
 		
 		return loginMember;
 	}
-	
+
 	//이름+전화번호로 아이디 찾기
 	public String searchId(Connection conn, String memberName, String memberPhone) {
 		PreparedStatement pstmt = null;
@@ -233,6 +233,53 @@ public class MemberDao {
 		return memberPw;
 	}
 
+	// 회원번호로 판매자 조회하는 메서드
+	public Member selectMemberByNo(Connection conn, String memberNo) {
+	    Member m = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rset = null;
+
+	    // 1. 회원 번호를 기준으로 전체 컬럼 조회
+	    String query = "SELECT * FROM TBL_MEMBER WHERE MEMBER_NO = ?";
+
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, memberNo);
+	        rset = pstmt.executeQuery();
+
+	        if (rset.next()) {
+	            m = new Member();
+
+	            // 2. 기본 회원 정보 세팅
+	            m.setMemberNo(rset.getString("MEMBER_NO"));
+	            m.setMemberId(rset.getString("MEMBER_ID"));
+	            m.setMemberNickname(rset.getString("MEMBER_NICKNAME"));
+	            m.setMemberName(rset.getString("MEMBER_NAME"));
+	            m.setMemberBirth(rset.getString("MEMBER_BIRTH"));   // 생년월일 (DATE → String 변환)
+	            m.setMemberPhone(rset.getString("MEMBER_PHONE"));
+	            m.setMemberAddr(rset.getString("MEMBER_ADDR"));
+	            m.setMemberEmail(rset.getString("MEMBER_EMAIL"));
+
+	            // 3. 가입일 및 회원등급 정보
+	            m.setJoin_date(rset.getString("JOIN_DATE"));        // 가입일
+	            m.setMember_rate(String.valueOf(rset.getInt("MEMBER_RATE"))); // NUMBER 타입을 문자열로 변환
+
+	            // 4. 이하 컬럼은 실제 테이블에 존재하지 않으므로 주석 처리 (※ 존재 시 복구)
+	            // m.setReportedCount(rset.getInt("REPORTED_COUNT")); 
+	            // m.setBlackCount(rset.getInt("BLACK_COUNT"));
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();  // 예외 발생 시 콘솔 출력
+	    } finally {
+	        // 5. 자원 해제
+	        JDBCTemplate.close(rset);
+	        JDBCTemplate.close(pstmt);
+	    }
+
+	    return m;
+	}
+
 	//회원정보 수정
 	public int updateMember(Connection conn, Member updMember) {
 		PreparedStatement pstmt = null;
@@ -270,4 +317,5 @@ public class MemberDao {
 		
 		return result;
 	}
+
 }

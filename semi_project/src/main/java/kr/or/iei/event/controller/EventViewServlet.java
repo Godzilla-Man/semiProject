@@ -1,6 +1,7 @@
 package kr.or.iei.event.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import kr.or.iei.event.model.service.EventService;
 import kr.or.iei.event.model.vo.Event;
+import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.notice.model.service.NoticeService;
 import kr.or.iei.notice.model.vo.Notice;
 
@@ -37,15 +39,19 @@ public class EventViewServlet extends HttpServlet {
 		String eventNo = request.getParameter("eventNo");
 		boolean updChk = Boolean.valueOf(request.getParameter("updChk")); //조회수 업데이트 여부
 		
-		//로직 - 상세 정보 조회
+		//로직
 		EventService service = new EventService();
+		//상세 정보
 		Event event = service.selectOneEvent(eventNo, updChk);
+		//파일 정보
+		List<Files> fileList = service.selectEventFileList(eventNo);
 		
 		//결과 처리
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/event/view.jsp");
 		
 		//4.2 화면 구현에 필요한 데이터 등록
 		request.setAttribute("event", event);
+		request.setAttribute("fileList", fileList);
 		
 		//4.3 페이지 이동
 		view.forward(request, response);

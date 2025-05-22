@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -7,12 +9,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>줍줍 - 결제하기</title>
-    <link rel="stylesheet" href="order_style.css">
+    <link rel="stylesheet" href="/resources/css/order.css">
+    <script src="https://js.tosspayments.com/v1/payment-widget"></script>
 </head>
+
 <body class="page-index2"> <!-- index2 페이지 전용 클래스 추가 -->
+	
+	<form action="#" method="post">
     <div class="container">
         <div class="header">
-            <a href="order_start.html" class="back-button">&lt;</a>
+            <a href="javascript:history.back();" class="back-button">&lt;</a>
             <h1 class="page-title-centered">결제하기</h1>
         </div>
        
@@ -25,29 +31,40 @@
         <div class="section order-summary-section">
             
             <div class="summary-group">
-                <h3 class="summary-group-title">배송 방법</h3>
-                <p>선불(일반 택배)</p>
+                <h3 class="summary-group-title">배송 방법</h3>                
+                <c:if test="${product.tradeMethodCode  == 'M1'}">
+                	<p>선불(일반 택배)</p>
+                </c:if>                
+                <c:if test="${product.tradeMethodCode  == 'M3'}">
+                	<p>착불(배송 기사님께 직접 결제)</p>
+                </c:if>              
             </div>
+            
             <div class="summary-group">
                 <h3 class="summary-group-title">배송 정보</h3>
+                
+                <!-- 추후 회원 정보 연결하여 불러와야할 영역!!! -->
                 <p>카와키타사이카</p>
                 <p>010-1234-5678</p>
+                
+                <!-- 회원 정보 불러오고 주소 수정 기능 버튼 추가 삽입 필요! -->
                 <p>(12345) 서울시 줍줍구 줍줍로 123, 101동 101호</p>
             </div>
+            
             <div class="summary-group">
                 <h3 class="summary-group-title">주문상품 정보</h3>           
                 <div class="product-details">
                     <div class="product-image-placeholder">
-                        <span>상품 이미지</span>
+                    	<img src="${product.thumbnailPath}" style="width: 100px; height: 100px; object-fit: cover;"> <%-- 썸네일 이미지 --%>                        
                     </div>
                     <div class="product-text-details">
-                        <div class="product-name">나이키 반팔 티셔츠</div>
-                        <div class="product-price">500,000 원</div>
+                        <div class="product-name">${product.productName}</div>
+                        <div class="product-price"><fmt:formatNumber value="${product.productPrice}" type="number"/> 원</div>
                     </div>
                 </div>
             </div>
         </div>
-
+	
         <div class="section payment-method-selection">
             <h2 class="section-main-title">결제수단</h2>
             <div class="method-options">
@@ -65,12 +82,19 @@
 
             <div class="summary-item">
                 <span class="summary-label">상품금액</span>
-                <span class="summary-value">500,000원</span>
+                <span class="summary-value"><fmt:formatNumber value="${product.productPrice}" type="number"/> 원</span>
             </div>
 
             <div class="summary-item">
                 <span class="summary-label">배송비</span>
-                <span class="summary-value">5,000원</span>
+                <span class="summary-value">
+					<c:if test="${product.tradeMethodCode  == 'M1'}">
+	                	<span>5,000 원</span>
+	                </c:if>                
+	                <c:if test="${product.tradeMethodCode  == 'M3'}">
+	                	<span>0 원(착불)</span>
+	                </c:if>
+                </span>
             </div>
 
             <div class="summary-item">
@@ -82,7 +106,7 @@
 
             <div class="summary-item total">
                 <span class="summary-label total-label">총 결제금액</span>
-                <span class="summary-amount total-amount">505,000원</span>
+                <span class="summary-amount total-amount"><fmt:formatNumber value="${totalProductAmount}" type="number"/>원</span>
             </div>
         </div>
        
@@ -99,21 +123,21 @@
                     <input type="checkbox" id="agreeTermFinancial" name="agreeTermFinancial" class="agree-individual" required>
                     줍줍 서비스 이용약관 동의 (필수)
                 </label>
-                <a href="#" class="view-term-link">보기</a>
+                <a href="/terms.jsp" class="view-term-link" target="_blank">보기</a>
             </li>
             <li>
                 <label for="agreeTermPersonalInfo" class="term-item-label">
                     <input type="checkbox" id="agreeTermPersonalInfo" name="agreeTermPersonalInfo" class="agree-individual" required>
                     개인정보 수집 및 이용 동의 (필수)
                 </label>
-                <a href="#" class="view-term-link">보기</a>
+                <a href="/privacyPolicy.jsp" class="view-term-link" target="_blank">보기</a>
             </li>
             <li>
                 <label for="agreeTermThirdParty" class="term-item-label">
                     <input type="checkbox" id="agreeTermThirdParty" name="agreeTermThirdParty" class="agree-individual" required>
                     개인정보 제3자 제공 동의 (필수)
                 </label>
-                <a href="#" class="view-term-link">보기</a>
+                <a href="/privacyThirdParty.jsp" class="view-term-link" target="_blank">보기</a>
             </li>
         </ul>            
         
@@ -197,21 +221,52 @@
                 alert('필수 약관에 모두 동의해주세요.');
                 return;
             }
-            alert('토스페이 API 연동이 필요합니다.\n' + paymentButton.textContent + ' 요청됨 (가상)');
-        }
+            
+            //1. toss pay 객체 생성
+            const tossPayments = TossPayments('test_ck_ma60RZblrqjQ7lgOoPb68wzYWBn1'); // 클라이언트 키로 초기화
+            
+            //2. 결제 요청에 필요한 정보 구성
+            const amountToPay = parseFloat(finalAmountSpan.textContent.replace(/[^0-9]/g,'')); // 최종 결제 금액
+            const orderName = "${product.productName}"; // 주문 상품명
+            const orderId = "${orderId}"
+            
+            // 만약 orderId가 전달되지 않았거나 비어있다면, 결제 진행을 막습니다.
+            if (!orderId) {
+                alert('주문 번호가 유효하지 않습니다. 다시 시도해주세요.');
+                return;
+            }
+            
+        	// 구매자 이름 - 실제 구매자 정보로 대체해야 합니다.
+            // 예: 세션에서 회원 이름을 가져오거나, 주문자 정보 입력 필드에서 값을 읽어옵니다.
+            // 현재 JSP에는 하드코딩된 이름 "카와키타사이카"가 있으나, 동적으로 처리하는 것이 좋습니다.
+            const customerName = document.querySelector('.summary-group p').textContent || '구매자이름'; // 임시로 첫번째 p 태그의 텍스트를 가져오거나 기본값 설정
 
-        // 결제 수단 선택
-        const paymentOptions = document.querySelectorAll('.payment-method-selection .method-option');
-        paymentOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelector('.payment-method-selection .method-option.selected')?.classList.remove('selected');
-                this.classList.add('selected');
-                const radioInput = this.querySelector('input[type="radio"]');
-                if (radioInput) {
-                    radioInput.checked = true;
+            // 3. 결제창 호출
+            tossPayments.requestPayment('카드', { // '카드' 외에 '가상계좌', '계좌이체', '휴대폰' 등 다른 결제수단 지정 가능
+                amount: amountToPay,
+                orderId: orderId,
+                orderName: orderName,
+                customerName: customerName, 
+                // successUrl, failUrl은 현재창(window.location.origin) 기준으로 설정하거나, 전체 URL을 명시해야 합니다.
+                // 실제 서비스에서는 이 URL에 해당하는 서블릿이나 컨트롤러를 구현하여 결제 성공/실패 로직을 처리해야 합니다.
+                successUrl: window.location.origin + '/order/paySuccess?orderId=' + orderId, // 예시: 성공 시 이동할 URL (실제 프로젝트에 맞게 수정)
+                failUrl: window.location.origin + '/order/payFail?orderId=' + orderId,     // 예시: 실패 시 이동할 URL (실제 프로젝트에 맞게 수정)
+            })
+            .catch(function (error) {
+                if (error.code === 'USER_CANCEL') {
+                    // 사용자가 결제를 취소한 경우
+                    alert('결제가 취소되었습니다.');
+                } else if (error.code === 'INVALID_CARD_COMPANY') {
+                    // 유효하지 않은 카드 회사인 경우
+                    alert('유효하지 않은 카드사 정보입니다.');
+                } else {
+                    // 기타 결제 실패 이유
+                    alert('결제에 실패하였습니다. 오류 : ' + error.message);
                 }
-            });
-        });
+            });            
+        }
+      
     </script>
+    </form>
 </body>
 </html>

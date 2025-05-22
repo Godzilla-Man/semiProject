@@ -481,7 +481,7 @@ section.section.bg-section {
   line-height: 40px;
 }
 .pagination .page-item.active-page {
-  background-color: rgb(41, 64, 246);
+  background-color: rgb(0, 82, 241);
   color: #fff;
 }
 
@@ -502,10 +502,10 @@ section.section.bg-section {
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
-  background-color: rgb(41, 64, 246);
+  background-color: rgb(0, 82, 241);
 }
 .header-wrap {
-  background-color: rgb(41, 64, 246);
+  background-color: rgb(0, 82, 241);
   margin: 0 auto;
   padding-bottom: 20px;
 }
@@ -567,7 +567,7 @@ section.section.bg-section {
 .search>button {
   height: 30px;
   width: 60px;
-  background-color: rgb(41, 64, 246);
+  background-color: rgb(0, 82, 241);
   color: white;
   border: none;
   border-radius: 10px;
@@ -641,14 +641,14 @@ section.section.bg-section {
   margin-bottom: 10px;
 }
 .post {
-  border: 1px solid rgb(41, 64, 246);
+  border: 1px solid rgb(0, 82, 241);
   background-color: white;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .top {
-  background-color: rgb(41, 64, 246);
+  background-color: rgb(0, 82, 241);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -659,7 +659,7 @@ section.section.bg-section {
   'wght' 400,
   'GRAD' 0,
   'opsz' 24;
-  color: rgb(41, 64, 246);
+  color: rgb(0, 82, 241);
   font-size: 45px;
 }
 .top>.material-symbols-outlined {
@@ -747,7 +747,7 @@ hr {
   margin-bottom: 20px;
   width: 80px;
   height: 30px;
-  background-color: rgb(41, 64, 246);
+  background-color: rgb(0, 82, 241);
   color: white;
   font-weight: bold;
   border: none;
@@ -812,9 +812,9 @@ hr {
   height: 40px;
   line-height: 40px;
   text-align: center;
-  border: 2px solid rgb(41, 64, 246);
+  border: 2px solid rgb(0, 82, 241);
   border-radius: 10px;
-  color: rgb(41, 64, 246);
+  color: rgb(0, 82, 241);
   font-weight: bold;
 }
 .write-btn:hover {
@@ -831,7 +831,7 @@ hr {
 }
 .tbl-list th {
   height: 50px;
-  background-color: rgb(41, 64, 246);
+  background-color: rgb(0, 82, 241);
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   border-left: 1px solid white;
@@ -924,7 +924,7 @@ hr {
   margin: 5px;
   border: none;
   border-radius: 30px;
-  background-color: rgb(41, 64, 246);
+  background-color: rgb(0, 82, 241);
   color: white;
   font-size: 20px;
   font-weight: bold;
@@ -954,7 +954,7 @@ hr {
 #priceFilter {
   width: 50px;
   height: 29px;
-  background-color: rgb(41, 64, 246);
+  background-color: rgb(0, 82, 241);
   color: white;
   border: none;
   border-radius: 10px;
@@ -982,9 +982,9 @@ hr {
   height: 43px;
   line-height: 43px;
   text-align: center;
-  border: 2px solid rgb(41, 64, 246);
+  border: 2px solid rgb(0, 82, 241);
   border-radius: 10px;
-  background-color: rgb(41, 64, 246);
+  background-color: rgb(0, 82, 241);
   color: white;
   font-weight: bold;
   margin-left: 5px;
@@ -1005,7 +1005,8 @@ hr {
   border-bottom: 1px solid black;
 }
 .notice-view>table img {
-  width: 900px;
+  display: block;
+  margin: 0 auto;
   height: 300px;
 }
 .notice-view>table div {
@@ -1014,13 +1015,13 @@ hr {
 }
 /* /notice/view.jsp 하단에 아직 구현 안 한 div와 관련된 css
 .view-wrap>div:last-child {
-  border-top: 1px solid rgb(41, 64, 246);
-  border-bottom: 1px solid rgb(41, 64, 246);
+  border-top: 1px solid rgb(0, 82, 241);
+  border-bottom: 1px solid rgb(0, 82, 241);
   margin-bottom: 20px;
 }
 .next-notice {
-  border-top: 1px solid rgb(41, 64, 246);
-  border-bottom: 1px solid rgb(41, 64, 246);
+  border-top: 1px solid rgb(0, 82, 241);
+  border-bottom: 1px solid rgb(0, 82, 241);
   width: 100%;
   height: 50px;
   line-height: 50px;
@@ -1089,23 +1090,28 @@ hr {
 
 /* 관리 페이지 */
 .admin-page {
-	width: 1000px;
+	width: 1200px;
 	min-height: 52.2vh;
 	margin: 0 auto;
 }
-.admin-page>span {
+.admin-page-sub {
+	width: 1000px;
+	margin: 0 auto;
+}
+.admin-page-sub>span {
 	font-weight: bold;
 	font-size: 20px;
 }
-.admin-page>div {
+.admin-page-sub>div {
 	display: flex;
+	justify-content: space-around;
 }
 .search-member,
 .search-report,
 .search-black {
-	width: 80%;
-	height: 400px;
-	margin-top: 20px;
+	width: 300px;
+	height: 300px;
+	margin-top: 30px;
 	margin-bottom: 10px;
 	text-align: center;
 }
@@ -1114,6 +1120,24 @@ hr {
 }
 .admin-page a:hover {
 	text-decoration: underline;
+}
+.count {
+	margin-top: 10px;
+	border: 5px solid rgb(0, 82, 241);
+	border-radius: 10px;	
+}
+.count span {
+	display: block;
+	margin: 0 auto;
+	margin-top: 20px;
+	font-size: 20px;
+}
+.count div {
+	width: 200px;
+	height: 200px;
+	margin: 0 auto;
+	line-height: 200px;
+	font-size: 100px;
 }
 
 /* 전체 회원 조회 */
@@ -1127,7 +1151,7 @@ hr {
 	border-bottom: 1px solid #eee;
 }
 .tbl-member tr:first-child>th {
-	background-color: rgb(41, 64, 246);
+	background-color: rgb(0, 82, 241);
 	color: white;
 	font-size: 20px;
 	border-top-left-radius: 10px;
@@ -1139,7 +1163,7 @@ hr {
 }
 .tbl-member button {
 	display: block;
-	background-color: rgb(41, 64, 246);
+	background-color: rgb(0, 82, 241);
 	color: white;
 	border: none;
 	border-radius: 10px;

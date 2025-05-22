@@ -8,7 +8,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.order.model.service.OrderService;
 import kr.or.iei.product.model.vo.Product;
 
@@ -31,9 +33,22 @@ public class OrderStartServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//1. 인코딩 설정 - 인코딩 필터로 설정 완료		
 		
+		//1.2 로그인 확인 로직
+		HttpSession session = request.getSession(false); // 세션이 없으면 새로 생성하지 않음.
+		Member loginMember = null;
 		
-		//1. 인코딩 설정 - 필터에서 진행
+		if(session != null) {
+			loginMember = (Member) session.getAttribute("loginMember"); //"m"으로 세션에 저장된 Member 객체를 가져옴.
+		}
+		
+		if (loginMember == null) {
+            // 로그인하지 않은 경우, 로그인 페이지로 리다이렉트           
+            response.setContentType("text/html;charset=utf-8");
+            response.getWriter().println("<script>alert('로그인이 필요한 서비스입니다.'); location.href='" + request.getContextPath() + "/member/loginFrm';</script>");
+            return; // 서블릿 실행 종료
+        }
 		
 		
 		//2. 값 추출
@@ -44,7 +59,7 @@ public class OrderStartServlet extends HttpServlet {
 		OrderService service = new OrderService();
 		Product p = service.selectOrderProduct(productId);
 		
-			//3.1 에러 발생 시 안ㅇ내페이지 생성
+			//3.1 에러 발생 시 안내페이지 생성
 	     	if (p == null) {	            
 	            // 사용자에게 보여줄 오류 메시지 설정
 	            request.setAttribute("errorTitle", "상품 정보 조회 실패");

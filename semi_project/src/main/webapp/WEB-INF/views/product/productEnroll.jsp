@@ -534,13 +534,14 @@
 
   <div class="delivery-box">
   
-  <!-- 배송방법 라디오 버튼 -->
-  <input type="radio" name="tradeMethodCode" value="M1"
-    <c:if test="${not empty product && product.tradeMethodCode eq 'M1'}">checked</c:if>> 배송비 포함
-  <input type="radio" name="tradeMethodCode" value="M2"
-    <c:if test="${not empty product && product.tradeMethodCode eq 'M2'}">checked</c:if>> 배송비 미포함
-  <input type="radio" name="tradeMethodCode" value="M3"
-    <c:if test="${not empty product && product.tradeMethodCode eq 'M3'}">checked</c:if>> 배송비 착불
+ <!-- 배송방법 라디오 버튼 -->
+<input type="radio" name="tradeMethodCode" value="M1"
+  <c:if test="${empty product || product.tradeMethodCode eq 'M1'}">checked</c:if>> 배송비 포함
+<input type="radio" name="tradeMethodCode" value="M2"
+  <c:if test="${not empty product && product.tradeMethodCode eq 'M2'}">checked</c:if>> 배송비 미포함
+<input type="radio" name="tradeMethodCode" value="M3"
+  <c:if test="${not empty product && product.tradeMethodCode eq 'M3'}">checked</c:if>> 배송비 착불
+
 
     <!-- 안내 문구 -->
     <p class="delivery-hint">
@@ -572,12 +573,26 @@
 </div>
     </form>
   </main>
+	<div class="fixed" style="right: 280px;">
+		<div class="top" onclick="scrollToTop()">
+			<span class="material-symbols-outlined">arrow_upward</span>
+		</div>
+	</div>
   <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   
     <!-- 카테고리 히든 필드 (소분류 코드) -->
   <input type="hidden" name="categoryCode" id="categoryCode"
          value="<c:out value='${product.categoryCode}' default=''/>">
-  
+
+<script>
+	//우측 하단 ↑ 버튼 클릭 시 상단으로 스크롤 이동
+    function scrollToTop() {
+        window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // 부드럽게 스크롤
+        });
+    }
+</script>
 <script>
 
 // 카테고리 선택 관련 스크립트 (대분류 - 중분류 - 소분류)
