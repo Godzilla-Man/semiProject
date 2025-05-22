@@ -24,4 +24,11 @@ public class Purchase {
 	private String pgTransactionId; // PG 거래 ID 
 	private Date dealDate; // 거래 일시
 	private String purchaseStatusCode; // 주문 상태 코드
+	
+	//주문 내역 갖고 오기 위한 DAO에 담을 정보들!!
+	private String productName;
+    private int productPrice; // 상품 자체의 가격 (ORDER_AMOUNT는 총 주문 금액)
+    private String sellerNickname;
+    private String purchaseStatusName; // 주문 상태명 (예: "배송전", "배송중")
+    private String thumbnailPath;      // 상품 대표 이미지 경로
 }

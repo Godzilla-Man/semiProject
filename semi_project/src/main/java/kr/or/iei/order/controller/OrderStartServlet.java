@@ -75,10 +75,9 @@ public class OrderStartServlet extends HttpServlet {
 			String trdadeMethodCode = p.getTradeMethodCode(); //DB에서 조회한 택배 코드 
 			
 			int deliveryFee = 0;
-			if("M1".equals(trdadeMethodCode)) { //M1 = 선불, M3 = 후불
+			if("M2".equals(trdadeMethodCode)) { //M1 = 배송비 무료, M2 = 배송비 5,000원 발생 M3 = 후불
 				deliveryFee = 5000; // 일반 택배
-			}else if ("M3".equals(trdadeMethodCode))
-				deliveryFee = 0;
+			}
 			
 			int totalProductAmount = productPrice + deliveryFee;
 			

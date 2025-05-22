@@ -2,9 +2,11 @@ package kr.or.iei.order.model.service;
 
 import java.sql.Connection;
 import java.util.Date;
+import java.util.List;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.file.model.dao.FileDao;
+import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.order.model.dao.OrderDao;
 import kr.or.iei.order.model.vo.Purchase;
 import kr.or.iei.product.model.dao.ProductDao;
@@ -105,6 +107,59 @@ public class OrderService {
         Purchase purchase = OrderDao.selectOnePurchase(conn, orderId);
         JDBCTemplate.close(conn);
         return purchase;	
+	}
+
+	public boolean OrderCancel(String orderId, String memberNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		boolean result = false;
+		int updatePurchaseStatus = 0;
+		int updateProductQuantity = 0;
+		
+		//1. 주문 정보 확인(취소 처리 하는데 문제 없는지. 본인? 취소 가능 상태?)
+		Purchase purchase = dao.selectOnePurchaseCancel(conn, orderId, memberNo);
+		
+		if(purchase != null && "PS01".equals(purchase.getPurchaseStatusCode())) { //purchse 스테이터스가 결제완료(PS01) 상태일 때만 취소 가능!!
+			//PS01 결제 완료 상태를 -> PS04 취소 완료 상태로 변환! 진행
+			updatePurchaseStatus = dao.updateOrderStatus(conn, orderId, "PS04");
+			
+			if(updatePurchaseStatus > 0) {
+				//Product Dao에상품 수량 및 상태 업데이트 진행
+				updateProductQuantity = ProductDao.updateProductStatusAndQuantity(conn, purchase.getProductNo(), "S01", 1);
+			}
+			
+			if(updatePurchaseStatus > 0 && updateProductQuantity > 0) {
+				/*
+			//PG사 결제 취소 API 호출 로직		
+            boolean pgCancelSuccess = callPgCancelApi(purchase.getPgTransactionId(), purchase.getOrderAmount());
+	            if (pgCancelSuccess) {            	
+	                JDBCTemplate.commit(conn);
+	                result = true;
+	            } else {
+	                JDBCTemplate.rollback(conn);
+	                System.out.println("PG사 결제 취소 실패 - orderId: " + orderId);
+	            }
+				 */
+				JDBCTemplate.commit(conn);
+				result = true;
+			} else {
+				JDBCTemplate.rollback(conn);
+				System.out.println("OrderService : 주문 취소 DB 처리 실패 - orderId: " + orderId);
+			}
+		} else {
+			System.out.println("OrderService: 주문 취소 불가 상태이거나 권한 없음 - orderId: " + orderId);
+		}
+		
+		JDBCTemplate.close(conn);
+			
+		return result;
+	}
+	
+	// 구매내역 정보를 추출하기 위한 service 메소드!!
+	public List<Purchase> getPurchaseListByBuyer(String buyerMemberNo) {
+	    Connection conn = JDBCTemplate.getConnection();	    
+	    List<Purchase> purchaseList = dao.selectPurchaseListByBuyerNo(conn, buyerMemberNo);
+	    JDBCTemplate.close(conn);
+	    return purchaseList;
 	}
 
 }
