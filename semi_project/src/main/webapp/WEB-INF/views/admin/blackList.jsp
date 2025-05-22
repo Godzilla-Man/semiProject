@@ -15,6 +15,7 @@
 				<a href="/admin/adminPage">관리자 페이지</a>
 				<a href="/admin/allMember">전체 회원 조회</a>
 				<a href="/admin/report">신고 내역 조회</a>
+				<a href="/admin/blackList">블랙 리스트 조회</a>
 			</div>
 			<table class="tbl-member">
 				<tr>
