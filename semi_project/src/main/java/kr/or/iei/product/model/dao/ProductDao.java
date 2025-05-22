@@ -884,20 +884,18 @@ public class ProductDao {
         ResultSet rset = null;
 
         String query =
-        	    "SELECT * FROM ( " +
-        	    "    SELECT P.PRODUCT_NO, P.PRODUCT_NAME, P.PRODUCT_PRICE, " +
-        	    "           F.FILE_PATH " +
-        	    "    FROM TBL_PROD P " +
-        	    "    LEFT JOIN ( " +
-        	    "        SELECT PRODUCT_NO, MIN(FILE_NO) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_NO, " +
-        	    "               MIN(FILE_PATH) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_PATH " +
-        	    "        FROM TBL_FILE " +
-        	    "        GROUP BY PRODUCT_NO " +
-        	    "    ) F ON P.PRODUCT_NO = F.PRODUCT_NO " +
-        	    "    WHERE P.CATEGORY_CODE = ? AND P.PRODUCT_NO != ? " +
-        	    "    ORDER BY P.ENROLL_DATE DESC " +
-        	    ") WHERE ROWNUM <= 6";
-
+        	    "SELECT P.PRODUCT_NO, P.PRODUCT_NAME, P.PRODUCT_PRICE, P.STATUS_CODE, " +
+        	    "       F.FILE_PATH " +
+        	    "FROM TBL_PROD P " +
+        	    "LEFT JOIN ( " +
+        	    "    SELECT PRODUCT_NO, MIN(FILE_NO) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_NO, " +
+        	    "           MIN(FILE_PATH) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_PATH " +
+        	    "    FROM TBL_FILE " +
+        	    "    GROUP BY PRODUCT_NO " +
+        	    ") F ON P.PRODUCT_NO = F.PRODUCT_NO " +
+        	    "WHERE P.CATEGORY_CODE = ? " +
+        	    "  AND P.PRODUCT_NO != ? " +
+        	    "ORDER BY P.ENROLL_DATE DESC";
 
         try {
             pstmt = conn.prepareStatement(query);
@@ -911,7 +909,7 @@ public class ProductDao {
                 p.setProductName(rset.getString("PRODUCT_NAME"));
                 p.setProductPrice(rset.getInt("PRODUCT_PRICE"));
                 p.setThumbnailPath(rset.getString("FILE_PATH")); // 대표 이미지 경로
-
+                p.setStatusCode(rset.getString("STATUS_CODE"));
                 list.add(p);
             }
 

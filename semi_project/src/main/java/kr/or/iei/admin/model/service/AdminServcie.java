@@ -82,4 +82,28 @@ public class AdminServcie {
 		
 		return result;
 	}
+
+	public int countTodayMember() {
+		Connection conn = JDBCTemplate.getConnection();
+		int mCnt = dao.countTodayMember(conn);
+		JDBCTemplate.close(conn);
+		
+		return mCnt;
+	}
+
+	public int countTodayReport() {
+		Connection conn = JDBCTemplate.getConnection();
+		int rCnt = dao.countTodayReport(conn);
+		JDBCTemplate.close(conn);
+		
+		return rCnt;
+	}
+
+	public int countTodayBlack() {
+		Connection conn = JDBCTemplate.getConnection();
+		int bCnt = dao.countTodayBlack(conn);
+		JDBCTemplate.close(conn);
+		
+		return bCnt;
+	}
 }

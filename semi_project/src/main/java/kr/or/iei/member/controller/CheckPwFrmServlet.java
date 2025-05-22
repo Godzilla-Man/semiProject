@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class CheckPw
  */
-@WebServlet("/member/CheckPw")
+@WebServlet("/member/checkPw")
 public class CheckPwFrmServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

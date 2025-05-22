@@ -28,18 +28,23 @@
             text-align: center;
         }
 
-        .seller-profile-img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background-color: var(--gray6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-            color: var(--gray3);
-            margin: 0 auto;
-        }
+		.seller-profile-img {
+		  width: 150px;
+		  height: 150px;
+		  border-radius: 50%;
+		  overflow: hidden;
+		  background-color: var(--gray6);
+		  display: flex;
+		  justify-content: center;
+		  align-items: center;
+		}
+		
+		.seller-profile-img img {
+		  width: 100%;
+		  height: 100%;
+		  object-fit: cover;
+		  display: block;
+		}
 
         .seller-profile-right {
             flex: 1;
@@ -276,7 +281,10 @@
             <!-- 판매자 프로필 상단 -->
             <section class="seller-profile-wrap">
                 <div class="seller-profile-left">
-                    <div class="seller-profile-img">회원 프로필 사진</div>
+					<c:set var="profileImg" value="${empty seller.profileImgPath ? '/resources/images/default.jpg' : seller.profileImgPath}" />
+					<div class="seller-profile-img">
+					  <img src="${profileImg}" alt="프로필 이미지" />
+					</div>
                 </div>
                 <div class="seller-profile-right">
                     <div>

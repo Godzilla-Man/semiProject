@@ -10,7 +10,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%
+<%	
+	//메인 화면에서 서블릿을 거치지 않고 DB에 있는 정보 가져오기 위한 작업
 	String memberNo = null;
 	Member loginMember = null;
 	session = request.getSession(false);
@@ -47,7 +48,7 @@
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 		<div class="main-wrap">
 			<c:forEach var="file" items="${fileList}" varStatus="status">
-	        <img src="${file.filePath}" alt="이벤트 이미지 ${status.index+1}" class="main-image" onclick="eventClick('${file.eventNo}')" style="cursor: pointer;">
+	        <img src="${file.filePath}" alt="이벤트 이미지 ${status.index+1}" class="main-image" onclick="eventClick('${file.eventNo}')" style="width: 1000px; height: 400px; margin: 0 auto; display: block; cursor: pointer;">
 	        </c:forEach>
 	        <span><a href="/product/allListDesc">최신 등록 상품</a></span> <%-- 클릭 시 전체 상품 화면으로 이동 --%>
     		<div class="style-review-board">
