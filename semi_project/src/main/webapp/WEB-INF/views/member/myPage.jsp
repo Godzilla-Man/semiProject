@@ -38,72 +38,17 @@
 						</div>
 						<div class="list-wrap">
 							<ul class="menu-wrap">
-								<li class="tab-link current" data-tab="tab-wishList">
+								<li class="tab-link current" id="default" data-tab="myPageWishList">
 									<a href="#">관심목록</a>
 								</li>
-								<li class="tab-link" data-tab="tab-salesList">
+								<li class="tab-link" data-tab="myPageSalesList">
 									<a href="#">판매내역</a>
 								</li>
-								<li class="tab-link" data-tab="tab-purchaseList">
+								<li class="tab-link" data-tab="myPagePurchaseList">
 									<a href="#">구매내역</a>
 								</li>
 							</ul>
-							<div class="content on" id="tab-wishList">
-								관심목록입니다.
-							</div>
-							<div class="content" id="tab-salesList">
-								판매내역입니다.
-							</div>
-							
-							
-							<!-- ★동주 구매 내역 탭 작업 시작 -->
-							<div class="content" id="tab-purchaseList">
-								<c:choose>
-									<c:when test="${empty purchaseList}">
-										<p style="text-align:center; padding: 40px 0;">구매 내역이 없습니다.</p>
-									</c:when>
-									<c:otherwise>
-										<c:forEach var="item" items="${purchaseList}">
-											
-											<div class="purchase-item-header">
-												<span class="purchase-date">
-													<fmt:formatDate value="${item.dealDate}" patter="yy년 MM월 dd일"/>
-												</span>
-												<%-- 주문 상태에 따라 다른 CSS 클래스 적용 --%>
-												<span class="purchase-status status-${item.purchaseStatusCode}">
-													${item.purchaseStatusName}
-												</span>
-												<%--상세 보기 링크 --%>
-												<a href="${pageContext.request.contextPath}/order/detail?orderNo=${item.orderNo}" class="material-sybols-outlined">chevron_right</a>  
-											</div>
-											
-											<div class="purchase-product-info">
-												<div class="purchase-product-price"><fmt:formatNumber value="${item.orderAmount}" type="currency" cyrrencySymbol="₩"/></div>
-												<div class="purchase-product-name">${item.productName}</div>
-												<div class="purchase-seller-info">판매자: ${item.sellerNickname}</div>												
-											</div>
-											
-											<div class="purchase-actions">
-												<%-- 상태에 따라 다른 버튼 표시 (예시) --%>
-					                            <c:if test="${item.purchaseStatusCode == 'PS01'}"> <%-- 결제완료 상태 --%>
-					                                <button type="button" class="btn-action" onclick="confirmCancelOrder('${item.orderNo}')">거래 취소</button>
-					                            </c:if>
-					                            <c:if test="${item.purchaseStatusCode == 'S05' || item.purchaseStatusCode == 'S06'}"> <%-- 배송중 또는 배송완료 --%>
-					                                <button type="button" class="btn-action dotted">배송 조회</button>
-					                            </c:if>
-					                            <c:if test="${item.purchaseStatusCode == 'S06'}"> <%-- 배송완료 상태 --%>
-					                                <button type="button" class="btn-action">구매 확정</button>
-					                                <button type="button" class="btn-action">리뷰 작성</button>
-					                            </c:if>
-											</div>
-											
-										</c:forEach>
-									</c:otherwise>
-								</c:choose>
-								
-							</div>
-							<!-- ★동주 구매 내역 탭 작업 끝 -->
-							
+							<div class="tab-content"></div>
 						</div>
 					</form>
 			</section>
@@ -113,20 +58,31 @@
 	<script>
 		//관심목록/판매내역/구매내역 탭메뉴 기능
 		const tabLink = $('.tab-link');
-		const content = $('.content');
+		const tabContent = $('.tab-content')
 		
-		$(tabLink).click(function(e) {
-			e.preventDefault();
-			
-			var current = $(this).attr('data-tab');
+		$(tabLink).click(function() {
+			let current = $(this).attr('data-tab');
 			
 			$(tabLink).removeClass('current');
-			$(content).removeClass('on');
-			
-			$(this).addClass('on');
 			$(this).addClass('current');
-			$('#' + current).addClass('on');
+			
+			$.ajax({
+				url : "/member/" + current,
+				type : "get",
+				dataType : "html",
+				success : function(data){					//비동기 통신 성공 시, 호출 함수
+					$(tabContent).html(data);
+				},
+				error : function(){							//비동기 통신 에러 시, 호출 함수
+					console.log("ajax : error");
+				}
+				
+			});
 		});
+		
+		$('#default').click();
+		
+		
 	</script>
 </body>
 </html>
