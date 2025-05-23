@@ -20,7 +20,7 @@ import kr.or.iei.notice.model.vo.Notice;
 @WebServlet("/notice/view")
 public class NoticeViewServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -32,26 +32,27 @@ public class NoticeViewServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//값 추출 - 게시글 번호
 		String noticeNo = request.getParameter("noticeNo");
 		boolean updChk = Boolean.valueOf(request.getParameter("updChk")); //조회수 업데이트 여부
-		
+
 		//로직
 		NoticeService service = new NoticeService();
 		//상세 정보
 		Notice notice = service.selectOneNotice(noticeNo, updChk);
 		//파일 정보
 		List<Files> fileList = service.selectNoticeFileList(noticeNo);
-		
-		
+
+
 		//결과 처리
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/notice/view.jsp");
-		
+
 		//4.2 화면 구현에 필요한 데이터 등록
 		request.setAttribute("notice", notice);
 		request.setAttribute("fileList", fileList);
-		
+
 		//4.3 페이지 이동
 		view.forward(request, response);
 	}
@@ -59,6 +60,7 @@ public class NoticeViewServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

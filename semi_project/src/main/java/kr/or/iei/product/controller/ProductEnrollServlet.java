@@ -3,7 +3,6 @@ package kr.or.iei.product.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -17,8 +16,8 @@ import javax.servlet.http.Part;
 
 import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.member.model.vo.Member;
-import kr.or.iei.product.model.vo.Product;
 import kr.or.iei.product.model.service.ProductService;
+import kr.or.iei.product.model.vo.Product;
 
 @WebServlet("/product/enroll")
 @MultipartConfig(
@@ -32,16 +31,17 @@ public class ProductEnrollServlet extends HttpServlet {
     public ProductEnrollServlet() {
         super();
     }
-    
+
     	@Override
     	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 판매 글 등록 페이지로 이동
         request.getRequestDispatcher("/WEB-INF/views/product/productEnroll.jsp").forward(request, response);
     	}
 
-    
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+
+    @Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
         // 1. 인코딩 - 필터에서 처리됨
         // 2. 클라이언트가 전송한 값 추출
 
@@ -50,7 +50,7 @@ public class ProductEnrollServlet extends HttpServlet {
         int productPrice = Integer.parseInt(request.getParameter("productPrice"));
         String tradeMethodCode = request.getParameter("tradeMethodCode");
         String categoryCode = request.getParameter("categoryCode");
-        
+
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loginMember") == null) {
             // 로그인하지 않은 사용자는 로그인 페이지로 리다이렉트
@@ -66,7 +66,9 @@ public class ProductEnrollServlet extends HttpServlet {
         // 파일 저장 경로 (서버 내 실제 경로)
         String uploadPath = getServletContext().getRealPath("/resources/upload/product");
         File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) uploadDir.mkdirs();
+        if (!uploadDir.exists()) {
+			uploadDir.mkdirs();
+		}
 
         // 업로드된 이미지 파일 리스트 수집
         List<Files> fileList = new ArrayList<>();
@@ -101,11 +103,11 @@ public class ProductEnrollServlet extends HttpServlet {
         p.setTradeMethodCode(tradeMethodCode);
         p.setMemberNo(memberNo);
         p.setStatusCode("S01"); // 등록 시 기본 상태 = 판매 중
-        
+
         //enrollDate, readCount는 기본값 처리
 
         int result = new ProductService().insertProduct(p, fileList);
-        
+
         // 4. 결과 처리
         // 4.1 이동할 JSP 페이지 경로 지정
         // 4.2 화면 구현에 필요한 데이터 등록
@@ -114,7 +116,7 @@ public class ProductEnrollServlet extends HttpServlet {
         	String priceOffer = request.getParameter("priceOffer") != null ? "true" : "false";
         	response.sendRedirect(request.getContextPath() + "/product/detail?no=" + p.getProductNo() + "&priceOffer=" + priceOffer);
 
-            
+
         } else {
             // 등록 실패 시 실패 페이지로 포워드
             request.setAttribute("msg", "상품 등록에 실패했습니다.");

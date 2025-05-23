@@ -23,7 +23,8 @@ import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
 public class UpdateReviewNoticeServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("--- UpdateReviewNoticeServlet doPost() 실행됨 ---");
         HttpSession session = request.getSession();
         Member loginMember = (Member) session.getAttribute("loginMember");
@@ -34,7 +35,7 @@ public class UpdateReviewNoticeServlet extends HttpServlet {
             return;
         }
 
-        // 📌 파일 저장 기본 경로 
+        // 📌 파일 저장 기본 경로
         String saveDirectory = getServletContext().getRealPath("/resources/upload/reviewnotice");
         File RsaveDirectory = new File(saveDirectory);
         if (!RsaveDirectory.exists()) {

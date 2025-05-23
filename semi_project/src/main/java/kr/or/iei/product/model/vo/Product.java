@@ -1,6 +1,7 @@
 package kr.or.iei.product.model.vo;
 
 import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,10 +29,10 @@ public class Product {
     private String priceOfferYn;	   // 가격 제안 여부 ('Y' 또는 'N')
     private String thumbnailPath;	   // 제품 대표 썸네일 ( 등록 당시 첫번째 사진 )
     private int productQuantity;	   // 상품 수량(1 : 판매 가능/ 0 : 불가)
-    
+
     private String filePath;			//상품의 이미지 파일 경로
-    
-    // 25-05-22 ★동주★ 셀러 닉네임 값 추가 
+
+    // 25-05-22 ★동주★ 셀러 닉네임 값 추가
     private String sellerNickname; 	    //판매자 셀러 닉네임
 
 }

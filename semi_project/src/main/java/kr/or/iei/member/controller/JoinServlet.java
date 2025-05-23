@@ -18,7 +18,7 @@ import kr.or.iei.member.model.vo.Member;
 @WebServlet("/member/join")
 public class JoinServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -30,6 +30,7 @@ public class JoinServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//1. 인코딩 - 필터에서 처리
 		//2. 클라이언트가 전송한 값 추출
@@ -50,7 +51,7 @@ public class JoinServlet extends HttpServlet {
 		//이메일은 아이디/도메인으로 나눠져있음
 		String memberEmailId = request.getParameter("memberEmailId");
 		String memberEmailDomain = request.getParameter("memberEmailDomain");
-		
+
 		//3. 로직 처리 - 회원가입
 		//나눠져있는 생년월일 합치기
 		String memberBirth = birthYear + birthMonth + birthDay;
@@ -58,7 +59,7 @@ public class JoinServlet extends HttpServlet {
 		String memberAddr = "[" + addr_postcode + "]" + addr_address + "," + addr_detailAddress + addr_extraAddress;
 		//나눠져있는 이메일 합치기
 		String memberEmail = memberEmailId + "@" + memberEmailDomain;
-		
+
 		Member member = new Member();
 		member.setMemberId(memberId);
 		member.setMemberPw(memberPw);
@@ -68,10 +69,10 @@ public class JoinServlet extends HttpServlet {
 		member.setMemberPhone(memberPhone);
 		member.setMemberAddr(memberAddr);
 		member.setMemberEmail(memberEmail);
-		
+
 		MemberService service = new MemberService();
 		int result = service.memberJoin(member);
-		
+
 		//4. 결과 처리
 			//4.1 이동할 JSP 페이지 경로 지정
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/common/msg.jsp");
@@ -94,6 +95,7 @@ public class JoinServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

@@ -26,6 +26,7 @@ public class ReportInsertServlet extends HttpServlet {
 	/**
 	 * POST 방식으로 신고 등록
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// 1. 인코딩 처리
 		request.setCharacterEncoding("UTF-8");

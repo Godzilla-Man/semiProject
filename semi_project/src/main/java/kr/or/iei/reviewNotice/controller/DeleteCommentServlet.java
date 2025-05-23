@@ -1,12 +1,14 @@
 package kr.or.iei.reviewNotice.controller;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.reviewNotice.model.service.ReviewNoticeService;
 
@@ -14,7 +16,8 @@ import kr.or.iei.reviewNotice.model.service.ReviewNoticeService;
 public class DeleteCommentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String stylePostNo = request.getParameter("stylePostNo");
         if (stylePostNo != null && !stylePostNo.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/review/detail?stylePostNo=" + stylePostNo + "&error=잘못된 접근입니다.");
@@ -22,8 +25,9 @@ public class DeleteCommentServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/review/list");
         }
     }
-    
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    @Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         String stylePostNo = request.getParameter("stylePostNo");
 

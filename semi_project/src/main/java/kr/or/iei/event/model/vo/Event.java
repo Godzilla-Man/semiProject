@@ -19,6 +19,6 @@ public class Event {
 	private String eventContent;
 	private String eventEnrollDate;
 	private int readCount;
-	
+
 	private List<Files> fileList;
 }

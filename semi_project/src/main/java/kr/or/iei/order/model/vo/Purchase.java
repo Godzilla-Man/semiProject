@@ -1,7 +1,4 @@
 package kr.or.iei.order.model.vo;
-
-
-
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -21,10 +18,10 @@ public class Purchase {
 	private int deliveryFee; // 배송비
 	private int orderAmount; // 총 구매 금액
 	private String pgProvider; // PG 정보
-	private String pgTransactionId; // PG 거래 ID 
+	private String pgTransactionId; // PG 거래 ID
 	private Date dealDate; // 거래 일시
 	private String purchaseStatusCode; // 주문 상태 코드
-	
+
 	//주문 내역 갖고 오기 위한 DAO에 담을 정보들!!
 	private String productName;
     private int productPrice; // 상품 자체의 가격 (ORDER_AMOUNT는 총 주문 금액)

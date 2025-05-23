@@ -241,7 +241,7 @@
         <form action="${pageContext.request.contextPath}/review/write" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
             <div class="form-group">
                 <label for="orderNo">주문번호</label>
-                <input type="text" id="orderNo" name="orderNo" placeholder="리뷰를 작성할 주문의 주문번호 (예: O2405220001)" value="<c:out value='${reviewNotice.orderNo}'/>" required>
+                <input type="text" id="orderNo" name="orderNo" placeholder="리뷰를 작성할 주문의 주문번호 (예: O2405220001)" value="<c:out value='${preFilledOrderNo}'/>" required>
             </div>
 
             <div class="form-group">

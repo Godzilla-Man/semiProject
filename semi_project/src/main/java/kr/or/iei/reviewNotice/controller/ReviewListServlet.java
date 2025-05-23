@@ -2,6 +2,7 @@ package kr.or.iei.reviewNotice.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,7 +20,8 @@ import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
 public class ReviewListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("--- ReviewListServlet doGet() 실행됨 ---"); // 실행 확인 로그
 
         // 1. 카테고리 코드 가져오기
@@ -55,11 +57,18 @@ public class ReviewListServlet extends HttpServlet {
 
         // 총 페이지 수 계산
         int totalPage = (int)Math.ceil((double)totalReviews / recordCountPerPage);
-        if (totalPage == 0) totalPage = 1; // 게시물이 없어도 1페이지는 표시
+        if (totalPage == 0)
+		 {
+			totalPage = 1; // 게시물이 없어도 1페이지는 표시
+		}
 
         // 현재 페이지 보정 (잘못된 값으로 요청 시)
-        if(currentPage < 1) currentPage = 1;
-        if(currentPage > totalPage) currentPage = totalPage;
+        if(currentPage < 1) {
+			currentPage = 1;
+		}
+        if(currentPage > totalPage) {
+			currentPage = totalPage;
+		}
 
 
         // 페이지 네비게이션 시작/끝 번호 계산
@@ -68,7 +77,7 @@ public class ReviewListServlet extends HttpServlet {
         if (endNavi > totalPage) {
             endNavi = totalPage;
         }
-        
+
         // 이전/다음 버튼 필요 여부
         boolean needPrev = startNavi > 1;
         boolean needNext = endNavi < totalPage;
@@ -96,7 +105,8 @@ public class ReviewListServlet extends HttpServlet {
         view.forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response); // POST 요청도 GET으로 동일하게 처리
     }
 }

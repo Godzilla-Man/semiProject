@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import kr.or.iei.common.JDBCTemplate;
-import kr.or.iei.file.model.vo.Files;
 
 public class FileDao {
 
@@ -17,7 +17,7 @@ public class FileDao {
         PreparedStatement pstmt = null;
         ResultSet rset = null;
         String filePath = null;
-        
+
         // ROWNUM = 1을 사용하여 정렬된 결과 중 첫 번째 행만 가져옴
         // FILE_NO를 기준으로 오름차순 정렬하여 가장 먼저 등록된 이미지를 선택
         String query = "SELECT FILE_PATH " +
@@ -42,5 +42,5 @@ public class FileDao {
             JDBCTemplate.close(pstmt);
         }
         return filePath;
-    }   
+    }
 }

@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
  */
 
 @Data
-@AllArgsConstructor 
-@NoArgsConstructor  
+@AllArgsConstructor
+@NoArgsConstructor
 
 public class Category {
 

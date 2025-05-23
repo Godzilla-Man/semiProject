@@ -19,7 +19,7 @@ import kr.or.iei.product.model.vo.Product;
 @WebServlet("/order/paySuccess")
 public class PaySuccessServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -31,31 +31,32 @@ public class PaySuccessServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//1. 인코딩 설정 - 필터 처리
-		
+
 		//2. 값 추출(토스페이먼츠에서 성공 시 전달하는 파라미터)
 		String paymentKey = request.getParameter("paymentKey"); // PG사 거래키
         String orderId = request.getParameter("orderId");       // 우리 시스템의 주문번호
         String amountStr = request.getParameter("amount");      // 실제 결제된 금액
-        
+
         int amount = 0;
         amount = Integer.parseInt(amountStr);
-        
+
         //3. 비지니스 로직 호출
         OrderService orderService = new OrderService();
         Purchase purchase = orderService.processSuccessPay(orderId, paymentKey, "TossPayments", amount);
-        
+
         if (purchase != null) {
             // 결제 및 주문 처리 성공
         	System.out.println("PaySuccessServlet - purchase.getProductNo(): " + purchase.getProductNo());
-        	
+
             Product product = orderService.selectOrderProduct(purchase.getProductNo()); // 상품 정보 조회
-            System.out.println("PaySuccessServlet - product 객체: " + product); // 
-            
+            System.out.println("PaySuccessServlet - product 객체: " + product); //
+
             request.setAttribute("purchase", purchase); // 처리된 구매 정보
             request.setAttribute("product", product);   // 관련 상품 정보
-            
+
             RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/order/orderFinish.jsp");
             view.forward(request, response);
         } else {
@@ -68,13 +69,14 @@ public class PaySuccessServlet extends HttpServlet {
             // 이 경우 사용자는 혼란을 겪을 수 있으므로, 실제 서비스에서는 더욱 상세한 오류 처리 및 안내가 필요합니다.
             RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/order/orderFail.jsp"); // 실패 페이지로 안내
             view.forward(request, response);
-        }        
+        }
 
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

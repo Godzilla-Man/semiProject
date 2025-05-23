@@ -16,12 +16,13 @@ import kr.or.iei.reviewNotice.model.service.ReviewNoticeService;
 @WebServlet("/review/delete")
 public class DeleteReviewNoticeServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    @Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	HttpSession session = request.getSession();
     	Member loginMember = (Member) session.getAttribute("loginMember");
     	String stylePostNo = request.getParameter("stylePostNo");
-    	
+
     	if (loginMember == null) {
     		session.setAttribute("alertMsg", "로그인이 필요한 기능입니다.");
     		response.sendRedirect(request.getContextPath() + "/views/member/login.jsp");
@@ -32,12 +33,12 @@ public class DeleteReviewNoticeServlet extends HttpServlet {
     		response.sendRedirect(request.getContextPath() + "/review/list");
     		return;
     	}
-    	
+
     	ReviewNoticeService rnService = new ReviewNoticeService();
     	String serverFileSavePath = getServletContext().getRealPath("/resources/upload/review");
-    	
+
     	int result = rnService.deletePost(stylePostNo, loginMember.getMemberNo(), serverFileSavePath);
-    	
+
     	RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/common/msg.jsp");
     	if (result > 0) {
     		request.setAttribute("title", "성공");
@@ -57,7 +58,8 @@ public class DeleteReviewNoticeServlet extends HttpServlet {
     	}
     	view.forward(request, response);
     }
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	doGet(request, response);
     }
 }

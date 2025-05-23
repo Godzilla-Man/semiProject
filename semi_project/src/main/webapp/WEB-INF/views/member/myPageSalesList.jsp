@@ -45,7 +45,7 @@
                                 <%-- 판매된 상품에 대한 실제 거래의 상태 --%>
                                 <c:if test="${not empty item.transactionStatusName}">
                                     <span class="purchase-status status-${item.transactionStatusCode}" style="margin-left: 5px; background-color: #6c757d;"> 
-                                        (거래: ${item.transactionStatusName})
+                                        ${item.transactionStatusName}
                                     </span>
                                 </c:if>
                             </div>                        	

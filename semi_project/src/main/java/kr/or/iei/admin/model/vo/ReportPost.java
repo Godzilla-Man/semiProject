@@ -15,7 +15,7 @@ public class ReportPost {
 	private String reportedMemberNo;
 	private String productNo;
 	private String reportDate;
-	
+
 	private String reportReason;
 	private String productMemberNo;
 	private String reportDetail;		// 신고 내용(100자)

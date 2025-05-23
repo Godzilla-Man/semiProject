@@ -10,9 +10,9 @@ import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.member.model.vo.Member;
 
 public class AdminServcie {
-	
+
 	private AdminDao dao;
-	
+
 	public AdminServcie() {
 		dao = new AdminDao();
 	}
@@ -21,7 +21,7 @@ public class AdminServcie {
 		Connection conn = JDBCTemplate.getConnection();
 		ArrayList<Member> memberList = dao.selectAllMember(conn);
 		JDBCTemplate.close(conn);
-		
+
 		return memberList;
 	}
 
@@ -29,28 +29,28 @@ public class AdminServcie {
 		Connection conn = JDBCTemplate.getConnection();
 		ArrayList<ReportPost> reportList = dao.selectReportPost(conn);
 		JDBCTemplate.close(conn);
-		
+
 		return reportList;
 	}
 
 	public Member searchOneMember(String memberNo) {
 		Connection conn = JDBCTemplate.getConnection();
-		
+
 		//회원 정보 가져오기
 		Member member = dao.searchOneMember(conn, memberNo);
-		
+
 		//회원의 신고당한 횟수 가져오기
 		int cnt = dao.searchReportedCount(conn, memberNo);
-		
+
 		//회원이 블랙 리스트에 있는지 확인
 		int blackCnt = dao.searchMemberBlack(conn, memberNo);
-		
+
 		//회원 정보에 신고당한 횟수, 블랙 여부 set
 		member.setReportedCount(cnt);
 		member.setBlackCount(blackCnt);
-		
+
 		JDBCTemplate.close(conn);
-		
+
 		return member;
 	}
 
@@ -58,7 +58,7 @@ public class AdminServcie {
 		Connection conn = JDBCTemplate.getConnection();
 		ArrayList<BlackList> blackList = dao.selectBlackList(conn);
 		JDBCTemplate.close(conn);
-		
+
 		return blackList;
 	}
 
@@ -66,7 +66,7 @@ public class AdminServcie {
 		Connection conn = JDBCTemplate.getConnection();
 		int blackCnt = dao.searchMemberBlack(conn, memberNo);
 		JDBCTemplate.close(conn);
-		
+
 		return blackCnt;
 	}
 
@@ -79,7 +79,7 @@ public class AdminServcie {
 			JDBCTemplate.rollback(conn);
 		}
 		JDBCTemplate.close(conn);
-		
+
 		return result;
 	}
 
@@ -87,7 +87,7 @@ public class AdminServcie {
 		Connection conn = JDBCTemplate.getConnection();
 		int mCnt = dao.countTodayMember(conn);
 		JDBCTemplate.close(conn);
-		
+
 		return mCnt;
 	}
 
@@ -95,7 +95,7 @@ public class AdminServcie {
 		Connection conn = JDBCTemplate.getConnection();
 		int rCnt = dao.countTodayReport(conn);
 		JDBCTemplate.close(conn);
-		
+
 		return rCnt;
 	}
 
@@ -103,7 +103,7 @@ public class AdminServcie {
 		Connection conn = JDBCTemplate.getConnection();
 		int bCnt = dao.countTodayBlack(conn);
 		JDBCTemplate.close(conn);
-		
+
 		return bCnt;
 	}
 
@@ -122,7 +122,7 @@ public class AdminServcie {
 
 		return result;
 	}
-	
+
 	public boolean hasAlreadyReported(String memberNo, String productNo) {
 	    Connection conn = JDBCTemplate.getConnection();
 	    boolean result = dao.hasReported(conn, memberNo, productNo);

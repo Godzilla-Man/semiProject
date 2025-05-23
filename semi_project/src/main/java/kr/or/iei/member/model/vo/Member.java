@@ -20,11 +20,11 @@ public class Member {
 	private String memberEmail;		//회원 이메일
 	private String join_date;		//가입일
 	private String member_rate;		//회원 평점
-	
+
 	private String wishProductNo;	//찜한 상품 번호
 	private int reportedCount;	//신고당한 횟수
 	private int blackCount;		//블랙 여부 확인
 	private String profileImgPath;	//프로필사진
-	
+
 	private String blackReason;
 }

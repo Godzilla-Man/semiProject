@@ -21,7 +21,7 @@ import kr.or.iei.product.model.vo.Product;
 @WebServlet("/order/cancelOrder")
 public class OrderCancelServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -33,9 +33,10 @@ public class OrderCancelServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//1. 인코딩(필터)
-		
+
 		//※ 공통 시작
 		//2. 로그인 확인
 		HttpSession session = request.getSession(false);
@@ -43,16 +44,16 @@ public class OrderCancelServlet extends HttpServlet {
 		if(session != null) {
 			loginMember = (Member) session.getAttribute("loginMember");
 		}
-		
+
 		if (loginMember == null) {
             response.setContentType("text/html;charset=utf-8");
             response.getWriter().println("<script>alert('로그인이 필요한 서비스입니다.'); location.href='" + request.getContextPath() + "/member/loginFrm';</script>");
             return;
         }
-		
+
 		//3. 값 추출
 		String orderId = request.getParameter("orderId");
-		
+
 		if (orderId == null || orderId.isEmpty()) {
             request.setAttribute("errorTitle", "잘못된 요청");
             request.setAttribute("errorMessage", "주문 번호가 전달되지 않았습니다.");
@@ -61,24 +62,24 @@ public class OrderCancelServlet extends HttpServlet {
             return;
         }
 		//※ 공통 종료
-		
+
 		//4. 로직 - 주문 취소 처리
-		OrderService orderService = new OrderService();		
+		OrderService orderService = new OrderService();
 		boolean cancelResult = orderService.OrderCancel(orderId, loginMember.getMemberNo());
-		
+
 		if (cancelResult) {
             // 취소 성공 시, 취소된 주문 정보 및 상품 정보를 다시 조회하여 JSP에 전달
             Purchase canceledPurchase = orderService.getPurchaseDetails(orderId); // 주문 상태가 변경된 Purchase 객체
             Product product = null;
             if (canceledPurchase != null) {
                 product = orderService.selectOrderProduct(canceledPurchase.getProductNo());
-                
+
                 /*
                 Purchase VO 또는 Product VO에 판매자 닉네임, 주문 상태명 등을 담는 로직 추가 필요
                 예: canceledPurchase.setPurchaseStatusName(orderService.getPurchaseStatusName(canceledPurchase.getPurchaseStatusCode()));
                 예: product.setSellerNickname(orderService.getSellerNickname(product.getMemberNo()));
                 */
-                
+
             }
 
             request.setAttribute("purchase", canceledPurchase);
@@ -96,12 +97,13 @@ public class OrderCancelServlet extends HttpServlet {
             RequestDispatcher errorView = request.getRequestDispatcher("/WEB-INF/views/order/errorPage.jsp");
             errorView.forward(request, response);
         }
-		
+
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

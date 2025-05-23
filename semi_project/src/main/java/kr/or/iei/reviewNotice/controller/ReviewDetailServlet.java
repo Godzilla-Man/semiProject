@@ -1,6 +1,7 @@
 package kr.or.iei.reviewNotice.controller;
 
 import java.io.IOException;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,13 +17,14 @@ import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
 public class ReviewDetailServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String stylePostNo = request.getParameter("stylePostNo");
 
         ReviewNoticeService service = new ReviewNoticeService();
         ReviewNotice review = service.selectReviewDetail(stylePostNo); // 변수명 review로 사용
         Category category = service.selectCategory(stylePostNo);
-        
+
         String path;
         if (review != null) {
             request.setAttribute("review", review); // JSP에서 사용할 이름 "review"
@@ -36,7 +38,8 @@ public class ReviewDetailServlet extends HttpServlet {
         view.forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
 }

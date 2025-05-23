@@ -2,10 +2,7 @@ package kr.or.iei.event.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -17,14 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import com.oreilly.servlet.MultipartRequest;
-
-import kr.or.iei.common.KhRenamePolicy;
 import kr.or.iei.event.model.service.EventService;
 import kr.or.iei.event.model.vo.Event;
 import kr.or.iei.file.model.vo.Files;
-import kr.or.iei.notice.model.service.NoticeService;
-import kr.or.iei.notice.model.vo.Notice;
 
 /**
  * Servlet implementation class EventUpdateServlet
@@ -37,7 +29,7 @@ import kr.or.iei.notice.model.vo.Notice;
 	)
 public class EventUpdateServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -49,6 +41,7 @@ public class EventUpdateServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String eventNo = request.getParameter("eventNo"); //회원 번호
 		String eventTitle = request.getParameter("eventTitle"); //게시글 제목
@@ -57,8 +50,10 @@ public class EventUpdateServlet extends HttpServlet {
 		 // 파일 저장 경로 (서버 내 실제 경로)
         String uploadPath = getServletContext().getRealPath("/resources/upload/event");
         File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) uploadDir.mkdirs();
-		
+        if (!uploadDir.exists()) {
+			uploadDir.mkdirs();
+		}
+
         // 업로드된 이미지 파일 리스트 수집
         List<Files> fileList = new ArrayList<>();
         for (Part part : request.getParts()) {
@@ -77,16 +72,16 @@ public class EventUpdateServlet extends HttpServlet {
                 fileList.add(file);
             }
         }
-		
+
 		//로직
 		Event event = new Event();
 		event.setEventNo(eventNo);
 		event.setEventTitle(eventTitle);
 		event.setEventContent(eventContent);
-		
+
 		EventService service = new EventService();
 		int result = service.updateEvent(event, fileList);
-		
+
 		//결과 처리
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/common/msg.jsp");
 
@@ -101,13 +96,14 @@ public class EventUpdateServlet extends HttpServlet {
 			request.setAttribute("icon", "error");
 			request.setAttribute("loc", "/event/updateFrm?eventNo=" + eventNo);
 		}
-		
+
 		view.forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

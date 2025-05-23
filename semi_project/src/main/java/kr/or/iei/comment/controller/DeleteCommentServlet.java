@@ -1,6 +1,7 @@
 package kr.or.iei.comment.controller;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,7 +16,7 @@ import kr.or.iei.product.model.service.ProductService;
 @WebServlet("/product/deleteComment")
 public class DeleteCommentServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -27,13 +28,14 @@ public class DeleteCommentServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int commentNo = Integer.parseInt(request.getParameter("no"));
         String productNo = request.getParameter("product");
 
         int result = new ProductService().deleteComment(commentNo);
 
-        
+
         if (result > 0) {
           response.sendRedirect(request.getContextPath() + "/product/detail?no=" + productNo);
         } else {
@@ -45,6 +47,7 @@ public class DeleteCommentServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

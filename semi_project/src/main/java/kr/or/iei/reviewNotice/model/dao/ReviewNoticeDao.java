@@ -1,19 +1,16 @@
 package kr.or.iei.reviewNotice.model.dao;
 
-import static kr.or.iei.common.JDBCTemplate.*; // JDBCTemplate 경로에 맞게
-
 import java.sql.Connection;
-import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import kr.or.iei.file.model.vo.Files;
-import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
+import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.comment.model.vo.Comment;
 import kr.or.iei.common.JDBCTemplate;
-import kr.or.iei.category.model.vo.Category; 
+import kr.or.iei.file.model.vo.Files;
+import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
 
 public class ReviewNoticeDao {
 
@@ -29,9 +26,9 @@ public class ReviewNoticeDao {
         ArrayList<ReviewNotice> reviewList = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         StringBuilder sql = new StringBuilder();
-        
+
         sql.append("SELECT ");
         sql.append("    SP.STYLE_POST_NO, ");         // 스타일 게시글 번호
         sql.append("    SP.POST_TITLE, ");            // 게시글 제목
@@ -59,28 +56,28 @@ public class ReviewNoticeDao {
         sql.append("    ) TEMP ");
         sql.append("    WHERE TEMP.RN = 1 "); // 각 게시글 당 첫번째 파일
         sql.append(") F_THUMB ON SP.STYLE_POST_NO = F_THUMB.STYLE_POST_NO ");
-        
+
         // 카테고리 필터링 조건 추가
         if (categoryCode != null && !categoryCode.isEmpty() && !categoryCode.equalsIgnoreCase("all")) {
             sql.append("JOIN TBL_PROD P ON PU.PRODUCT_NO = P.PRODUCT_NO "); // 상품 테이블과 조인
             sql.append("JOIN TBL_PROD_CATEGORY PC ON P.CATEGORY_CODE = PC.CATEGORY_CODE "); // 상품 카테고리 테이블과 조인
             sql.append("WHERE PC.PAR_CATEGORY_CODE = ? "); // 부모 카테고리 코드로 필터링
         }
-        
+
         sql.append("ORDER BY SP.POST_DATE DESC"); // 최신글 순으로 정렬
 
         try {
             pstmt = conn.prepareStatement(sql.toString());
-            
-            int paramIndex = 1; 
+
+            int paramIndex = 1;
             if (categoryCode != null && !categoryCode.isEmpty() && !categoryCode.equalsIgnoreCase("all")) {
                 pstmt.setString(paramIndex++, categoryCode); // 파라미터 바인딩
             }
-            
+
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 ReviewNotice rn = new ReviewNotice();
-                rn.setStylePostNo(rs.getString("STYLE_POST_NO")); 
+                rn.setStylePostNo(rs.getString("STYLE_POST_NO"));
                 rn.setPostTitle(rs.getString("POST_TITLE"));
                 rn.setOrderNo(rs.getString("ORDER_NO"));
                 rn.setPostDate(rs.getString("POST_DATE"));
@@ -118,8 +115,8 @@ public class ReviewNoticeDao {
         ReviewNotice reviewNotice = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
-        String sql = 
+
+        String sql =
             "SELECT " +
             "    SP.STYLE_POST_NO, " +
             "    SP.POST_TITLE, " +
@@ -150,14 +147,14 @@ public class ReviewNoticeDao {
                 reviewNotice.setOrderNo(rs.getString("ORDER_NO"));
                 reviewNotice.setPostDate(rs.getString("POST_DATE"));
                 reviewNotice.setReadCount(rs.getInt("READ_COUNT"));
-                
+
                 // "참조" 정보 설정 (주문자)
                 reviewNotice.setMemberNo(rs.getString("MEMBER_NO"));
                 reviewNotice.setMemberNickname(rs.getString("MEMBER_NICKNAME"));
-                
+
                 // "참조" 정보 설정 (상품 카테고리)
                 reviewNotice.setCategoryCode(rs.getString("CATEGORY_CODE")); // ReviewNotice VO의 categoryCode 필드
-                
+
                 // ReviewNotice VO의 categoryList 필드에 상품 카테고리 정보를 Category 객체로 담아 설정
                 String prodCategoryCode = rs.getString("CATEGORY_CODE");
                 String prodCategoryName = rs.getString("PROD_CATEGORY_NAME");
@@ -168,7 +165,7 @@ public class ReviewNoticeDao {
                     category.setCategoryCode(prodCategoryCode);
                     category.setCategoryName(prodCategoryName);
                     category.setParCategoryCode(prodParCategoryCode);
-                    
+
                     ArrayList<Category> categoryList = new ArrayList<>();
                     categoryList.add(category);
                     reviewNotice.setCategoryList(categoryList);
@@ -180,11 +177,11 @@ public class ReviewNoticeDao {
         }
         return reviewNotice;
     }
-    
+
     public int increaseReadCount(Connection conn, String stylePostNo) throws SQLException {
         PreparedStatement pstmt = null;
         int result = 0;
-        String sql = 
+        String sql =
             "UPDATE TBL_STYLE_POST " +
             "SET READ_COUNT = READ_COUNT + 1 " +
             "WHERE STYLE_POST_NO = ?";
@@ -202,7 +199,7 @@ public class ReviewNoticeDao {
         ArrayList<Files> fileList = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        String sql = 
+        String sql =
             "SELECT " +
             "    FILE_NO, PRODUCT_NO, STYLE_POST_NO, NOTICE_NO, EVENT_NO, " +
             "    FILE_NAME, FILE_PATH, UPLOAD_DATE " +
@@ -236,7 +233,7 @@ public class ReviewNoticeDao {
         ArrayList<Comment> commentList = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        String sql = 
+        String sql =
             "SELECT " +
             "    C.COMMENT_NO, C.MEMBER_NO, C.PRODUCT_NO, C.STYLE_POST_NO, " +
             "    C.CONTENT, C.CREATED_DATE, M.MEMBER_NICKNAME " +
@@ -269,7 +266,7 @@ public class ReviewNoticeDao {
     public int insertComment(Connection conn, Comment comment) throws SQLException {
         PreparedStatement pstmt = null;
         int result = 0;
-        String sql = 
+        String sql =
             "INSERT INTO TBL_COMMENT ( " +
             "    COMMENT_NO, MEMBER_NO, PRODUCT_NO, STYLE_POST_NO, CONTENT, CREATED_DATE " +
             ") VALUES ( " +
@@ -291,7 +288,7 @@ public class ReviewNoticeDao {
     public int updateComment(Connection conn, int commentNo, String content) throws SQLException {
         PreparedStatement pstmt = null;
         int result = 0;
-        String sql = 
+        String sql =
             "UPDATE TBL_COMMENT " +
             "SET CONTENT = ?, CREATED_DATE = SYSDATE " + // 수정일도 현재 시간으로 갱신
             "WHERE COMMENT_NO = ?";
@@ -309,7 +306,7 @@ public class ReviewNoticeDao {
     public int deleteComment(Connection conn, int commentNo) throws SQLException {
         PreparedStatement pstmt = null;
         int result = 0;
-        String sql = 
+        String sql =
             "DELETE FROM TBL_COMMENT " +
             "WHERE COMMENT_NO = ?"; // 물리적 삭제
         try {
@@ -321,12 +318,12 @@ public class ReviewNoticeDao {
         }
         return result;
     }
-    
+
     public Comment selectOneComment(Connection conn, int commentNo) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Comment comment = null;
-        String sql = 
+        String sql =
             "SELECT MEMBER_NO " + // 작성자 확인을 위해 MEMBER_NO만 조회
             "FROM TBL_COMMENT " +
             "WHERE COMMENT_NO = ?";
@@ -367,7 +364,7 @@ public class ReviewNoticeDao {
     public int insertReviewNotice(Connection conn, ReviewNotice reviewNotice) throws SQLException {
         PreparedStatement pstmt = null;
         int result = 0;
-        String sql = 
+        String sql =
             "INSERT INTO TBL_STYLE_POST ( " +
             "    STYLE_POST_NO, POST_TITLE, POST_CONTENT, ORDER_NO, POST_DATE, READ_COUNT " +
             ") VALUES ( " +
@@ -389,7 +386,7 @@ public class ReviewNoticeDao {
     public int getNextFileNo(Connection conn) throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        int nextFileNo = 1; 
+        int nextFileNo = 1;
         String sql = "SELECT MAX(FILE_NO) AS MAX_NO FROM TBL_FILE"; // MAX 값 조회
         try {
             pstmt = conn.prepareStatement(sql);
@@ -411,7 +408,7 @@ public class ReviewNoticeDao {
     public int insertFile(Connection conn, Files file) throws SQLException {
         PreparedStatement pstmt = null;
         int result = 0;
-        String sql = 
+        String sql =
             "INSERT INTO TBL_FILE ( " +
             "    FILE_NO, PRODUCT_NO, STYLE_POST_NO, NOTICE_NO, EVENT_NO, " +
             "    FILE_NAME, FILE_PATH, UPLOAD_DATE " +
@@ -598,7 +595,7 @@ public class ReviewNoticeDao {
                 pstmt.setString(2, file.getFileName()); // 원본 파일명
                 pstmt.setString(3, file.getFilePath()); // 서버 저장 파일명
                 totalInserted += pstmt.executeUpdate();
-                
+
                 JDBCTemplate.close(pstmt);
             }
         } catch (SQLException e) {
@@ -773,10 +770,10 @@ public class ReviewNoticeDao {
 		String sql = "select s.category_code as category_code, s.category_name as small_ctg_name, m.category_name as mid_ctg_name, l.category_name as lar_ctg_name  \r\n"
 				+ "from tbl_style_post sp join tbl_purchase pur on sp.order_no = pur.order_no join tbl_prod prod on pur.product_no = prod.product_no join tbl_prod_category s on prod.category_code = s.category_code\r\n"
 				+ "join tbl_prod_category m on s.par_category_code = m.category_code join tbl_prod_category l on m.par_category_code = l.category_code where sp.style_post_no = ?";
-		
+
 		try {
 			pstmt = conn.prepareStatement(sql);
-			
+
 			pstmt.setString(1, stylePostNo);
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
@@ -785,7 +782,7 @@ public class ReviewNoticeDao {
 				category.setCategoryName(rs.getString("small_ctg_name"));
 				category.setMidCategoryName(rs.getString("mid_ctg_name"));
 				category.setLarCategoryName(rs.getString("lar_ctg_name"));
-				
+
 			}
  		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -799,24 +796,24 @@ public class ReviewNoticeDao {
 	public ArrayList<ReviewNotice> selectAllReviewList(Connection conn) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
-		
+
 		String query = "select s.style_post_no, s.post_title, f.file_path"
 				+ " from tbl_style_post s left join (select style_post_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by style_post_no) f"
 				+ " on (s.style_post_no = f.style_post_no) order by s.post_date desc, f.file_no asc";
-		
-		ArrayList<ReviewNotice> reviewList = new ArrayList<ReviewNotice>();
-		
+
+		ArrayList<ReviewNotice> reviewList = new ArrayList<>();
+
 		try {
 			pstmt = conn.prepareStatement(query);
-			
+
 			rset = pstmt.executeQuery();
-			
+
 			while(rset.next()) {
 				ReviewNotice r = new ReviewNotice();
 				r.setStylePostNo(rset.getString("style_post_no"));
 				r.setPostTitle(rset.getString("post_title"));
 				r.setFilePath(rset.getString("file_path"));
-				
+
 				reviewList.add(r);
 			}
 		} catch (SQLException e) {
@@ -826,7 +823,7 @@ public class ReviewNoticeDao {
 			JDBCTemplate.close(rset);
 			JDBCTemplate.close(pstmt);
 		}
-		
+
 		return reviewList;
 	}
 }

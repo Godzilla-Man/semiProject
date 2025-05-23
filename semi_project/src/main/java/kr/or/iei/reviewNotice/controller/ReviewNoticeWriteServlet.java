@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.reviewNotice.model.service.ReviewNoticeService;
@@ -29,7 +28,8 @@ import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
 public class ReviewNoticeWriteServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	@Override
+		protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
             System.out.println("--- ReviewNoticeWriteServlet doGet() 실행됨: 글쓰기 폼 요청 처리 ---");
 
             // 1. (구매내역 페이지 등에서) 전달된 주문번호(orderNo) 파라미터 받기
@@ -48,7 +48,8 @@ public class ReviewNoticeWriteServlet extends HttpServlet {
             view.forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loginMember") == null) {
             request.setAttribute("errorMsg", "로그인이 필요한 서비스입니다.");
@@ -77,8 +78,8 @@ public class ReviewNoticeWriteServlet extends HttpServlet {
         }
 
         ArrayList<Files> fileList = new ArrayList<>();
-        String root = getServletContext().getRealPath("/"); 
-        String saveDirectory = root + "/resources/upload" + File.separator + "reviewnotice"; 
+        String root = getServletContext().getRealPath("/");
+        String saveDirectory = root + "/resources/upload" + File.separator + "reviewnotice";
 
         File directory = new File(saveDirectory);
         if (!directory.exists()) {
@@ -94,14 +95,14 @@ public class ReviewNoticeWriteServlet extends HttpServlet {
                         String extension = "";
                         int dotIndex = originalFileName.lastIndexOf(".");
                         if (dotIndex > -1 && dotIndex < originalFileName.length() - 1) {
-                            extension = originalFileName.substring(dotIndex); 
+                            extension = originalFileName.substring(dotIndex);
                         }
                         String newFileName = "review_" + System.currentTimeMillis() + "_" + (int)(Math.random()*10000) + extension;
                         part.write(saveDirectory + File.separator + newFileName);
 
                         Files fileVo = new Files();
-                        fileVo.setFileName(originalFileName); 
-                        fileVo.setFilePath("/resources/upload/reviewnotice/" + newFileName); 
+                        fileVo.setFileName(originalFileName);
+                        fileVo.setFilePath("/resources/upload/reviewnotice/" + newFileName);
                         fileList.add(fileVo);
                     }
                 }
@@ -109,11 +110,13 @@ public class ReviewNoticeWriteServlet extends HttpServlet {
         } catch (IOException | ServletException e) {
             e.printStackTrace();
             fileProcessingError = true;
-            for(Files fVo : fileList) { 
+            for(Files fVo : fileList) {
                 if (fVo.getFilePath() != null) {
                     String uploadedFileName = fVo.getFilePath().substring(fVo.getFilePath().lastIndexOf("/") + 1);
                     File createdFile = new File(saveDirectory + File.separator + uploadedFileName);
-                    if(createdFile.exists()) createdFile.delete();
+                    if(createdFile.exists()) {
+						createdFile.delete();
+					}
                 }
             }
             fileList.clear();
@@ -125,9 +128,9 @@ public class ReviewNoticeWriteServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/views/reviewnotice/reviewWrite.jsp").forward(request, response);
             return;
         }
-        
+
         ReviewNoticeService service = new ReviewNoticeService();
-        int result = service.insertReviewNotice(rn, fileList); 
+        int result = service.insertReviewNotice(rn, fileList);
 
         if (result > 0) {
             response.sendRedirect(request.getContextPath() + "/review/detail?stylePostNo=" + rn.getStylePostNo());
@@ -136,7 +139,9 @@ public class ReviewNoticeWriteServlet extends HttpServlet {
                 if (fVo.getFilePath() != null) {
                     String uploadedFileName = fVo.getFilePath().substring(fVo.getFilePath().lastIndexOf("/") + 1);
                     File failedFile = new File(saveDirectory + File.separator + uploadedFileName);
-                    if(failedFile.exists()) failedFile.delete();
+                    if(failedFile.exists()) {
+						failedFile.delete();
+					}
                 }
             }
             request.setAttribute("errorMsg", "게시글 등록에 실패했습니다.");

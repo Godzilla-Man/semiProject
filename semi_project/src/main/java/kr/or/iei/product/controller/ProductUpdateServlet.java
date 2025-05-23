@@ -2,16 +2,21 @@ package kr.or.iei.product.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
+import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.product.model.service.ProductService;
 import kr.or.iei.product.model.vo.Product;
-import kr.or.iei.file.model.vo.Files;
 
 @WebServlet("/product/update")
 @MultipartConfig(
@@ -34,8 +39,10 @@ public class ProductUpdateServlet extends HttpServlet {
 
         // 저장 경로 존재 확인 및 없으면 생성
         File dir = new File(savePath);
-        if (!dir.exists()) dir.mkdirs();
-        
+        if (!dir.exists()) {
+			dir.mkdirs();
+		}
+
         // 3. 일반 텍스트 데이터 추출
         String productNo = request.getParameter("productNo");
         String productName = request.getParameter("productName");

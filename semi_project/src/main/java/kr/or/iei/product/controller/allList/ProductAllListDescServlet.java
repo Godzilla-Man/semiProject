@@ -21,7 +21,7 @@ import kr.or.iei.product.model.vo.Product;
 @WebServlet("/product/allListDesc")
 public class ProductAllListDescServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -33,6 +33,7 @@ public class ProductAllListDescServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String memberNo = null;
 		String memberId = null;
@@ -41,14 +42,14 @@ public class ProductAllListDescServlet extends HttpServlet {
 		if(session != null) {
 			loginMember = (Member) session.getAttribute("loginMember");
 			if(loginMember != null) {
-				memberNo = loginMember.getMemberNo();		
+				memberNo = loginMember.getMemberNo();
 				memberId = loginMember.getMemberId(); // 관리자 판단용
 			}
 		}
-		
+
 		ProductService service = new ProductService();
 		ArrayList<Product> productList = service.selectAllListDesc(memberNo, memberId);
-		
+
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/allList/productAllListDesc.jsp");
 		request.setAttribute("productList", productList);
 		view.forward(request, response);
@@ -57,6 +58,7 @@ public class ProductAllListDescServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
