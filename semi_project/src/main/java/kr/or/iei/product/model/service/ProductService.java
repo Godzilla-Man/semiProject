@@ -651,6 +651,13 @@ public class ProductService {
 	    return result;
 	}
 
+	public ArrayList<Product> selectMemberWishList(String memberNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		ArrayList<Product> productList = dao.selectMemberWishList(conn, memberNo);
+		JDBCTemplate.close(conn);
+		
+		return productList;
+	}
 }
 
 
