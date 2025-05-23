@@ -20,48 +20,26 @@ import kr.or.iei.product.model.vo.Product;
  */
 @WebServlet("/product/allListPrice")
 public class ProductAllListPriceServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ProductAllListPriceServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String memberNo = null;
-		Member loginMember = null;
-		HttpSession session = request.getSession(false); //세션 있으면 존재, 없으면 null (로그인 되어 있으면 존재, 비로그인 시 null)
-		if(session != null) {
-			loginMember = (Member) session.getAttribute("loginMember");
-			if(loginMember != null) {
-				memberNo = loginMember.getMemberNo();				
-			}
-		}
 		String min = request.getParameter("min");
 		String max = request.getParameter("max");
-		
+
+		HttpSession session = request.getSession(false);
+		String memberNo = null;
+		String memberId = null;
+
+		if (session != null) {
+			Member loginMember = (Member) session.getAttribute("loginMember");
+			if (loginMember != null) {
+				memberNo = loginMember.getMemberNo();
+				memberId = loginMember.getMemberId();
+			}
+		}
+
 		ProductService service = new ProductService();
-		ArrayList<Product> productList = service.selectAllListPrice(memberNo, min, max);
-		
-		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/allList/productAllListPrice.jsp");
-		
+		ArrayList<Product> productList = service.selectAllListPrice(memberNo, min, max, memberId);
+
 		request.setAttribute("productList", productList);
-		
-		view.forward(request, response);
+		request.getRequestDispatcher("/WEB-INF/views/product/allList/productAllListPrice.jsp").forward(request, response);
 	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
 }

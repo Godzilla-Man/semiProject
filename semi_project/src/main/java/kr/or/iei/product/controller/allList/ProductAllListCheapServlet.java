@@ -20,46 +20,33 @@ import kr.or.iei.product.model.vo.Product;
  */
 @WebServlet("/product/allListCheap")
 public class ProductAllListCheapServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+    private static final long serialVersionUID = 1L;
+
     public ProductAllListCheapServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String memberNo = null;
-		Member loginMember = null;
-		HttpSession session = request.getSession(false); //세션 있으면 존재, 없으면 null (로그인 되어 있으면 존재, 비로그인 시 null)
-		if(session != null) {
-			loginMember = (Member) session.getAttribute("loginMember");
-			if(loginMember != null) {
-				memberNo = loginMember.getMemberNo();				
-			}
-		}
-		
-		ProductService service = new ProductService();
-		ArrayList<Product> productList = service.selectAllListCheap(memberNo);
-		
-		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/allList/productAllListCheap.jsp");
-		
-		request.setAttribute("productList", productList);
-		
-		view.forward(request, response);
-	}
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String memberNo = null;
+        String memberId = null;
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Member loginMember = (Member) session.getAttribute("loginMember");
+            if (loginMember != null) {
+                memberNo = loginMember.getMemberNo();
+                memberId = loginMember.getMemberId();  // ✅ 관리자 여부 판단용
+            }
+        }
 
+        ProductService service = new ProductService();
+        ArrayList<Product> productList = service.selectAllListCheap(memberNo, memberId);  // ✅ 변경된 호출 방식
+
+        request.setAttribute("productList", productList);
+        request.getRequestDispatcher("/WEB-INF/views/product/allList/productAllListCheap.jsp").forward(request, response);
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
 }
