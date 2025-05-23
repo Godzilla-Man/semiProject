@@ -1,4 +1,4 @@
-package kr.or.iei.reviewnotice.controller;
+package kr.or.iei.reviewNotice.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +15,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.member.model.vo.Member;
-import kr.or.iei.reviewnotice.model.service.ReviewNoticeService;
-import kr.or.iei.reviewnotice.model.vo.ReviewNotice;
+import kr.or.iei.reviewNotice.model.service.ReviewNoticeService;
+import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
 
 @WebServlet("/review/write")
 @MultipartConfig(

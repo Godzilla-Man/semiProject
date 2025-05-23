@@ -1,4 +1,4 @@
-package kr.or.iei.reviewnotice.controller;
+package kr.or.iei.reviewNotice.controller;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.comment.model.vo.Comment;
-import kr.or.iei.reviewnotice.model.service.ReviewNoticeService;
+import kr.or.iei.reviewNotice.model.service.ReviewNoticeService;
 
 @WebServlet("/review/commentInsert")
 public class InsertCommentServlet extends HttpServlet {

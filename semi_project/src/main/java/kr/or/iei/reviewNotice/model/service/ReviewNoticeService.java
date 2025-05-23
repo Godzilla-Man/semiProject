@@ -1,4 +1,4 @@
-package kr.or.iei.reviewnotice.model.service;
+package kr.or.iei.reviewNotice.model.service;
 
 import static kr.or.iei.common.JDBCTemplate.*;
 
@@ -12,8 +12,8 @@ import java.util.Date;
 import kr.or.iei.file.model.vo.Files; 
 import kr.or.iei.comment.model.vo.Comment;
 import kr.or.iei.common.JDBCTemplate;
-import kr.or.iei.reviewnotice.model.dao.ReviewNoticeDao;
-import kr.or.iei.reviewnotice.model.vo.ReviewNotice;
+import kr.or.iei.reviewNotice.model.dao.ReviewNoticeDao;
+import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
 
 public class ReviewNoticeService {
     private ReviewNoticeDao reviewNoticeDao = new ReviewNoticeDao();

@@ -106,4 +106,29 @@ public class AdminServcie {
 		
 		return bCnt;
 	}
-}
+
+	public int insertReport(ReportPost report) {
+		Connection conn = JDBCTemplate.getConnection();
+
+		int result = dao.insertReport(conn, report);
+
+		if (result > 0) {
+			JDBCTemplate.commit(conn);
+		} else {
+			JDBCTemplate.rollback(conn);
+		}
+
+		JDBCTemplate.close(conn);
+
+		return result;
+	}
+	
+	public boolean hasAlreadyReported(String memberNo, String productNo) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    boolean result = dao.hasReported(conn, memberNo, productNo);
+	    JDBCTemplate.close(conn);
+	    return result;
+	}
+
+	}
+

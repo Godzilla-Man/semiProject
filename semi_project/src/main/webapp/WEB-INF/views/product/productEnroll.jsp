@@ -377,6 +377,20 @@
   display: none;
 }
 
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 라디오 버튼과 텍스트 사이 간격 */
+  font-size: 15px;
+}
+
 
 
 </style>
@@ -534,13 +548,25 @@
 
   <div class="delivery-box">
   
- <!-- 배송방법 라디오 버튼 -->
-<input type="radio" name="tradeMethodCode" value="M1"
-  <c:if test="${empty product || product.tradeMethodCode eq 'M1'}">checked</c:if>> 배송비 포함
-<input type="radio" name="tradeMethodCode" value="M2"
-  <c:if test="${not empty product && product.tradeMethodCode eq 'M2'}">checked</c:if>> 배송비 미포함
-<input type="radio" name="tradeMethodCode" value="M3"
-  <c:if test="${not empty product && product.tradeMethodCode eq 'M3'}">checked</c:if>> 배송비 착불
+<!-- 배송방법 라디오 버튼 -->
+<div class="radio-group">
+  <label class="radio-item">
+    <input type="radio" name="tradeMethodCode" value="M1"
+      <c:if test="${empty product || product.tradeMethodCode eq 'M1'}">checked</c:if>> 
+    배송비 포함
+  </label>
+  <label class="radio-item">
+    <input type="radio" name="tradeMethodCode" value="M2"
+      <c:if test="${not empty product && product.tradeMethodCode eq 'M2'}">checked</c:if>> 
+    배송비 미포함
+  </label>
+  <label class="radio-item">
+    <input type="radio" name="tradeMethodCode" value="M3"
+      <c:if test="${not empty product && product.tradeMethodCode eq 'M3'}">checked</c:if>> 
+    배송비 착불
+  </label>
+</div>
+
 
 
     <!-- 안내 문구 -->

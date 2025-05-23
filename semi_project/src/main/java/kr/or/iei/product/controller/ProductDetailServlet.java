@@ -10,6 +10,7 @@ import javax.servlet.http.*;
 import kr.or.iei.product.model.service.ProductService;
 import kr.or.iei.product.model.vo.Product;
 import kr.or.iei.file.model.vo.Files;
+import kr.or.iei.admin.model.vo.ReportPost;
 import kr.or.iei.comment.model.vo.Comment;
 import kr.or.iei.member.model.vo.Member;
 
@@ -25,6 +26,7 @@ public class ProductDetailServlet extends HttpServlet {
 
 		// 2. 클라이언트가 전송한 값 추출
 		String productNo = request.getParameter("no");
+		String from = request.getParameter("from"); // 찜하기에서 왔는지 확인하는 파라미터
 
 		// 잘못된 접근 처리
 		if (productNo == null || productNo.trim().isEmpty()) {
@@ -35,8 +37,12 @@ public class ProductDetailServlet extends HttpServlet {
 		// 3. 로직 처리
 		ProductService service = new ProductService();
 
+		   // ⭐ 찜하기에서 온 요청이 아닌 경우에만 조회수 증가
+	    if (from == null || !from.equals("wishlist")) {
 		// (1) 상품 기본 정보 조회
 		service.increaseReadCount(productNo);
+	    }
+	    
 		Product product = service.selectOneProduct(productNo);
 
 		// 상품이 존재하지 않을 경우 오류 처리
@@ -97,7 +103,10 @@ public class ProductDetailServlet extends HttpServlet {
 		    relatedProducts = service.selectRelatedProducts(categoryCode, currentProductNo);
 		}
 
-
+		//  (6) 신고 사유 리스트 조회
+		List<ReportPost> reportReasonList = service.getReportReasonList();
+		request.setAttribute("reportReasonList", reportReasonList);
+		
 		// 4. 결과 처리
 		product.setProductStatus(statusName);
 		product.setWishlistCount(wishlistCount);

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,7 +20,7 @@
 			</div>
 			<table class="tbl-member">
 				<tr>
-					<th colspan="7">신고&nbsp;&nbsp;&nbsp;&nbsp;내역&nbsp;&nbsp;&nbsp;&nbsp;조회</th>
+					<th colspan="8">신고&nbsp;&nbsp;&nbsp;&nbsp;내역&nbsp;&nbsp;&nbsp;&nbsp;조회</th>
 				</tr>
 				<tr>
 					<th>신고 번호</th>
@@ -27,6 +28,7 @@
 					<th>상품 등록 회원</th>
 					<th>신고한 회원</th>
 					<th>신고 사유</th>
+					<th>신고 내용</th>
 					<th>신고 일시</th>
 					<th>블랙 처리</th>
 				</tr>
@@ -37,6 +39,8 @@
 					<td><a href="/admin/searchMember?memberNo=${report.productMemberNo}">${report.productMemberNo}</a></td>
 					<td><a href="/admin/searchMember?memberNo=${report.reportedMemberNo}">${report.reportedMemberNo}</a></td>
 					<td>${report.reportReason}</td>
+<td><button type="button" style="white-space:nowrap;" data-detail="${fn:escapeXml(report.reportDetail)}" onclick="openReasonModal(this)">사유 확인</button></td>
+
 					<td>${report.reportDate}</td>
 					<td><button onclick="insertBlackList('${report.productMemberNo}', '${report.reportNo}')">블랙 처리</button></td>
 				</tr>
@@ -52,6 +56,43 @@
 		
 		<jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
 	</div>
+	
+	<!-- 신고 내용 확인용 모달 추가 -->
+	<!-- 신고내용 확인용 모달 레이아웃: 기본은 숨김 처리 -->
+	<div id="reportDetailModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:10000;">
+	  <div style="background:#fff; border-radius:8px; padding:24px; width:400px; max-width:90%; position:relative;">
+	    <h3 style="margin-bottom:16px;">신고 내용</h3>
+	    <!-- 신고 상세내용이 표시될 영역 -->
+	    <div id="reportDetailContent" style="white-space:pre-wrap; font-size:14px; color:#333;"></div>
+	    <div style="margin-top:20px; text-align:right;">
+	      <button onclick="closeReportDetail()" style="padding:6px 14px;">닫기</button>
+	    </div>
+	  </div>
+	</div>
+
+<script>
+  //  신고 내용 모달 열기 함수
+		function openReasonModal(btnElement) {
+		  if (!btnElement || !btnElement.dataset) {
+		    console.error("버튼 요소가 올바르게 전달되지 않았습니다.");
+		    return;
+		  }
+		
+		  const detailText = btnElement.dataset.detail || "(신고 내용이 없습니다)";
+		  const modal = document.getElementById("reportDetailModal");
+		  const content = document.getElementById("reportDetailContent");
+		
+		  content.textContent = detailText;
+		  modal.style.display = "flex";
+		}
+
+
+  //  모달 닫기 함수
+  function closeReportDetail() {
+    document.getElementById("reportDetailModal").style.display = "none";
+  }
+</script>
+	
 	
 	<script>
 	

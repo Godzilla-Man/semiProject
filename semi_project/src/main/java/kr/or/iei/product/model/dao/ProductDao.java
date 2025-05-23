@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import kr.or.iei.comment.model.vo.Comment;
+import kr.or.iei.admin.model.vo.ReportPost;
 import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.file.model.vo.Files;
@@ -1945,6 +1946,35 @@ public class ProductDao {
 	    }
 	    return result;
 	}
+	
+	// 신고사유 리스트 불러오기
+	public List<ReportPost> selectReportReasonList(Connection conn) {
+	    List<ReportPost> list = new ArrayList<>();
+	    PreparedStatement pstmt = null;
+	    ResultSet rset = null;
+
+	    String query = "SELECT REPORT_CODE, REPORT_REASON FROM TBL_REPORT";
+
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        rset = pstmt.executeQuery();
+
+	        while (rset.next()) {
+	            ReportPost reason = new ReportPost();
+	            reason.setReportCode(rset.getString("REPORT_CODE"));
+	            reason.setReportReason(rset.getString("REPORT_REASON"));
+	            list.add(reason);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(rset);
+	        JDBCTemplate.close(pstmt);
+	    }
+
+	    return list;
+	}
+
 }
    
 

@@ -109,8 +109,10 @@
         }
 
         .product-count-section .count {
+        	all: unset; /* 모든 상속 스타일 제거 */
             color: var(--main2);
             font-weight: bold;
+            font-size: 20px;
         }
 		
 		/* 상품 없을 때 안내 방식 */

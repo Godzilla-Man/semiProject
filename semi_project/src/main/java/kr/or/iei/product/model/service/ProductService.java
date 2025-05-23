@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kr.or.iei.comment.model.vo.Comment;
+import kr.or.iei.admin.model.vo.ReportPost;
 import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.file.model.vo.Files;
@@ -665,6 +666,15 @@ public class ProductService {
 	    JDBCTemplate.close(conn);
 	    return list;
 	}
+	
+	// 신고사유 리스트 불러오기
+	public List<ReportPost> getReportReasonList() {
+	    Connection conn = JDBCTemplate.getConnection();
+	    List<ReportPost> list = dao.selectReportReasonList(conn);
+	    JDBCTemplate.close(conn);
+	    return list;
+	}
+
 }
 
 
