@@ -1,6 +1,7 @@
 package kr.or.iei.member.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -8,10 +9,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-/**
- * Servlet implementation class MyPageWishListServlet
- */
+import kr.or.iei.member.model.vo.Member;
+import kr.or.iei.order.model.service.OrderService;
+import kr.or.iei.order.model.vo.Purchase;
+import kr.or.iei.product.model.service.ProductService;
+import kr.or.iei.product.model.vo.SalesProduct;
+
+
 @WebServlet("/member/myPageSalesList")
 public class myPageSalesListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -27,16 +33,35 @@ public class myPageSalesListServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//1. 인코딩 - 필터에서 처리
-		//2. 클라이언트가 전송한 값 추출
-		//3. 로직 처리
-		//4. 결과 처리
-			//4.1 이동할 JSP 페이지 경로 지정
-		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/member/myPageSalesList.jsp");
-			//4.2 화면 구현에 필요한 데이터 등록
-			//4.3 페이지 이동
-		view.forward(request, response);
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
+		
+		// 시작 : 로그인 세션 갖고 오는 공통 영역		
+		HttpSession session = request.getSession(false);
+        Member loginMember = null;
+
+        if (session != null) {
+            loginMember = (Member) session.getAttribute("loginMember"); // 세션에서 로그인 정보 가져오기
+        }
+
+        if (loginMember == null) {
+            // 로그인되지 않은 경우 로그인 페이지로
+            response.setContentType("text/html;charset=utf-8");
+            response.getWriter().println("<script>alert('로그인이 필요한 서비스입니다.'); location.href='" + request.getContextPath() + "/member/loginFrm';</script>");
+            return;
+        }        
+        // 종료 : 로그인 세션 갖고 오는 공통 영역
+
+        // 판매내역 조회
+        ProductService productService = new ProductService();
+        List<SalesProduct> salesList = productService.getMySalesList(loginMember.getMemberNo());
+        
+     // 4. 결과 처리: JSP로 데이터 전달
+        request.setAttribute("salesList", salesList);
+
+        RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/member/myPageSalesList.jsp"); // 판매 내역을 표시할 JSP
+        view.forward(request, response);
+       
+        
 	}
 
 	/**

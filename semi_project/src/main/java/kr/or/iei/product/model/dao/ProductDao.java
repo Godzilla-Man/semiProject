@@ -17,6 +17,7 @@ import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.product.model.vo.Product;
+import kr.or.iei.product.model.vo.SalesProduct;
 import kr.or.iei.product.model.vo.WishList;
 
 public class ProductDao {
@@ -1946,7 +1947,69 @@ public class ProductDao {
 	    }
 	    return result;
 	}
-	
+
+	// ★동주★ 판매 내역 정보를 추출하기 위한 DAO 메소드!! 시작
+	public List<SalesProduct> getMySaleList(Connection conn, String memberNo) {
+		List<SalesProduct> list = new ArrayList<>();
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        // TBL_PROD를 기준으로 TBL_PROD_STATUS, TBL_FILE (썸네일)을 조인하고,
+        // 판매된 경우 TBL_PURCHASE, TBL_MEMBER (구매자), TBL_PURCHASE_STATUS 정보를 LEFT JOIN으로 가져옵니다.
+        String query = "SELECT " +
+                       "    P.PRODUCT_NO, P.PRODUCT_NAME, P.PRODUCT_PRICE, P.ENROLL_DATE, " +
+                       "    P.STATUS_CODE AS PRODUCT_STATUS_CODE, " +
+                       "    PS_PROD.STATUS_NAME AS PRODUCT_STATUS_NAME, " +                     
+                       "    TP.ORDER_NO, " +
+                       "    TP.DEAL_DATE AS PURCHASE_DEAL_DATE, " +
+                       "    BUYER.MEMBER_NICKNAME AS BUYER_NICKNAME, " +
+                       "    TP.PURCHASE_STATUS_CODE AS TRANSACTION_STATUS_CODE, " +
+                       "    PS_PURCHASE.STATUS_NAME AS TRANSACTION_STATUS_NAME " +
+                       "FROM " +
+                       "    TBL_PROD P " +
+                       "LEFT JOIN TBL_PROD_STATUS PS_PROD ON P.STATUS_CODE = PS_PROD.STATUS_CODE " + // 상품 상태명 조인                      
+                       "LEFT JOIN TBL_PURCHASE TP ON P.PRODUCT_NO = TP.PRODUCT_NO AND TP.SELLER_MEMBER_NO = P.MEMBER_NO " + // 내가 판매한 거래
+                       "LEFT JOIN TBL_MEMBER BUYER ON TP.BUYER_MEMBER_NO = BUYER.MEMBER_NO " +
+                       "LEFT JOIN TBL_PURCHASE_STATUS PS_PURCHASE ON TP.PURCHASE_STATUS_CODE = PS_PURCHASE.PURCHASE_STATUS_CODE " +
+                       "WHERE " +
+                       "    P.MEMBER_NO = ? " + // 현재 로그인한 판매자의 회원번호
+                       "ORDER BY " +
+                       "    P.ENROLL_DATE DESC"; // 상품 등록일 최신순으로 정렬
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, memberNo);
+            rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                SalesProduct sp = new SalesProduct(); // SalesProduct VO 객체 생성
+
+                // Product 기본 정보
+                sp.setProductNo(rset.getString("PRODUCT_NO"));
+                sp.setProductName(rset.getString("PRODUCT_NAME"));
+                sp.setProductPrice(rset.getInt("PRODUCT_PRICE"));
+                sp.setEnrollDate(rset.getDate("ENROLL_DATE"));
+                sp.setProductStatusCode(rset.getString("PRODUCT_STATUS_CODE"));
+                sp.setProductStatusName(rset.getString("PRODUCT_STATUS_NAME"));                
+
+                // 판매 관련 정보 (판매된 경우에만 값이 있음, LEFT JOIN이므로 NULL 가능성 체크)
+                sp.setOrderNo(rset.getString("ORDER_NO")); // NULL일 수 있음
+                sp.setPurchaseDealDate(rset.getDate("PURCHASE_DEAL_DATE")); // NULL일 수 있음
+                sp.setBuyerNickname(rset.getString("BUYER_NICKNAME")); // NULL일 수 있음
+                sp.setTransactionStatusCode(rset.getString("TRANSACTION_STATUS_CODE")); // NULL일 수 있음
+                sp.setTransactionStatusName(rset.getString("TRANSACTION_STATUS_NAME")); // NULL일 수 있음
+
+                list.add(sp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+        return list;    
+	}
+	// ★동주★ 판매 내역 정보를 추출하기 위한 DAO 메소드!! 끝
+
 	// 신고사유 리스트 불러오기
 	public List<ReportPost> selectReportReasonList(Connection conn) {
 	    List<ReportPost> list = new ArrayList<>();
@@ -1974,7 +2037,43 @@ public class ProductDao {
 
 	    return list;
 	}
-
+	
+	public ArrayList<Product> selectMemberWishList(Connection conn, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select p.product_no, p.product_name, p.product_price, 'Y' as wish_yn, f.file_path"
+				+ "  from tbl_prod p, tbl_wishlist w, tbl_file f"
+				+ " where p.product_no = w.product_no"
+				+ "   and w.product_no = f.product_no"
+				+ "   and w.member_no = ?";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return productList;
+	}
 }
    
 

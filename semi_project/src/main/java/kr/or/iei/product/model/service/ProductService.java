@@ -8,18 +8,24 @@ import kr.or.iei.comment.model.vo.Comment;
 import kr.or.iei.admin.model.vo.ReportPost;
 import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.common.JDBCTemplate;
+import kr.or.iei.file.model.dao.FileDao;
 import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.member.model.vo.Member;
+import kr.or.iei.order.model.vo.Purchase;
 import kr.or.iei.product.model.dao.ProductDao;
 import kr.or.iei.product.model.vo.Product;
+import kr.or.iei.product.model.vo.SalesProduct;
 import kr.or.iei.product.model.vo.WishList;
 
 public class ProductService {
 
     private ProductDao dao;
+    private FileDao fileDao;
     
     public ProductService() {
+    	
     	dao = new ProductDao();
+    	fileDao = new FileDao();
     }
 
     /**
@@ -651,6 +657,24 @@ public class ProductService {
 	    JDBCTemplate.close(conn);
 	    return result;
 	}
+	
+	 
+	// ★동주★ 판매 내역 정보를 추출하기 위한 service 메소드!! 시작
+	public List<SalesProduct> getMySalesList(String memberNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		List<SalesProduct> salesList = dao.getMySaleList(conn, memberNo);	
+		
+		for (SalesProduct sp : salesList) {
+            if (sp.getProductNo() != null && !sp.getProductNo().isEmpty()) {                
+                String thumbnailPath = fileDao.selectThumbnail(conn, sp.getProductNo());
+                sp.setThumbnailPath(thumbnailPath); // SalesProduct VO에 썸네일 경로 설정
+            }
+        }
+		
+		JDBCTemplate.close(conn);
+		return salesList;		
+	}
+	// ★동주★ 판매 내역 정보를 추출하기 위한 service 메소드!! 끝
 
 	// 일반 사용자에게 상품 목록 출력 메서드
 	public List<Product> selectVisibleRelatedProducts(String categoryCode, String currentProductNo) {
@@ -675,6 +699,13 @@ public class ProductService {
 	    return list;
 	}
 
+	public ArrayList<Product> selectMemberWishList(String memberNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		ArrayList<Product> productList = dao.selectMemberWishList(conn, memberNo);
+		JDBCTemplate.close(conn);
+		
+		return productList;
+	}
 }
 
 

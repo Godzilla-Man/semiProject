@@ -1,5 +1,7 @@
-<%@page import="kr.or.iei.reviewNotice.model.vo.ReviewNotice"%>
+
 <%@page import="kr.or.iei.reviewNotice.model.service.ReviewNoticeService"%>
+<%@page import="kr.or.iei.reviewNotice.model.vo.ReviewNotice"%>
+
 <%@page import="kr.or.iei.file.model.vo.Files"%>
 <%@page import="java.util.List"%>
 <%@page import="kr.or.iei.event.model.service.EventService"%>
@@ -29,7 +31,7 @@
 	ProductService pService = new ProductService();
 	ArrayList<Product> productList = pService.selectAllListDesc(memberNo);
 	
-	ReviewNoticeService rService = new ReviewNoticeService();
+	ReviewNoticeService rService = new ReviewNoticeService();    
     ArrayList<ReviewNotice> reviewList = rService.selectAllReviewList();
     
     EventService eService = new EventService();
