@@ -1,4 +1,4 @@
-package kr.or.iei.reviewnotice.model.dao;
+package kr.or.iei.reviewNotice.model.dao;
 
 import static kr.or.iei.common.JDBCTemplate.*; // JDBCTemplate 경로에 맞게
 
@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import kr.or.iei.file.model.vo.Files;
-import kr.or.iei.reviewnotice.model.vo.ReviewNotice;
+import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
 import kr.or.iei.comment.model.vo.Comment;
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.category.model.vo.Category; 
