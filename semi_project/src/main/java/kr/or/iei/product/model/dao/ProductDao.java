@@ -2037,7 +2037,43 @@ public class ProductDao {
 
 	    return list;
 	}
-
+	
+	public ArrayList<Product> selectMemberWishList(Connection conn, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select p.product_no, p.product_name, p.product_price, 'Y' as wish_yn, f.file_path"
+				+ "  from tbl_prod p, tbl_wishlist w, tbl_file f"
+				+ " where p.product_no = w.product_no"
+				+ "   and w.product_no = f.product_no"
+				+ "   and w.member_no = ?";
+		
+		ArrayList<Product> productList = new ArrayList<Product>();
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Product p = new Product();
+				p.setProductNo(rset.getString("product_no"));
+				p.setProductName(rset.getString("product_name"));
+				p.setProductPrice(rset.getInt("product_price"));
+				p.setWishYn(rset.getString("wish_yn"));
+				p.setFilePath(rset.getString("file_path"));
+				
+				productList.add(p);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return productList;
+	}
 }
    
 
