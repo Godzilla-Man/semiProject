@@ -20,7 +20,7 @@
 				
 				<div class="purchase-item-header">
 					<span class="purchase-date">
-						<fmt:formatDate value="${item.dealDate}" patter="yy년 MM월 dd일"/>
+						<fmt:formatDate value="${item.dealDate}" pattern="yy년 MM월 dd일"/>
 					</span>
 					<%-- 주문 상태에 따라 다른 CSS 클래스 적용 --%>
 					<span class="purchase-status status-${item.purchaseStatusCode}">
@@ -31,7 +31,7 @@
 				</div>
 				
 				<div class="purchase-product-info">
-					<div class="purchase-product-price"><fmt:formatNumber value="${item.orderAmount}" type="currency" cyrrencySymbol="₩"/></div>
+					<div class="purchase-product-price"><fmt:formatNumber value="${item.orderAmount}" type="currency" currencyCode="KRW"/></div>
 					<div class="purchase-product-name">${item.productName}</div>
 					<div class="purchase-seller-info">판매자: ${item.sellerNickname}</div>												
 				</div>
