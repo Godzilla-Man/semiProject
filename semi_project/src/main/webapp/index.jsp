@@ -10,6 +10,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%	
 	//메인 화면에서 서블릿을 거치지 않고 DB에 있는 정보 가져오기 위한 작업
 	String memberNo = null;
@@ -82,7 +83,7 @@
 									</div>
 									<div class="image-info">
 										<span class="image-prod"><a href="/product/detail?no=${prod.productNo}">${prod.productName}</a></span>
-										<span class="image-price">${prod.productPrice}</span>
+										<span class="image-price"><fmt:formatNumber value="${prod.productPrice}" type="number"/>원</span>
 									</div>
 								</div>
 							</div>
