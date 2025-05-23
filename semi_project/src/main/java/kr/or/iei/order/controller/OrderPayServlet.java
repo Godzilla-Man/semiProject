@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.crypto.KeySelector.Purpose;
 
 import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.order.model.service.OrderService;
@@ -46,71 +47,79 @@ public class OrderPayServlet extends HttpServlet {
 		System.out.println("OrderPayServlet : 세션에서 구매자 정보 로드됨 - " + loginMember.getMemberId());
 		
 		
-		//2. 값 추출		
-		String productNo = request.getParameter("productId");
-		
-		
-		//3. 로직 -> 주문 상품의 상품 번호(productNo)와 일치하는 상품 조회
+		// 2. 값 추출
+		String orderIdFromRequest = request.getParameter("orderId"); // 마이페이지에서 주문 재시작
+		String productIdFromRequest = request.getParameter("productId"); // 신규 주문건 처리
+
 		OrderService orderservice = new OrderService();
-		Product p = orderservice.selectOrderProduct(productNo);
-		
-			
-		//3.1 에러 발생 시 안내페이지 생성
-     	if (p == null) {	            
-            // 사용자에게 보여줄 오류 메시지 설정
-            request.setAttribute("errorTitle", "상품 정보 조회 실패");
-            request.setAttribute("errorMessage", "요청하신 상품 ID('" + productNo + "')에 해당하는 상품 정보를 찾을 수 없거나, 현재 구매할 수 없는 상품입니다. 상품 ID를 다시 확인해주세요.");
-            // 공통 에러 페이지로 포워딩 (이 JSP 파일은 직접 만드셔야 합니다)
-            RequestDispatcher errorView = request.getRequestDispatcher("/WEB-INF/views/order/errorPage.jsp"); 
-            errorView.forward(request, response);
-            return; //
-     	}
-     		     	
-    	//3.2 총 결제 예상 금액 계산
-		int productPrice = p.getProductPrice(); // DB에서 조회한 상품 가격.
-		String trdadeMethodCode = p.getTradeMethodCode(); //DB에서 조회한 택배 코드 
-		
-		int deliveryFee = 0;
-		if("M2".equals(trdadeMethodCode)) { //M1 = 선불, M3 = 후불
-			deliveryFee = 5000; // 일반 택배
-		}
-		int totalProductAmount = productPrice + deliveryFee;
-		
-		
-		//3.3 ★주문 정보 객체 생성 및 값 설정(결제 준비(대기) 생성)
-		Purchase readyOrder = new Purchase();  
-		
-		readyOrder.setProductNo(p.getProductNo());
-		readyOrder.setBuyerMemberNo(loginMember.getMemberNo());
-		readyOrder.setSellerMemberNo(p.getMemberNo());
-		readyOrder.setOrderAmount(totalProductAmount);
-		readyOrder.setDeliveryFee(deliveryFee);
-		readyOrder.setDeliveryAddr(loginMember.getMemberAddr());
-		readyOrder.setPurchaseStatusCode("PS00");
-		readyOrder.setPgProvider(null);
-		readyOrder.setPgTransactionId(null);
-		
-		//OrderService service2 = new OrderService();
-		String generatedOrderId = orderservice.createOrderId(readyOrder);	
-			
-		//4. 결과 처리
-		//4.1 이동할 JSP 페이지 지정
-		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/order/orderPay.jsp");
-		
-		//4.2 화면 구현에 필요한 데이터 등록
+		Product p = null; // 최종적으로 사용할 상품 객체 
+		String generatedOrderId = null; // 최종적으로 사용할 주문 ID 
+		int totalProductAmount = 0;   // 총 결제 예상 금액
+		int deliveryFee = 0;      // 배송비
+
+		if (orderIdFromRequest != null && !orderIdFromRequest.isEmpty()) { // orderId가 넘어온 경우 (마이페이지 "결제하기")
+		    		    
+		    Purchase existingPurchase = orderservice.getPurchaseDetails(orderIdFromRequest);
+
+		    if (existingPurchase != null && loginMember.getMemberNo().equals(existingPurchase.getBuyerMemberNo())) {
+		        p = orderservice.selectOrderProduct(existingPurchase.getProductNo()); // 상품 정보 가져오기
+
+		        if (p != null) {
+		            totalProductAmount = existingPurchase.getOrderAmount();
+		            deliveryFee = existingPurchase.getDeliveryFee();
+		            generatedOrderId = existingPurchase.getOrderNo(); // 기존 주문번호 사용
+		        } else {
+		            // 상품 정보를 못 가져온 경우 (예: 삭제된 상품)
+		            System.out.println("OrderPayServlet : 기존 주문의 상품 정보를 찾을 수 없습니다. ProductNo: " + existingPurchase.getProductNo());		          
+		        }
+		    } else {
+		        // 주문 정보가 없거나, 본인 주문이 아닌 경우
+		        System.out.println("OrderPayServlet : 유효하지 않은 기존 주문 정보 접근. OrderId: " + orderIdFromRequest);		      
+		    }
+
+		} else if (productIdFromRequest != null && !productIdFromRequest.isEmpty()) {  // productId가 넘어온 경우 (신규 주문)
+		   	    
+		    p = orderservice.selectOrderProduct(productIdFromRequest);
+
+		    if (p == null) { // 3.1 기존 상품 조회 실패 시 에러 처리 
+		        request.setAttribute("errorTitle", "상품 정보 조회 실패");
+		        request.setAttribute("errorMessage", "요청하신 상품 ID('" + productIdFromRequest + "')에 해당하는 상품 정보를 찾을 수 없거나, 현재 구매할 수 없는 상품입니다. 상품 ID를 다시 확인해주세요.");
+		        RequestDispatcher errorView = request.getRequestDispatcher("/WEB-INF/views/order/errorPage.jsp");
+		        errorView.forward(request, response);
+		        return;
+		    }
+
+		    // 3.2 총 결제 예상 금액 계산 
+		    int productPrice = p.getProductPrice();
+		    String tradeMethodCode = p.getTradeMethodCode();
+		    if ("M2".equals(tradeMethodCode)) {
+		        deliveryFee = 5000;
+		    }
+		    totalProductAmount = productPrice + deliveryFee;
+
+		    // 3.3 주문 정보 객체 생성 및 DB에 'PS00' 상태로 INSERT
+		    Purchase readyOrder = new Purchase();
+		    readyOrder.setProductNo(p.getProductNo());
+		    readyOrder.setBuyerMemberNo(loginMember.getMemberNo());
+		    readyOrder.setSellerMemberNo(p.getMemberNo());
+		    readyOrder.setOrderAmount(totalProductAmount);
+		    readyOrder.setDeliveryFee(deliveryFee);
+		    readyOrder.setDeliveryAddr(loginMember.getMemberAddr());
+		    readyOrder.setPurchaseStatusCode("PS00");
+
+		    generatedOrderId = orderservice.createOrderId(readyOrder); // 생성된 주문번호		   
+		} 
+
+		// 4. 결과 처리 (JSP로 데이터 전달)
 		request.setAttribute("product", p);
-		request.setAttribute("loginMember", loginMember);		
-			
-		//4.2.1 배송 방법 및 총 결제 상품 금액			
-		request.setAttribute("totalProductAmount", totalProductAmount); // 총 상품 금액
-		request.setAttribute("deliveryFee", deliveryFee); // 배송비
-		
-		//4.2.2 주문번호 전달
-		request.setAttribute("orderId", generatedOrderId); // 생성된 주문번호(ORDER_NO) 전달
-				
-		//4.3 페이지 이동
-		view.forward(request, response);  	
-		
+		request.setAttribute("loginMember", loginMember);
+		request.setAttribute("totalProductAmount", totalProductAmount);
+		request.setAttribute("deliveryFee", deliveryFee);
+		request.setAttribute("orderId", generatedOrderId);
+
+		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/order/orderPay.jsp");
+		view.forward(request, response);			
+	
 	}
 
 	/**

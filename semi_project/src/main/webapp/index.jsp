@@ -1,5 +1,7 @@
-<%@page import="kr.or.iei.reviewNotice.model.vo.ReviewNotice"%>
+
 <%@page import="kr.or.iei.reviewNotice.model.service.ReviewNoticeService"%>
+<%@page import="kr.or.iei.reviewNotice.model.vo.ReviewNotice"%>
+
 <%@page import="kr.or.iei.file.model.vo.Files"%>
 <%@page import="java.util.List"%>
 <%@page import="kr.or.iei.event.model.service.EventService"%>
@@ -13,34 +15,39 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%
-	// 메인 화면에서 서블릿을 거치지 않고 DB에 있는 정보 가져오기 위한 작업
+	// 로그인 정보 확인 (세션에서 추출)
 	String memberNo = null;
 	String memberId = null;
 	Member loginMember = null;
+
 	session = request.getSession(false);
-	if(session != null){
+	if (session != null) {
 		loginMember = (Member) session.getAttribute("loginMember");
-		
-		if(loginMember != null){			
+		if (loginMember != null) {
 			memberNo = loginMember.getMemberNo();
-			memberId = loginMember.getMemberId();  // ← 추가: 관리자 판단용
+			memberId = loginMember.getMemberId(); // ← 관리자 여부 판단용
 		}
 	}
 
-	// 관리자 여부(memberId)도 함께 전달
+	// 상품 목록 조회 (관리자 분기 포함 구조)
+	// 관리자일 경우 삭제된 상품(S99)도 조회됨, 일반 회원은 제외
 	ProductService pService = new ProductService();
 	ArrayList<Product> productList = pService.selectAllListDesc(memberNo, memberId);
 
-	ReviewNoticeService rService = new ReviewNoticeService();
+	// 리뷰공지 목록 조회
+	ReviewNoticeService rService = new ReviewNoticeService();    
 	ArrayList<ReviewNotice> reviewList = rService.selectAllReviewList();
 
+	// 이벤트 썸네일 파일 리스트 조회 (이벤트 1개당 1개 썸네일)
 	EventService eService = new EventService();
 	List<Files> fileList = eService.selectFirstEventFileList();
 
+	// 뷰 페이지로 전달
 	request.setAttribute("productList", productList);
 	request.setAttribute("reviewList", reviewList);
 	request.setAttribute("fileList", fileList);
 %>
+
 
 
 <!DOCTYPE html>
