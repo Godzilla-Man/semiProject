@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kr.or.iei.comment.model.vo.Comment;
+import kr.or.iei.admin.model.vo.ReportPost;
 import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.file.model.dao.FileDao;
@@ -674,6 +675,29 @@ public class ProductService {
 		return salesList;		
 	}
 	// ★동주★ 판매 내역 정보를 추출하기 위한 service 메소드!! 끝
+
+	// 일반 사용자에게 상품 목록 출력 메서드
+	public List<Product> selectVisibleRelatedProducts(String categoryCode, String currentProductNo) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    List<Product> list = dao.selectVisibleProducts(conn, categoryCode, currentProductNo);
+	    JDBCTemplate.close(conn);
+	    return list;
+	}
+
+	public List<Product> selectRelatedProductsAdmin(String categoryCode, String productNo) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    List<Product> list = new ProductDao().selectRelatedProductsAdmin(conn, categoryCode, productNo);
+	    JDBCTemplate.close(conn);
+	    return list;
+	}
+	
+	// 신고사유 리스트 불러오기
+	public List<ReportPost> getReportReasonList() {
+	    Connection conn = JDBCTemplate.getConnection();
+	    List<ReportPost> list = dao.selectReportReasonList(conn);
+	    JDBCTemplate.close(conn);
+	    return list;
+	}
 
 }
 

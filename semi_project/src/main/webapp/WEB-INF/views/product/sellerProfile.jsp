@@ -109,8 +109,10 @@
         }
 
         .product-count-section .count {
+        	all: unset; /* 모든 상속 스타일 제거 */
             color: var(--main2);
             font-weight: bold;
+            font-size: 20px;
         }
 		
 		/* 상품 없을 때 안내 방식 */
@@ -337,38 +339,36 @@
       <div class="posting-wrap" id="productContainer">
       
 <c:forEach var="prod" items="${productList}" varStatus="status">
-  <div class="${status.index >= 9 ? 'posting-item hidden-product' : 'posting-item'}">
-    <a href="/product/detail?no=${prod.productNo}">
-      
-      <div class="posting-img-wrap">
-        <img src="${empty prod.thumbnailPath ? '/upload/product/default.jpg' : prod.thumbnailPath}" alt="상품 이미지">
-      </div>
-
-      <div class="posting-info">
-        <div class="posting-title">${prod.productName}</div>
-
-			<div class="posting-sub-info">
-			  <span class="price-highlight">
-			    ₩<fmt:formatNumber value="${prod.productPrice}" pattern="#,###"/>
-			  </span>
-			</div>
-
-        <!-- 배송비 + 등록일 우측 정렬 묶음 -->
-        <div class="posting-meta-bottom">
-          <span class="delivery-label">
-            <c:choose>
-              <c:when test="${prod.tradeMethodCode eq 'M1'}">배송비 포함</c:when>
-              <c:otherwise>배송비 별도</c:otherwise>
-            </c:choose>
-          </span>
-          <span class="date-label">
-            <fmt:formatDate value="${prod.enrollDate}" pattern="yy-MM-dd"/>
-          </span>
+  <c:if test="${prod.statusCode ne 'S99'}">
+    <div class="${status.index >= 9 ? 'posting-item hidden-product' : 'posting-item'}">
+      <a href="/product/detail?no=${prod.productNo}">
+        <div class="posting-img-wrap">
+          <img src="${empty prod.thumbnailPath ? '/upload/product/default.jpg' : prod.thumbnailPath}" alt="상품 이미지">
         </div>
-      </div>
-    </a>
-  </div>
+        <div class="posting-info">
+          <div class="posting-title">${prod.productName}</div>
+          <div class="posting-sub-info">
+            <span class="price-highlight">
+              ₩<fmt:formatNumber value="${prod.productPrice}" pattern="#,###"/>
+            </span>
+          </div>
+          <div class="posting-meta-bottom">
+            <span class="delivery-label">
+              <c:choose>
+                <c:when test="${prod.tradeMethodCode eq 'M1'}">배송비 포함</c:when>
+                <c:otherwise>배송비 별도</c:otherwise>
+              </c:choose>
+            </span>
+            <span class="date-label">
+              <fmt:formatDate value="${prod.enrollDate}" pattern="yy-MM-dd"/>
+            </span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </c:if>
 </c:forEach>
+
 
       </div>
       

@@ -1,6 +1,7 @@
 
-<%@page import="kr.or.iei.reviewnotice.model.vo.ReviewNotice"%>
-<%@page import="kr.or.iei.reviewnotice.model.service.ReviewNoticeService"%>
+<%@page import="kr.or.iei.reviewNotice.model.service.ReviewNoticeService"%>
+<%@page import="kr.or.iei.reviewNotice.model.vo.ReviewNotice"%>
+
 <%@page import="kr.or.iei.file.model.vo.Files"%>
 <%@page import="java.util.List"%>
 <%@page import="kr.or.iei.event.model.service.EventService"%>
@@ -10,7 +11,9 @@
 <%@page import="kr.or.iei.product.model.service.ProductService"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%	
 	//메인 화면에서 서블릿을 거치지 않고 DB에 있는 정보 가져오기 위한 작업
 	String memberNo = null;
@@ -28,7 +31,7 @@
 	ProductService pService = new ProductService();
 	ArrayList<Product> productList = pService.selectAllListDesc(memberNo);
 	
-	ReviewNoticeService rService = new ReviewNoticeService();
+	ReviewNoticeService rService = new ReviewNoticeService();    
     ArrayList<ReviewNotice> reviewList = rService.selectAllReviewList();
     
     EventService eService = new EventService();
@@ -38,6 +41,7 @@
 	request.setAttribute("reviewList", reviewList);
 	request.setAttribute("fileList", fileList);
 %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -83,7 +87,7 @@
 									</div>
 									<div class="image-info">
 										<span class="image-prod"><a href="/product/detail?no=${prod.productNo}">${prod.productName}</a></span>
-										<span class="image-price">${prod.productPrice}</span>
+										<span class="image-price"><fmt:formatNumber value="${prod.productPrice}" type="number"/>원</span>
 									</div>
 								</div>
 							</div>
@@ -208,7 +212,7 @@
 								
 								//클릭시 스타일 변경
 								$(obj).attr("class", "material-symbols-outlined fill");
-								$(obj).attr("onclick", "delWhishList(this, " + memberNo + ", " + productNo + ")");
+								$(obj).attr("onclick", "delWhishList(this, '" + memberNo + "', '" + productNo + "')");
 								
 							}else if(res == 0){ //찜하기 실패
 								swal({
@@ -274,7 +278,7 @@
 								
 								//클릭시 스타일 변경
 								$(obj).attr("class", "material-symbols-outlined");
-								$(obj).attr("onclick", "addWishList(this, " + memberNo + ", " + productNo + ")");
+								$(obj).attr("onclick", "addWishList(this, '" + memberNo + "', '" + productNo + "')");
 								
 							}else{ //찜하기 삭제 실패
 								swal({

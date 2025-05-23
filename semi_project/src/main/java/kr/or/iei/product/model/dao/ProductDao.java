@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import kr.or.iei.comment.model.vo.Comment;
+import kr.or.iei.admin.model.vo.ReportPost;
 import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.file.model.vo.Files;
@@ -1834,6 +1835,99 @@ public class ProductDao {
 		
 		return productList;
 	}
+	
+	public List<Product> selectVisibleProducts(Connection conn, String categoryCode, String currentProductNo) {
+	    List<Product> list = new ArrayList<>();
+	    PreparedStatement pstmt = null;
+	    ResultSet rset = null;
+
+	    String query =
+	        "SELECT * FROM ( " +
+	        "    SELECT P.PRODUCT_NO, P.PRODUCT_NAME, P.PRODUCT_PRICE, P.STATUS_CODE, " +
+	        "           F.FILE_PATH " +
+	        "    FROM TBL_PROD P " +
+	        "    LEFT JOIN ( " +
+	        "        SELECT PRODUCT_NO, MIN(FILE_NO) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_NO, " +
+	        "               MIN(FILE_PATH) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_PATH " +
+	        "        FROM TBL_FILE " +
+	        "        GROUP BY PRODUCT_NO " +
+	        "    ) F ON P.PRODUCT_NO = F.PRODUCT_NO " +
+	        "    WHERE P.CATEGORY_CODE = ? AND P.PRODUCT_NO != ? AND P.STATUS_CODE != 'S99' " +
+	        "    ORDER BY P.ENROLL_DATE DESC " +
+	        ")";
+
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, categoryCode);
+	        pstmt.setString(2, currentProductNo);
+	        rset = pstmt.executeQuery();
+
+	        while (rset.next()) {
+	            Product p = new Product();
+	            p.setProductNo(rset.getString("PRODUCT_NO"));
+	            p.setProductName(rset.getString("PRODUCT_NAME"));
+	            p.setProductPrice(rset.getInt("PRODUCT_PRICE"));
+	            p.setStatusCode(rset.getString("STATUS_CODE"));
+	            p.setThumbnailPath(rset.getString("FILE_PATH"));
+	            list.add(p);
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(rset);
+	        JDBCTemplate.close(pstmt);
+	    }
+
+	    return list;
+	}
+
+
+	public List<Product> selectRelatedProductsAdmin(Connection conn, String categoryCode, String currentProductNo) {
+	    List<Product> list = new ArrayList<>();
+	    PreparedStatement pstmt = null;
+	    ResultSet rset = null;
+
+	    String query =
+	        "SELECT * FROM ( " +
+	        "    SELECT P.PRODUCT_NO, P.PRODUCT_NAME, P.PRODUCT_PRICE, P.STATUS_CODE, " +
+	        "           F.FILE_PATH " +
+	        "    FROM TBL_PROD P " +
+	        "    LEFT JOIN ( " +
+	        "        SELECT PRODUCT_NO, MIN(FILE_NO) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_NO, " +
+	        "               MIN(FILE_PATH) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_PATH " +
+	        "        FROM TBL_FILE " +
+	        "        GROUP BY PRODUCT_NO " +
+	        "    ) F ON P.PRODUCT_NO = F.PRODUCT_NO " +
+	        "    WHERE P.CATEGORY_CODE = ? AND P.PRODUCT_NO != ? " +
+	        "    ORDER BY P.ENROLL_DATE DESC " +
+	        ")";
+
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, categoryCode);
+	        pstmt.setString(2, currentProductNo);
+	        rset = pstmt.executeQuery();
+
+	        while (rset.next()) {
+	            Product p = new Product();
+	            p.setProductNo(rset.getString("PRODUCT_NO"));
+	            p.setProductName(rset.getString("PRODUCT_NAME"));
+	            p.setProductPrice(rset.getInt("PRODUCT_PRICE"));
+	            p.setStatusCode(rset.getString("STATUS_CODE"));
+	            p.setThumbnailPath(rset.getString("FILE_PATH"));
+	            list.add(p);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(rset);
+	        JDBCTemplate.close(pstmt);
+	    }
+
+	    return list;
+	}
+
 
 	// ★ 동주 : 거래 후 거래 취소 시 tbl_prod 상태 값 & 수량 값 업데이트
 	public static int updateProductStatusAndQuantity(Connection conn, String productNo, String string, int i) {
@@ -1853,7 +1947,6 @@ public class ProductDao {
 	    }
 	    return result;
 	}
-	
 
 	// ★동주★ 판매 내역 정보를 추출하기 위한 DAO 메소드!! 시작
 	public List<SalesProduct> getMySaleList(Connection conn, String memberNo) {
@@ -1916,6 +2009,35 @@ public class ProductDao {
         return list;    
 	}
 	// ★동주★ 판매 내역 정보를 추출하기 위한 DAO 메소드!! 끝
+
+	// 신고사유 리스트 불러오기
+	public List<ReportPost> selectReportReasonList(Connection conn) {
+	    List<ReportPost> list = new ArrayList<>();
+	    PreparedStatement pstmt = null;
+	    ResultSet rset = null;
+
+	    String query = "SELECT REPORT_CODE, REPORT_REASON FROM TBL_REPORT";
+
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        rset = pstmt.executeQuery();
+
+	        while (rset.next()) {
+	            ReportPost reason = new ReportPost();
+	            reason.setReportCode(rset.getString("REPORT_CODE"));
+	            reason.setReportReason(rset.getString("REPORT_REASON"));
+	            list.add(reason);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(rset);
+	        JDBCTemplate.close(pstmt);
+	    }
+
+	    return list;
+	}
+
 }
    
 

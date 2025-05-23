@@ -1,4 +1,4 @@
-package kr.or.iei.reviewnotice.controller;
+package kr.or.iei.reviewNotice.controller;
 
 import java.io.IOException;
 import javax.servlet.RequestDispatcher;
