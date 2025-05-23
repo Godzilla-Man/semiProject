@@ -318,4 +318,34 @@ public class MemberDao {
 		return result;
 	}
 
+	public Member searchBlack(Connection conn, String memberId) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = "select * from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no) join tbl_member using (member_no) where member_id = ?";
+		
+		Member m = null;
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberId);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				m = new Member();
+				m.setBlackReason(rset.getString("black_reason"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+		
+		return m;
+	}
+
 }

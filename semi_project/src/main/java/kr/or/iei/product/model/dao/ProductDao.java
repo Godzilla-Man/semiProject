@@ -139,7 +139,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 order by prod.enroll_date desc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.enroll_date desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -179,7 +179,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 order by prod.enroll_date desc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.enroll_date desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -219,7 +219,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 order by prod.enroll_date desc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.enroll_date desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -258,7 +258,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 order by prod.enroll_date desc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.enroll_date desc, f.file_no asc";
 		
 		ArrayList<Product> productCtgList = new ArrayList<Product>();
 		
@@ -388,7 +388,7 @@ public class ProductDao {
 		
 		String qeury = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 order by prod.enroll_date asc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.enroll_date asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -459,7 +459,7 @@ public class ProductDao {
                 p.setEnrollDate(rset.getDate("ENROLL_DATE"));
                 p.setReadCount(rset.getInt("READ_COUNT"));
                 p.setPriceOfferYn(rset.getString("PRICE_OFFER_YN"));
-
+                p.setProductQuantity(rset.getInt("PRODUCT_QUANTITY"));
             }
 
         } catch (SQLException e) {
@@ -1236,7 +1236,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1275,7 +1275,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 order by prod.product_price desc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.product_price desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1314,7 +1314,7 @@ public class ProductDao {
 
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1355,7 +1355,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 order by prod.enroll_date asc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.enroll_date asc, f.file_no asc";
 		
 		ArrayList<Product> productCtgList = new ArrayList<Product>();
 		
@@ -1395,7 +1395,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productCtgList = new ArrayList<Product>();
 		
@@ -1435,7 +1435,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 order by prod.product_price desc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.product_price desc, f.file_no asc";
 		
 		ArrayList<Product> productCtgList = new ArrayList<Product>();
 		
@@ -1476,7 +1476,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.category_code = ? and prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productCtgList = new ArrayList<Product>();
 		
@@ -1518,7 +1518,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 order by prod.enroll_date asc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.enroll_date asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1558,7 +1558,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 order by prod.enroll_date asc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.enroll_date asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1598,7 +1598,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1638,7 +1638,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1678,7 +1678,7 @@ public class ProductDao {
 
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 order by prod.product_price desc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.product_price desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1718,7 +1718,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 order by prod.product_price desc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.product_price desc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1758,7 +1758,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.product_name like ? and prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		
@@ -1800,7 +1800,7 @@ public class ProductDao {
 		
 		String query = "select prod.product_no, prod.product_name, prod.product_price, (select 'Y' from tbl_wishlist wish where wish.product_no = prod.product_no and wish.member_no = ?) wish_yn, f.file_path"
 				+ " from tbl_prod prod left join (select product_no, min(file_no) keep (dense_rank first order by file_no) as file_no, min(file_path) keep (dense_rank first order by file_no) as file_path from tbl_file group by product_no) f"
-				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 order by prod.product_price asc, f.file_no asc";
+				+ " on (prod.product_no = f.product_no) where prod.member_no = (select mem.member_no from tbl_member mem where mem.member_nickname = ?) and prod.product_price >= ? and prod.product_price <= ? and prod.product_quantity = 1 and prod.product_no not in (select product_no from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no)) order by prod.product_price asc, f.file_no asc";
 		
 		ArrayList<Product> productList = new ArrayList<Product>();
 		

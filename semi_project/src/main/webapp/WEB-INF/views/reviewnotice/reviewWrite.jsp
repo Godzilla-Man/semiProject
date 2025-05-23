@@ -11,7 +11,6 @@
         *, *:before, *:after { box-sizing: inherit; }
         body {
             font-family: "Noto Sans KR", "Arial", sans-serif;
-            background: #f0f2f5;
             color: #333;
             line-height: 1.6;
             margin: 0;

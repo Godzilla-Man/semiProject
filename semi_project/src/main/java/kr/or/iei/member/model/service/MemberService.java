@@ -105,4 +105,12 @@ public class MemberService {
 		return result;
 	}
 
+	public Member searchBlack(String memberId) {
+		Connection conn = JDBCTemplate.getConnection();
+		Member m = dao.searchBlack(conn, memberId);
+		JDBCTemplate.close(conn);
+		
+		return m;
+	}
+
 }

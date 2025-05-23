@@ -1,6 +1,7 @@
 .checkPw-wrap {
 		width : 500px;
 		margin : 0 auto;
+		min-height: 48vh;
 		
 }
 .checkPw-wrap .input-wrap {
@@ -16,6 +17,7 @@
 }
 .page-title {
 		text-align : center;
+		margin-top: 30px;
 }
 .input-msg {
 	text-align: center;

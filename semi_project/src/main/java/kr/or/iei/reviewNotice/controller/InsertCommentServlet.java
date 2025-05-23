@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import kr.or.iei.member.model.vo.Member;
-import kr.or.iei.comment.model.vo.Comment;
 import kr.or.iei.reviewNotice.model.service.ReviewNoticeService;
+import kr.or.iei.comment.model.vo.Comment;
 
 @WebServlet("/review/commentInsert")
 public class InsertCommentServlet extends HttpServlet {

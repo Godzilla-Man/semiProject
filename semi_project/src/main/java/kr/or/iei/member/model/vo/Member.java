@@ -25,4 +25,6 @@ public class Member {
 	private int reportedCount;	//신고당한 횟수
 	private int blackCount;		//블랙 여부 확인
 	private String profileImgPath;	//프로필사진
+	
+	private String blackReason;
 }

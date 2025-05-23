@@ -1,27 +1,26 @@
-package kr.or.iei.admin.controller;
+package kr.or.iei.member.controller;
 
 import java.io.IOException;
-
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import kr.or.iei.admin.model.service.AdminServcie;
+import kr.or.iei.member.model.service.MemberService;
+import kr.or.iei.member.model.vo.Member;
 
 /**
- * Servlet implementation class InsertBlackListFrmServlet
+ * Servlet implementation class SearchBlackServlet
  */
-@WebServlet("/admin/insertBlackListFrm")
-public class InsertBlackListFrmServlet extends HttpServlet {
+@WebServlet("/member/searchBlack")
+public class SearchBlackServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public InsertBlackListFrmServlet() {
+    public SearchBlackServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -30,15 +29,17 @@ public class InsertBlackListFrmServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int reportNo = Integer.parseInt(request.getParameter("reportNo"));
-		String memberNo = request.getParameter("memberNo");
+		String memberId = request.getParameter("memberId");
+		MemberService service = new MemberService();
+		Member m = service.searchBlack(memberId);
 		
-		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/admin/insertBlackListFrm.jsp");
+		int result = 0;
 		
-		request.setAttribute("reportNo", reportNo);
-		request.setAttribute("memberNo", memberNo);
+		if(m != null) {
+			result = 1;
+		}
 		
-		view.forward(request, response);
+		response.getWriter().print(m);
 	}
 
 	/**
