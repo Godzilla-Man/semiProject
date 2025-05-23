@@ -1,4 +1,4 @@
-package kr.or.iei.reviewNotice.controller;
+package kr.or.iei.reviewnotice.controller;
 
 import java.io.IOException;
 import javax.servlet.RequestDispatcher;
@@ -7,8 +7,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import kr.or.iei.reviewNotice.model.service.ReviewNoticeService;
-import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
+import kr.or.iei.reviewnotice.model.service.ReviewNoticeService;
+import kr.or.iei.reviewnotice.model.vo.ReviewNotice;
 
 @WebServlet("/review/detail")
 public class ReviewDetailServlet extends HttpServlet {

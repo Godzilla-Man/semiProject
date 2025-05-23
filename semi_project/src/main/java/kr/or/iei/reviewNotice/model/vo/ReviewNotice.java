@@ -1,4 +1,4 @@
-package kr.or.iei.reviewNotice.model.vo;
+package kr.or.iei.reviewnotice.model.vo;
 
 import java.sql.Date; // java.sql.Date 임포트: DB의 DATE 타입과 매핑
 import java.util.ArrayList;

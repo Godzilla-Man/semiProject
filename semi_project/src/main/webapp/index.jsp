@@ -1,5 +1,5 @@
-<%@page import="kr.or.iei.reviewNotice.model.vo.ReviewNotice"%>
-<%@page import="kr.or.iei.reviewNotice.model.service.ReviewNoticeService"%>
+<%@page import="kr.or.iei.reviewnotice.model.vo.ReviewNotice"%>
+<%@page import="kr.or.iei.reviewnotice.model.service.ReviewNoticeService"%>
 <%@page import="kr.or.iei.file.model.vo.Files"%>
 <%@page import="java.util.List"%>
 <%@page import="kr.or.iei.event.model.service.EventService"%>
