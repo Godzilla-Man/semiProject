@@ -570,8 +570,14 @@ textarea::placeholder {
 }
 
 .comment-box-username {
+	text-decoration: none;
+  	font-weight: bold;
 	font-family: ns-b;
 	text-align: center;
+}
+
+.comment-box-username:hover {
+  text-decoration: underline;
 }
 
 /* 댓글 본문 박스 내부: 너비 제한 및 flex 대응 */
@@ -1253,7 +1259,7 @@ textarea::placeholder {
 					<div class="comment-box-item">
 						<div class="comment-box-profile">
 							<div class="profile-image">${fn:substring(comment.memberNickname, 0, 1)}</div>
-							<div class="comment-box-username">${comment.memberNickname}</div>
+							<a href="/product/seller?memberNo=${comment.memberNo}" class="comment-box-username">${comment.memberNickname}</a>
 						</div>
 						<div class="comment-box-body">
 							<div class="comment-box-content-fixed">${comment.content}</div>
@@ -1288,7 +1294,7 @@ textarea::placeholder {
 								<div class="comment-box-item comment-reply">
 									<div class="comment-box-profile">
 										<div class="profile-image">${fn:substring(reply.memberNickname, 0, 1)}</div>
-										<div class="comment-box-username">${reply.memberNickname}</div>
+										<a href="/product/seller?memberNo=${reply.memberNo}" class="comment-box-username">${reply.memberNickname}</a>
 									</div>
 									<div class="comment-box-body">
 										<div class="comment-box-content-fixed">${reply.content}</div>
