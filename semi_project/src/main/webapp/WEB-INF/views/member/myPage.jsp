@@ -1,5 +1,31 @@
+<%@page import="kr.or.iei.product.model.service.ProductService"%>
+<%@page import="kr.or.iei.member.model.vo.Member"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%	
+	//메인 화면에서 서블릿을 거치지 않고 DB에 있는 정보 가져오기 위한 작업
+	String memberNo = null;
+	Member loginMember = null;
+	session = request.getSession(false);
+	if(session != null){
+		loginMember = (Member) session.getAttribute("loginMember");
+		
+		if(loginMember != null){			
+			memberNo = loginMember.getMemberNo();
+		}
+	}
+
+	ProductService pService = new ProductService();
+	int getWishCount = 0;
+	int wishCount = 0;
+	int salesCount = 0;
+	int purchaseCount = 0;
+	
+	request.setAttribute("getWishCount", getWishCount);
+	request.setAttribute("wishCount", wishCount);
+	request.setAttribute("salesCount", salesCount);
+	request.setAttribute("purchaseCount", purchaseCount);
+%>
 <!DOCTYPE html>
 <html>
 <head>
