@@ -12,9 +12,10 @@
     
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%	
-	//메인 화면에서 서블릿을 거치지 않고 DB에 있는 정보 가져오기 위한 작업
+<%
+	// 메인 화면에서 서블릿을 거치지 않고 DB에 있는 정보 가져오기 위한 작업
 	String memberNo = null;
+	String memberId = null;
 	Member loginMember = null;
 	session = request.getSession(false);
 	if(session != null){
@@ -22,23 +23,25 @@
 		
 		if(loginMember != null){			
 			memberNo = loginMember.getMemberNo();
+			memberId = loginMember.getMemberId();  // ← 추가: 관리자 판단용
 		}
 	}
-	
 
+	// 관리자 여부(memberId)도 함께 전달
 	ProductService pService = new ProductService();
-	ArrayList<Product> productList = pService.selectAllListDesc(memberNo);
-	
+	ArrayList<Product> productList = pService.selectAllListDesc(memberNo, memberId);
+
 	ReviewNoticeService rService = new ReviewNoticeService();
-    ArrayList<ReviewNotice> reviewList = rService.selectAllReviewList();
-    
-    EventService eService = new EventService();
-    List<Files> fileList = eService.selectFirstEventFileList();
-	
+	ArrayList<ReviewNotice> reviewList = rService.selectAllReviewList();
+
+	EventService eService = new EventService();
+	List<Files> fileList = eService.selectFirstEventFileList();
+
 	request.setAttribute("productList", productList);
 	request.setAttribute("reviewList", reviewList);
 	request.setAttribute("fileList", fileList);
 %>
+
 
 <!DOCTYPE html>
 <html>
@@ -120,7 +123,7 @@
 						</c:otherwise>
 					</c:choose>
 				</div>
-			</div>
+			</div>ㅑ
         	<button onclick="styleReview()">+ 더보기</button>
     	</div>
     	
