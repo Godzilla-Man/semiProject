@@ -41,7 +41,8 @@ public class WishlistToggleServlet extends HttpServlet {
 			result = service.addWishlist(productNo, memberNo);
 		}
 
-		// 처리 후 다시 상세 페이지로 이동
-		response.sendRedirect("/product/detail?no=" + productNo);
+		// 처리 후 다시 상세 페이지로 이동 (조회수 증가 막기 위해 from=wishlist 추가)
+		response.sendRedirect("/product/detail?no=" + productNo + "&from=wishlist");
+
 	}
 }

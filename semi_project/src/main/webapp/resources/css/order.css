@@ -69,7 +69,7 @@ form {
 }
 
 .back-button {
-    /* position: absolute; 유지 */
+    position: absolute;
     top: 50%;
     left: 10px; /* 헤더 왼쪽에 명확한 위치 지정 (padding 대신) */
     transform: translateY(-50%);

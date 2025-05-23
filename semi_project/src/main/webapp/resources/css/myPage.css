@@ -2,6 +2,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	min-height: 52.2vh;
 }
 
 .myPage-wrap {
@@ -84,128 +85,211 @@
 }
 
 /* ★동주★ 구매 내역 관련 CSS 시작 */
-#tab-purchaseList {
-    padding-top: 20px;
+
+/* 구매 내역 탭 전체 컨텐츠 영역에 대한 기본 패딩 (필요시) */
+/* #tab-purchaseList or .tab-content */
+.tab-content {
+    padding-top: 20px; /* 탭 메뉴와 내용 사이의 간격 */
 }
 
+/* 각 구매 내역 아이템을 감싸는 카드 스타일 */
 .purchase-item {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    padding: 0; /* 내부 패딩은 각 섹션에서 조절 */
-    background-color: #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef; /* 테두리 색상 변경 */
+    border-radius: 12px;       /* 모서리 둥글게 */
+    margin-bottom: 25px;     /* 아이템 간 간격 */
+    background-color: #ffffff;    
+    overflow: hidden; /* 내부 요소가 카드를 벗어나지 않도록 */
 }
 
+/* 구매 날짜와 상세보기 링크가 있는 헤더 */
 .purchase-item-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
-    border-bottom: 1px solid #f0f0f0;
-    background-color: #f9f9f9; /* 헤더 배경색 */
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    padding: 12px 20px; /* 패딩 조정 */
+    background-color: #f8f9fa; /* 헤더 배경색 약간 추가 */
+    border-bottom: 1px solid #e9ecef; /* 구분선 */
 }
 
 .purchase-date {
+    font-size: 15px; /* 날짜 폰트 크기 */
+    color: #495057;  /* 날짜 색상 */
+    font-weight: 500;
+}
+
+.details-link {
     font-size: 14px;
-    color: #555;
+    color: #495057; /* 링크 색상 */
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
     font-weight: 500;
 }
 
-.purchase-status {
-    font-size: 13px;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-weight: 500;
+.details-link .material-symbols-outlined {
+    font-size: 20px; /* 아이콘 크기 */
+    margin-left: 4px;
+    vertical-align: middle; /* 아이콘 세로 정렬 */
 }
-/* 주문 상태별 색상 (예시) */
-.status-PS00 { background-color: #ffc107; color: #fff; } /* 결제대기 - 노란색 계열 */
-.status-PS01 { background-color: #28a745; color: #fff; } /* 결제완료 - 초록색 계열 */
-.status-shipping { background-color: #17a2b8; color: #fff; } /* 배송중 - 청록색 계열 */
-.status-delivered { background-color: #007bff; color: #fff; } /* 배송완료 - 파란색 계열 */
-.status-canceled { background-color: #dc3545; color: #fff; } /* 취소 - 빨간색 계열 */
-.status-default { background-color: #6c757d; color: #fff; } /* 기타 - 회색 계열 */
 
-
+/* 이미지, 상품정보, 버튼들을 포함하는 메인 컨텐츠 영역 */
 .purchase-item-content {
     display: flex;
     padding: 20px;
-    gap: 20px; /* 이미지와 정보 사이 간격 */
-    align-items: flex-start; /* 상단 정렬 */
+    gap: 20px; /* 이미지, 정보, 버튼 사이 간격 */
+    align-items: flex-start; /* 상단 정렬 유지 */
 }
 
-.purchase-product-image {
-    width: 80px;
-    height: 80px;
-    border-radius: 6px;
+/* 상품 이미지와 상태를 감싸는 컨테이너 */
+.purchase-product-image-container {
+    position: relative; /* 상태 텍스트를 absolute로 위치시키기 위함 */
+    width: 100px;       /* 이미지 너비 (예시 이미지와 유사하게) */
+    height: 100px;      /* 이미지 높이 */
+    border-radius: 8px; /* 이미지 모서리 둥글게 */
     overflow: hidden;
-    flex-shrink: 0;
-    background-color: #f0f0f0; /* 이미지 없을 경우 배경 */
+    flex-shrink: 0;   /* 컨테이너 크기가 줄어들지 않도록 */
+    background-color: #f1f3f5; /* 이미지 로딩 전 배경색 */
 }
 
-.purchase-product-image img {
+.purchase-product-image-tag { /* 실제 img 태그 */
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* 이미지가 컨테이너를 꽉 채우면서 비율 유지 */
 }
 
-.purchase-product-info {
+/* 상품 상세 정보 내부에 위치할 주문 상태를 위한 스타일 */
+.purchase-status-wrapper {
+    margin-bottom: 8px; /* 가격 정보와의 간격 */
+    /* 필요하다면 text-align 등 추가 스타일링 */
+}
+
+.purchase-status { /* .image-overlay-status 클래스가 제거되었으므로, .purchase-status 공통 스타일 */
+    font-size: 13px;   /* 폰트 크기 조정 (원하는 대로) */
+    padding: 5px 12px; /* 패딩 조정 */
+    border-radius: 15px; /* 기존 캡슐 모양 유지 또는 변경 */
+    font-weight: 500;  /* 폰트 두께 */
+    display: inline-block; /* span 태그를 블록처럼 다루기 위해 (선택적) */
+    /* position, top, left, z-index 등 오버레이 관련 속성은 제거 */
+}
+
+/* 주문 상태별 색상 (기존 스타일 유지 및 필요시 보강) */
+.status-PS00,.status-S01 { background-color: #ffc107; color: #343a40; border: 1px solid rgba(0,0,0,0.1); } /* 결제대기 */
+.status-PS01,.status-S02 { background-color: #28a745; color: #fff; } /* 결제완료 */
+.status-PS04,.status-S99 { background-color: #6c757d; color: #fff; } /* 취소완료 */
+.status-S05 { background-color: #17a2b8; color: #fff; } /* 배송중 (JSP 코드에 맞게 수정) */
+.status-S06 { background-color: #007bff; color: #fff; } /* 배송완료 (JSP 코드에 맞게 수정) */
+.status-SC01 { background-color: #dc3545; color: #fff; } /* 거래취소 (예시 코드값, 실제 코드값으로 변경) */
+.status-SC02 { background-color: #6c757d; color: #fff; } /* 거래실패 (예시 코드값, 실제 코드값으로 변경) */
+/* 필요한 다른 상태 코드에 대한 스타일 추가 */
+
+
+/* 상품 가격, 이름, 판매자 정보 묶음 */
+.purchase-product-details {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 5px; /* 정보들 사이 간격 */
+    gap: 8px; /* 정보들 사이 간격 */
+    justify-content: center; /* 텍스트 내용을 세로 중앙에 가깝게 (선택적) */
+    min-height: 100px; /* 이미지 높이와 비슷하게 최소 높이 확보 */
 }
 
 .purchase-product-name {
-    font-size: 16px;
-    font-weight: 500;
-    color: #333;
-    /* 한 줄로 표시하고 넘치면 ... 처리 (선택 사항) */
-    /* white-space: nowrap; */
-    /* overflow: hidden; */
-    /* text-overflow: ellipsis; */
+    font-size: 16px; /* 상품명 폰트 크기 증가 */
+    font-weight: 600;
+    color: #343a40;
+    line-height: 1.4;
+    
+    /* 두 줄 이상 넘어갈 경우 ... 처리 (선택 사항) */
+    /*
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    */
 }
 
 .purchase-product-price {
-    font-size: 15px;
-    color: #555;
+    font-size: 17px;
+    font-weight: 600; /* 가격도 약간 굵게 */
+    color: #343a40;
 }
 
 .purchase-seller-info {
-    font-size: 13px;
-    color: #777;
+    font-size: 14px;
+    color: #6c757d; /* 판매자 정보 색상 */
 }
 
+/* 버튼들을 포함하는 영역 */
 .purchase-actions {
     display: flex;
-    flex-direction: column; /* 버튼 세로 정렬 */
-    align-items: flex-end; /* 오른쪽 정렬 */
-    gap: 8px;
-    min-width: 100px; /* 버튼 영역 최소 너비 */
+    flex-direction: column;
+    align-items: flex-end; /* 버튼들을 오른쪽으로 정렬 */
+    justify-content: center; /* 버튼들을 세로 중앙 정렬 */
+    gap: 10px; /* 버튼 사이 간격 */
+    min-width: 110px; /* 버튼 영역 최소 너비 */
+    flex-shrink: 0;
 }
 
 .purchase-actions .btn-action {
-    padding: 6px 12px;
-    font-size: 13px;
-    border-radius: 5px;
+    padding: 6px 14px; /* 버튼 패딩 조정 */
+    font-size: 14px;   /* 버튼 폰트 크기 */
+    font-weight: 200;
+    border-radius: 6px;
     text-decoration: none;
     text-align: center;
     cursor: pointer;
-    border: 1px solid #ddd;
-    background-color: #fff;
-    color: #555;
-    min-width: 90px; /* 버튼 최소 너비 */
+    border: 1px solid #ced4da;
+    background-color: #ffffff;
+    color: #495057;
+    min-width: 100px; /* 버튼 최소 너비 */
+    box-sizing: border-box;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 
 .purchase-actions .btn-action:hover {
-    background-color: #f5f5f5;
+    background-color: #f1f3f5;
+    border-color: #adb5bd;
+    color: #212529;
 }
 
-/* 점선 버튼 스타일 (예: 배송조회) */
-.btn-action.dotted {
-    border-style: dashed;
-    background-color: transparent;
+/* "결제하기" 버튼을 위한 강조 스타일 (파란색 버튼) */
+.purchase-actions .btn-action.btn-goToPay { /* 새로운 클래스명 예시: btn-primary-action */
+    background-color: #0064FF; /* order.css의 .next-button 배경색 예시 */
+    color: #FFFFFF;
+    border-color: #0064FF; /* 테두리도 동일하게 또는 제거 */
+    font-weight: bold; /* 필요시 폰트 두께 강조 */
 }
-/* ★동주★ 구매 내역 관련 CSS 끝 */ 
+
+.purchase-actions .btn-action.btn-goToPay:hover {
+    background-color: #0052CC; /* order.css의 .next-button hover 배경색 예시 */
+    border-color: #0052CC;
+}
+
+/* 배송 조회 등 */
+.btn-action.dotted { 
+    border-style: dashed;
+    border-color: #adb5bd;
+}
+.btn-action.dotted:hover {
+    background-color: #e9ecef;
+}
+
+/* 송장 번호 입력 모달 */
+.swal-custom-form-element { /* 모든 입력 요소에 공통으로 적용할 클래스 */
+    width: 100% !important; /* SweetAlert2 기본 스타일보다 우선 적용 */
+    padding: .5rem .75rem !important;
+    font-size: 0.9rem !important;
+    box-sizing: border-box !important;
+    border: 1px solid #ced4da !important;
+    border-radius: .25rem !important;
+}
+.swal-custom-label {
+    display: block;
+    margin-bottom: .3rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+
+/* ★동주★ 구매 내역 관련 CSS 끝 */

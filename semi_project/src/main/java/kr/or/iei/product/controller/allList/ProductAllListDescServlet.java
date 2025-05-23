@@ -35,22 +35,22 @@ public class ProductAllListDescServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String memberNo = null;
+		String memberId = null;
 		Member loginMember = null;
 		HttpSession session = request.getSession(false); //세션 있으면 존재, 없으면 null (로그인 되어 있으면 존재, 비로그인 시 null)
 		if(session != null) {
 			loginMember = (Member) session.getAttribute("loginMember");
 			if(loginMember != null) {
-				memberNo = loginMember.getMemberNo();				
+				memberNo = loginMember.getMemberNo();		
+				memberId = loginMember.getMemberId(); // 관리자 판단용
 			}
 		}
 		
 		ProductService service = new ProductService();
-		ArrayList<Product> productList = service.selectAllListDesc(memberNo);
+		ArrayList<Product> productList = service.selectAllListDesc(memberNo, memberId);
 		
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/allList/productAllListDesc.jsp");
-		
 		request.setAttribute("productList", productList);
-		
 		view.forward(request, response);
 	}
 

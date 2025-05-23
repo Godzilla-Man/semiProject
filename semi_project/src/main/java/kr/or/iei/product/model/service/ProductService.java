@@ -3,22 +3,30 @@ package kr.or.iei.product.model.service;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import kr.or.iei.comment.model.vo.Comment;
+import kr.or.iei.admin.model.vo.ReportPost;
 import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.common.JDBCTemplate;
+import kr.or.iei.file.model.dao.FileDao;
 import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.member.model.vo.Member;
+import kr.or.iei.order.model.vo.Purchase;
 import kr.or.iei.product.model.dao.ProductDao;
 import kr.or.iei.product.model.vo.Product;
+import kr.or.iei.product.model.vo.SalesProduct;
 import kr.or.iei.product.model.vo.WishList;
 
 public class ProductService {
 
     private ProductDao dao;
+    private FileDao fileDao;
     
     public ProductService() {
+    	
     	dao = new ProductDao();
+    	fileDao = new FileDao();
     }
 
     /**
@@ -359,13 +367,12 @@ public class ProductService {
         return result1 * result3; // 하나라도 실패하면 0 이하
     }
 
-	public Category selectCategory(String category) {
-		Connection conn = JDBCTemplate.getConnection();
-		Category ctg = dao.selectCategory(conn, category);
-		JDBCTemplate.close(conn);
-		
-		return ctg;
-	}
+    public Category selectCategory(String categoryCode) {
+        Connection conn = JDBCTemplate.getConnection();
+        Category ctg = dao.selectCategory(conn, categoryCode);
+        JDBCTemplate.close(conn);
+        return ctg;
+    }
 
 	//상품명으로 검색 시 최신순 상품 리스트
 	public ArrayList<Product> searchProdcutNameDesc(String productName, String memberNo) {
@@ -385,23 +392,28 @@ public class ProductService {
 		return productList;
 	}
 
-	//최신순 전체 상품 리스트
-	public ArrayList<Product> selectAllListDesc(String memberNo) {
-		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productList = dao.selectAllListDesc(conn, memberNo);
-		JDBCTemplate.close(conn);
-		
-		return productList;
+	// 최신순 전체 상품 리스트 조회 (삭제상품 포함 여부 분기)
+	public ArrayList<Product> selectAllListDesc(String memberNo, String memberId) {
+	    Connection conn = JDBCTemplate.getConnection();
+
+	    // memberId가 "admin"일 경우 삭제상품도 포함
+	    boolean isAdmin = "admin".equals(memberId);
+
+	    ArrayList<Product> list = dao.selectAllListDesc(conn, memberNo, isAdmin);
+
+	    JDBCTemplate.close(conn);
+	    return list;
 	}
 
+
 	//카테고리별 상품 리스트
-	public ArrayList<Product> selectCategoryListDesc(String category, String memberNo) {
-		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productCtgList = dao.selectCategoryListDesc(conn, category, memberNo);
-		JDBCTemplate.close(conn);
-		
-		return productCtgList;
+	public ArrayList<Product> selectCategoryListDesc(String categoryCode, String memberNo, boolean isAdmin) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    ArrayList<Product> list = dao.selectCategoryListDesc(conn, categoryCode, memberNo, isAdmin); // 오버로딩된 DAO 메서드 호출
+	    JDBCTemplate.close(conn);
+	    return list;
 	}
+
 
 	//찜하기 등록
 	public int addWishList(String memberNo, String productNo) {
@@ -431,12 +443,17 @@ public class ProductService {
 	}
 
 	//오래된순 전체 상품 리스트
-	public ArrayList<Product> selectAllListAsc(String memberNo) {
-		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productList = dao.selectAllListAsc(conn, memberNo);
-		JDBCTemplate.close(conn);
-		
-		return productList;
+	public ArrayList<Product> selectAllListAsc(String memberNo, String memberId) {
+	    Connection conn = JDBCTemplate.getConnection();
+
+	    // admin 여부 판단
+	    boolean isAdmin = "admin".equals(memberId);
+
+	    // 관리자 여부에 따라 삭제상품 필터 분기
+	    ArrayList<Product> list = dao.selectAllListAsc(conn, memberNo, isAdmin);
+
+	    JDBCTemplate.close(conn);
+	    return list;
 	}
 
 	//찜하기 삭제
@@ -449,67 +466,77 @@ public class ProductService {
 	}
 	
 	//최저가순 전체 상품 리스트
-	public ArrayList<Product> selectAllListCheap(String memberNo) {
-		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productList = dao.selectAllListCheap(conn, memberNo);
-		JDBCTemplate.close(conn);
-		
-		return productList;
+	public ArrayList<Product> selectAllListCheap(String memberNo, String memberId) {
+	    Connection conn = JDBCTemplate.getConnection();
+
+	    boolean isAdmin = "admin".equals(memberId);  //  관리자 여부 판단
+	    ArrayList<Product> list = dao.selectAllListCheap(conn, memberNo, isAdmin);
+
+	    JDBCTemplate.close(conn);
+	    return list;
 	}
 
 	//최고가순 전체 상품 리스트
-	public ArrayList<Product> selectAllListExpen(String memberNo) {
-		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productList = dao.selectAllListExpen(conn, memberNo);
-		JDBCTemplate.close(conn);
-		
-		return productList;
+	public ArrayList<Product> selectAllListExpen(String memberNo, String memberId) {
+	    Connection conn = JDBCTemplate.getConnection();
+
+	    boolean isAdmin = "admin".equals(memberId);  // 관리자 여부 판단
+
+	    ArrayList<Product> list;
+	    if (isAdmin) {
+	        list = dao.selectAllListExpen(conn, memberNo);  // 기존 방식
+	    } else {
+	        list = dao.selectAllListExpen(conn, memberNo, false);  // 삭제 필터링
+	    }
+
+	    JDBCTemplate.close(conn);
+	    return list;
 	}
+
 
 	//가격설정 전체 상품 리스트
-	public ArrayList<Product> selectAllListPrice(String memberNo, String min, String max) {
+	public ArrayList<Product> selectAllListPrice(String memberNo, String min, String max, String memberId) {
 		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productList = dao.selectAllListPrice(conn, memberNo, min, max);
+		boolean isAdmin = "admin".equals(memberId);
+		ArrayList<Product> list = dao.selectAllListPrice(conn, memberNo, min, max, isAdmin);
 		JDBCTemplate.close(conn);
-		
-		return productList;
+		return list;
 	}
 
-	//카테고리별 오래된순 상품 리스트
-	public ArrayList<Product> selectCategoryListAsc(String category, String memberNo) {
-		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productCtgList = dao.selectCategoryListAsc(conn, category, memberNo);
-		JDBCTemplate.close(conn);
-		
-		return productCtgList;
+
+	// 카테고리별 오래된순 상품 리스트
+	public ArrayList<Product> selectCategoryListAsc(String categoryCode, String memberNo, boolean isAdmin) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    ArrayList<Product> list = dao.selectCategoryListAsc(conn, categoryCode, memberNo, isAdmin);  // ✅ 오버로딩된 메서드 호출
+	    JDBCTemplate.close(conn);
+	    return list;
 	}
 
 	//카테고리별 최저가순 상품 리스트
-	public ArrayList<Product> selectCategoryListCheap(String category, String memberNo) {
-		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productCtgList = dao.selectCategoryListCheap(conn, category, memberNo);
-		JDBCTemplate.close(conn);
-		
-		return productCtgList;
+	public ArrayList<Product> selectCategoryListCheap(String categoryCode, String memberNo, boolean isAdmin) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    ArrayList<Product> list = dao.selectCategoryListCheap(conn, categoryCode, memberNo, isAdmin); // 오버로딩 메서드 호출
+	    JDBCTemplate.close(conn);
+	    return list;
 	}
 
 	//카테고리별 최고가순 상품 리스트
-	public ArrayList<Product> selectCategoryListExpen(String category, String memberNo) {
-		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productCtgList = dao.selectCategoryListExpen(conn, category, memberNo);
-		JDBCTemplate.close(conn);
-		
-		return productCtgList;
+	public ArrayList<Product> selectCategoryListExpen(String categoryCode, String memberNo, boolean isAdmin) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    ArrayList<Product> list = dao.selectCategoryListExpen(conn, categoryCode, memberNo, isAdmin); // 오버로딩된 DAO 호출
+	    JDBCTemplate.close(conn);
+	    return list;
 	}
 
 	//카테고리별 가격설정 상품 리스트
-	public ArrayList<Product> selectCategoryListPrice(String category, String memberNo, String min, String max) {
-		Connection conn = JDBCTemplate.getConnection();
-		ArrayList<Product> productCtgList = dao.selectCategoryListPrice(conn, category, memberNo, min, max);
-		JDBCTemplate.close(conn);
-		
-		return productCtgList;
+	public ArrayList<Product> selectCategoryListPrice(String category, String memberNo, String min, String max, String memberId) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    boolean isAdmin = "admin".equals(memberId);
+	    ArrayList<Product> list = dao.selectCategoryListPrice(conn, category, memberNo, min, max, isAdmin);
+	    JDBCTemplate.close(conn);
+	    return list;
 	}
+
 
 	//상품명으로 검색 시 오래된순 상품 리스트
 	public ArrayList<Product> searchProdcutNameAsc(String productName, String memberNo) {
@@ -650,6 +677,47 @@ public class ProductService {
 	    JDBCTemplate.close(conn);
 	    return result;
 	}
+	
+	 
+	// ★동주★ 판매 내역 정보를 추출하기 위한 service 메소드!! 시작
+	public List<SalesProduct> getMySalesList(String memberNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		List<SalesProduct> salesList = dao.getMySaleList(conn, memberNo);	
+		
+		for (SalesProduct sp : salesList) {
+            if (sp.getProductNo() != null && !sp.getProductNo().isEmpty()) {                
+                String thumbnailPath = fileDao.selectThumbnail(conn, sp.getProductNo());
+                sp.setThumbnailPath(thumbnailPath); // SalesProduct VO에 썸네일 경로 설정
+            }
+        }
+		
+		JDBCTemplate.close(conn);
+		return salesList;		
+	}
+	// ★동주★ 판매 내역 정보를 추출하기 위한 service 메소드!! 끝
+
+	// 일반 사용자에게 상품 목록 출력 메서드
+	public List<Product> selectVisibleRelatedProducts(String categoryCode, String currentProductNo) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    List<Product> list = dao.selectVisibleProducts(conn, categoryCode, currentProductNo);
+	    JDBCTemplate.close(conn);
+	    return list;
+	}
+
+	public List<Product> selectRelatedProductsAdmin(String categoryCode, String productNo) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    List<Product> list = new ProductDao().selectRelatedProductsAdmin(conn, categoryCode, productNo);
+	    JDBCTemplate.close(conn);
+	    return list;
+	}
+	
+	// 신고사유 리스트 불러오기
+	public List<ReportPost> getReportReasonList() {
+	    Connection conn = JDBCTemplate.getConnection();
+	    List<ReportPost> list = dao.selectReportReasonList(conn);
+	    JDBCTemplate.close(conn);
+	    return list;
+	}
 
 	public ArrayList<Product> selectMemberWishList(String memberNo) {
 		Connection conn = JDBCTemplate.getConnection();
@@ -658,8 +726,8 @@ public class ProductService {
 		
 		return productList;
 	}
-}
 
+}
 
 
 

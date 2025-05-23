@@ -105,7 +105,6 @@ public class ProductEnrollServlet extends HttpServlet {
         //enrollDate, readCount는 기본값 처리
 
         int result = new ProductService().insertProduct(p, fileList);
-  
         
         // 4. 결과 처리
         // 4.1 이동할 JSP 페이지 경로 지정

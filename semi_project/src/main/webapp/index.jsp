@@ -1,5 +1,7 @@
-<%@page import="kr.or.iei.reviewnotice.model.vo.ReviewNotice"%>
-<%@page import="kr.or.iei.reviewnotice.model.service.ReviewNoticeService"%>
+
+<%@page import="kr.or.iei.reviewNotice.model.service.ReviewNoticeService"%>
+<%@page import="kr.or.iei.reviewNotice.model.vo.ReviewNotice"%>
+
 <%@page import="kr.or.iei.file.model.vo.Files"%>
 <%@page import="java.util.List"%>
 <%@page import="kr.or.iei.event.model.service.EventService"%>
@@ -9,34 +11,45 @@
 <%@page import="kr.or.iei.product.model.service.ProductService"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%	
-	//메인 화면에서 서블릿을 거치지 않고 DB에 있는 정보 가져오기 위한 작업
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%
+	// 로그인 정보 확인 (세션에서 추출)
 	String memberNo = null;
+	String memberId = null;
 	Member loginMember = null;
+
 	session = request.getSession(false);
-	if(session != null){
+	if (session != null) {
 		loginMember = (Member) session.getAttribute("loginMember");
-		
-		if(loginMember != null){			
+		if (loginMember != null) {
 			memberNo = loginMember.getMemberNo();
+			memberId = loginMember.getMemberId(); // ← 관리자 여부 판단용
 		}
 	}
-	
 
+	// 상품 목록 조회 (관리자 분기 포함 구조)
+	// 관리자일 경우 삭제된 상품(S99)도 조회됨, 일반 회원은 제외
 	ProductService pService = new ProductService();
-	ArrayList<Product> productList = pService.selectAllListDesc(memberNo);
-	
-	ReviewNoticeService rService = new ReviewNoticeService();
-    ArrayList<ReviewNotice> reviewList = rService.selectAllReviewList();
-    
-    EventService eService = new EventService();
-    List<Files> fileList = eService.selectFirstEventFileList();
-	
+	ArrayList<Product> productList = pService.selectAllListDesc(memberNo, memberId);
+
+	// 리뷰공지 목록 조회
+	ReviewNoticeService rService = new ReviewNoticeService();    
+	ArrayList<ReviewNotice> reviewList = rService.selectAllReviewList();
+
+	// 이벤트 썸네일 파일 리스트 조회 (이벤트 1개당 1개 썸네일)
+	EventService eService = new EventService();
+	List<Files> fileList = eService.selectFirstEventFileList();
+
+	// 뷰 페이지로 전달
 	request.setAttribute("productList", productList);
 	request.setAttribute("reviewList", reviewList);
 	request.setAttribute("fileList", fileList);
 %>
+
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -82,7 +95,7 @@
 									</div>
 									<div class="image-info">
 										<span class="image-prod"><a href="/product/detail?no=${prod.productNo}">${prod.productName}</a></span>
-										<span class="image-price">${prod.productPrice}</span>
+										<span class="image-price"><fmt:formatNumber value="${prod.productPrice}" type="number"/>원</span>
 									</div>
 								</div>
 							</div>
@@ -117,7 +130,7 @@
 						</c:otherwise>
 					</c:choose>
 				</div>
-			</div>
+			</div>ㅑ
         	<button onclick="styleReview()">+ 더보기</button>
     	</div>
     	
@@ -207,7 +220,7 @@
 								
 								//클릭시 스타일 변경
 								$(obj).attr("class", "material-symbols-outlined fill");
-								$(obj).attr("onclick", "delWhishList(this, " + memberNo + ", " + productNo + ")");
+								$(obj).attr("onclick", "delWhishList(this, '" + memberNo + "', '" + productNo + "')");
 								
 							}else if(res == 0){ //찜하기 실패
 								swal({
@@ -273,7 +286,7 @@
 								
 								//클릭시 스타일 변경
 								$(obj).attr("class", "material-symbols-outlined");
-								$(obj).attr("onclick", "addWishList(this, " + memberNo + ", " + productNo + ")");
+								$(obj).attr("onclick", "addWishList(this, '" + memberNo + "', '" + productNo + "')");
 								
 							}else{ //찜하기 삭제 실패
 								swal({

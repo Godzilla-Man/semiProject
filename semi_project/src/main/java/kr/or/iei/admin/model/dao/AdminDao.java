@@ -52,21 +52,26 @@ public class AdminDao {
 		return memberList;
 	}
 
-	//전체 신고 리스트 조회
+	// 전체 신고 리스트 조회
 	public ArrayList<ReportPost> selectReportPost(Connection conn) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
-		
-		String query = "select report_no, b.report_reason as report_reason, reported_member_no, a.product_no as product_no, c.member_no as product_member_no, to_char(report_date, 'yyyy-mm-dd') as report_date from tbl_report_post a join tbl_report b on (a.report_code = b.report_code) join tbl_prod c on (a.product_no = c.product_no)";
-		
-		ArrayList<ReportPost> reportList = new ArrayList<ReportPost>();
-		
+
+		String query = "SELECT a.report_no, b.report_reason AS report_reason, a.reported_member_no, "
+		             + "a.product_no AS product_no, c.member_no AS product_member_no, "
+		             + "TO_CHAR(a.report_date, 'yyyy-mm-dd') AS report_date, "
+		             + "a.report_detail " 
+		             + "FROM tbl_report_post a "
+		             + "JOIN tbl_report b ON (a.report_code = b.report_code) "
+		             + "JOIN tbl_prod c ON (a.product_no = c.product_no)";
+
+		ArrayList<ReportPost> reportList = new ArrayList<>();
+
 		try {
 			pstmt = conn.prepareStatement(query);
-			
 			rset = pstmt.executeQuery();
-			
-			while(rset.next()) {
+
+			while (rset.next()) {
 				ReportPost r = new ReportPost();
 				r.setReportNo(rset.getInt("report_no"));
 				r.setReportReason(rset.getString("report_reason"));
@@ -74,19 +79,20 @@ public class AdminDao {
 				r.setProductNo(rset.getString("product_no"));
 				r.setReportDate(rset.getString("report_date"));
 				r.setProductMemberNo(rset.getString("product_member_no"));
-				
+				r.setReportDetail(rset.getString("report_detail")); 
+
 				reportList.add(r);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			JDBCTemplate.close(rset);
 			JDBCTemplate.close(pstmt);
 		}
-		
+
 		return reportList;
 	}
+
 
 	//회원 한 명 조회
 	public Member searchOneMember(Connection conn, String memberNo) {
@@ -324,6 +330,58 @@ public class AdminDao {
 			JDBCTemplate.close(pstmt);
 		}
 		return bCnt;
+	}
+
+	public int insertReport(Connection conn, ReportPost report) {
+		int result = 0;
+		PreparedStatement pstmt = null;
+
+		String query = "INSERT INTO TBL_REPORT_POST "
+		             + "(REPORT_NO, REPORT_CODE, REPORTED_MEMBER_NO, PRODUCT_NO, REPORT_DETAIL, REPORT_DATE) "
+		             + "VALUES (SEQ_REPORT.NEXTVAL, ?, ?, ?, ?, SYSDATE)";
+
+		try {
+			pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, report.getReportCode());
+			pstmt.setString(2, report.getReportedMemberNo());
+			pstmt.setString(3, report.getProductNo());
+			pstmt.setString(4, report.getReportDetail());
+
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(pstmt);
+		}
+
+		return result;
+	}
+	
+	// 특정 회원이 특정 상품을 신고한 적이 있는지 확인
+	public boolean hasReported(Connection conn, String memberNo, String productNo) {
+	    boolean result = false;
+	    PreparedStatement pstmt = null;
+	    ResultSet rset = null;
+	    
+	    String query = "SELECT COUNT(*) FROM TBL_REPORT_POST WHERE REPORTED_MEMBER_NO = ? AND PRODUCT_NO = ?";
+	    
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, memberNo);
+	        pstmt.setString(2, productNo);
+	        rset = pstmt.executeQuery();
+	        
+	        if (rset.next() && rset.getInt(1) > 0) {
+	            result = true;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(rset);
+	        JDBCTemplate.close(pstmt);
+	    }
+	    
+	    return result;
 	}
 
 }
