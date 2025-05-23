@@ -1833,6 +1833,99 @@ public class ProductDao {
 		
 		return productList;
 	}
+	
+	public List<Product> selectVisibleProducts(Connection conn, String categoryCode, String currentProductNo) {
+	    List<Product> list = new ArrayList<>();
+	    PreparedStatement pstmt = null;
+	    ResultSet rset = null;
+
+	    String query =
+	        "SELECT * FROM ( " +
+	        "    SELECT P.PRODUCT_NO, P.PRODUCT_NAME, P.PRODUCT_PRICE, P.STATUS_CODE, " +
+	        "           F.FILE_PATH " +
+	        "    FROM TBL_PROD P " +
+	        "    LEFT JOIN ( " +
+	        "        SELECT PRODUCT_NO, MIN(FILE_NO) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_NO, " +
+	        "               MIN(FILE_PATH) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_PATH " +
+	        "        FROM TBL_FILE " +
+	        "        GROUP BY PRODUCT_NO " +
+	        "    ) F ON P.PRODUCT_NO = F.PRODUCT_NO " +
+	        "    WHERE P.CATEGORY_CODE = ? AND P.PRODUCT_NO != ? AND P.STATUS_CODE != 'S99' " +
+	        "    ORDER BY P.ENROLL_DATE DESC " +
+	        ")";
+
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, categoryCode);
+	        pstmt.setString(2, currentProductNo);
+	        rset = pstmt.executeQuery();
+
+	        while (rset.next()) {
+	            Product p = new Product();
+	            p.setProductNo(rset.getString("PRODUCT_NO"));
+	            p.setProductName(rset.getString("PRODUCT_NAME"));
+	            p.setProductPrice(rset.getInt("PRODUCT_PRICE"));
+	            p.setStatusCode(rset.getString("STATUS_CODE"));
+	            p.setThumbnailPath(rset.getString("FILE_PATH"));
+	            list.add(p);
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(rset);
+	        JDBCTemplate.close(pstmt);
+	    }
+
+	    return list;
+	}
+
+
+	public List<Product> selectRelatedProductsAdmin(Connection conn, String categoryCode, String currentProductNo) {
+	    List<Product> list = new ArrayList<>();
+	    PreparedStatement pstmt = null;
+	    ResultSet rset = null;
+
+	    String query =
+	        "SELECT * FROM ( " +
+	        "    SELECT P.PRODUCT_NO, P.PRODUCT_NAME, P.PRODUCT_PRICE, P.STATUS_CODE, " +
+	        "           F.FILE_PATH " +
+	        "    FROM TBL_PROD P " +
+	        "    LEFT JOIN ( " +
+	        "        SELECT PRODUCT_NO, MIN(FILE_NO) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_NO, " +
+	        "               MIN(FILE_PATH) KEEP (DENSE_RANK FIRST ORDER BY FILE_NO) AS FILE_PATH " +
+	        "        FROM TBL_FILE " +
+	        "        GROUP BY PRODUCT_NO " +
+	        "    ) F ON P.PRODUCT_NO = F.PRODUCT_NO " +
+	        "    WHERE P.CATEGORY_CODE = ? AND P.PRODUCT_NO != ? " +
+	        "    ORDER BY P.ENROLL_DATE DESC " +
+	        ")";
+
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, categoryCode);
+	        pstmt.setString(2, currentProductNo);
+	        rset = pstmt.executeQuery();
+
+	        while (rset.next()) {
+	            Product p = new Product();
+	            p.setProductNo(rset.getString("PRODUCT_NO"));
+	            p.setProductName(rset.getString("PRODUCT_NAME"));
+	            p.setProductPrice(rset.getInt("PRODUCT_PRICE"));
+	            p.setStatusCode(rset.getString("STATUS_CODE"));
+	            p.setThumbnailPath(rset.getString("FILE_PATH"));
+	            list.add(p);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(rset);
+	        JDBCTemplate.close(pstmt);
+	    }
+
+	    return list;
+	}
+
 }
    
 

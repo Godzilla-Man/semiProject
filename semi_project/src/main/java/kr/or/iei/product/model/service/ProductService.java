@@ -651,6 +651,20 @@ public class ProductService {
 	    return result;
 	}
 
+	// 일반 사용자에게 상품 목록 출력 메서드
+	public List<Product> selectVisibleRelatedProducts(String categoryCode, String currentProductNo) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    List<Product> list = dao.selectVisibleProducts(conn, categoryCode, currentProductNo);
+	    JDBCTemplate.close(conn);
+	    return list;
+	}
+
+	public List<Product> selectRelatedProductsAdmin(String categoryCode, String productNo) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    List<Product> list = new ProductDao().selectRelatedProductsAdmin(conn, categoryCode, productNo);
+	    JDBCTemplate.close(conn);
+	    return list;
+	}
 }
 
 
