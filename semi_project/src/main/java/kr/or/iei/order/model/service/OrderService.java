@@ -158,8 +158,34 @@ public class OrderService {
 	public List<Purchase> getPurchaseListByBuyer(String buyerMemberNo) {
 	    Connection conn = JDBCTemplate.getConnection();	    
 	    List<Purchase> purchaseList = dao.selectPurchaseListByBuyerNo(conn, buyerMemberNo);
+	    
+	    for (Purchase purchase : purchaseList) {
+	        if (purchase.getProductNo() != null && !purchase.getProductNo().isEmpty()) {
+	            String thumbnailPath = filedao.selectThumbnail(conn, purchase.getProductNo());
+	            purchase.setThumbnailPath(thumbnailPath);
+	        }
+	    }
+	    
 	    JDBCTemplate.close(conn);
 	    return purchaseList;
 	}
+
+	public boolean saveShipmentInfo(String orderNo, String sellerMemberNo, String deliveryCompanyCode, String deliveryCompanyName, String trackingNumber) {
+	    Connection conn = JDBCTemplate.getConnection();
+	    // DAO 메소드도 파라미터 변경 필요
+	    int result = dao.updateShipmentInfo(conn, orderNo, sellerMemberNo, deliveryCompanyCode, deliveryCompanyName, trackingNumber);
+	    boolean success = false;
+
+	    if (result > 0) {
+	        JDBCTemplate.commit(conn);
+	        success = true;
+	    } else {
+	        JDBCTemplate.rollback(conn);
+	    }
+	    JDBCTemplate.close(conn);
+	    return success;
+	}
+
+	
 
 }

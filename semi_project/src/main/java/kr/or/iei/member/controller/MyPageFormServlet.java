@@ -35,8 +35,7 @@ public class MyPageFormServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		// 시작 : 로그인 세션 갖고 오는 공통 영역
-		
+		// 시작 : 로그인 세션 갖고 오는 공통 영역		
 		HttpSession session = request.getSession(false);
         Member loginMember = null;
 
@@ -50,14 +49,7 @@ public class MyPageFormServlet extends HttpServlet {
             response.getWriter().println("<script>alert('로그인이 필요한 서비스입니다.'); location.href='" + request.getContextPath() + "/member/loginFrm';</script>");
             return;
         }        
-        // 종료 : 로그인 세션 갖고 오는 공통 영역
-
-        // 구매내역 조회
-        OrderService orderService = new OrderService();
-        List<Purchase> purchaseList = orderService.getPurchaseListByBuyer(loginMember.getMemberNo());
-
-        request.setAttribute("purchaseList", purchaseList); // 조회된 구매내역 리스트를 request에 저장
-        // request.setAttribute("loginMember", loginMember); // JSP에서 이미 세션으로 접근 가능하지만, 명시적으로 넘겨도 됨
+        // 종료 : 로그인 세션 갖고 오는 공통 영역        
 
         RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/member/myPage.jsp"); // 실제 마이페이지 JSP 경로
         view.forward(request, response);

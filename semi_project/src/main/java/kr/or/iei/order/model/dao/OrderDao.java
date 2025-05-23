@@ -271,8 +271,8 @@ public class OrderDao {
 	                   "    P.PG_PROVIDER, P.PG_TRANSACTION_ID, P.DEAL_DATE, P.PURCHASE_STATUS_CODE, " +
 	                   "    PROD.PRODUCT_NAME, PROD.PRODUCT_PRICE, " + // 상품명, 상품 가격
 	                   "    SELLER.MEMBER_NICKNAME AS SELLER_NICKNAME, " + // 판매자 닉네임
-	                   "    PS.STATUS_NAME AS PURCHASE_STATUS_NAME, " +   // 주문 상태명
-	                   "    (SELECT FL.FILE_PATH FROM (SELECT F.FILE_PATH, F.FILE_NO FROM TBL_FILE F WHERE F.PRODUCT_NO = PRODUCT_NO ORDER BY F.FILE_NO ASC) FL WHERE ROWNUM = 1) AS THUMBNAIL_PATH " + // 대표 이미지 경로
+	                   "    PS.STATUS_NAME AS PURCHASE_STATUS_NAME " +   // 주문 상태명
+	                   
 	                   "FROM TBL_PURCHASE P " +
 	                   "JOIN TBL_PROD PROD ON P.PRODUCT_NO = PROD.PRODUCT_NO " +
 	                   "JOIN TBL_MEMBER SELLER ON P.SELLER_MEMBER_NO = SELLER.MEMBER_NO " +
@@ -286,7 +286,8 @@ public class OrderDao {
 	        rset = pstmt.executeQuery();
 
 	        while (rset.next()) {
-	            Purchase p = new Purchase();
+	            Purchase p = new Purchase(); 
+	            
 	            p.setOrderNo(rset.getString("ORDER_NO"));
 	            p.setProductNo(rset.getString("PRODUCT_NO"));
 	            p.setSellerMemberNo(rset.getString("SELLER_MEMBER_NO"));
@@ -298,15 +299,14 @@ public class OrderDao {
 	            p.setPgTransactionId(rset.getString("PG_TRANSACTION_ID"));
 	            p.setDealDate(rset.getDate("DEAL_DATE"));
 	            p.setPurchaseStatusCode(rset.getString("PURCHASE_STATUS_CODE"));
-
+	            
 	            // 조인된 추가 정보 설정 
 	            p.setProductName(rset.getString("PRODUCT_NAME"));
 	            p.setProductPrice(rset.getInt("PRODUCT_PRICE")); // 상품 원가
 	            p.setSellerNickname(rset.getString("SELLER_NICKNAME"));
-	            p.setPurchaseStatusName(rset.getString("PURCHASE_STATUS_NAME"));
-	            p.setThumbnailPath(rset.getString("THUMBNAIL_PATH"));
-
-	            list.add(p);
+	            p.setPurchaseStatusName(rset.getString("PURCHASE_STATUS_NAME")); 	            
+	            list.add(p);            
+	            
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
@@ -316,8 +316,53 @@ public class OrderDao {
 	    }
 	    return list;
 	}
-	
-	
+
+	public int updateShipmentInfo(Connection conn, String orderNo, String sellerMemberNo, String deliveryCompanyCode, String deliveryCompanyName, String trackingNumber) {
+	    PreparedStatement pstmt = null;
+	    int result = 0;
+	    // TBL_PURCHASE에 DELIVERY_COMPANY_CODE 와 DELIVERY_COMPANY_NAME 컬럼이 모두 있다고 가정
+	    String query = "UPDATE TBL_PURCHASE " +
+	                   "SET DELIVERY_COMPANY_CODE = ?, " + // 택배사 코드 저장
+	                   "    DELIVERY_COMPANY_NAME = ?, " + // 택배사 명 저장
+	                   "    TRACKING_NUMBER = ?, " +
+	                   "    PURCHASE_STATUS_CODE = 'S05', " +
+	                   "    SHIPMENT_DATE = SYSDATE " +
+	                   "WHERE ORDER_NO = ? " +
+	                   "  AND SELLER_MEMBER_NO = ? " +
+	                   "  AND PURCHASE_STATUS_CODE IN ('PS01', 'PS02')";
+
+	    try {
+	        pstmt = conn.prepareStatement(query);
+
+	        // 택배사 코드가 'ETC'이거나 비어있고, 택배사 명이 있는 경우 (기타 직접 입력)
+	        // 또는 택배사 코드가 있고, 택배사 명도 있는 경우 (선택)
+	        // TBL_DELIVERY_COMPANY와 연동한다면, 코드는 필수, 이름은 TBL_DELIVERY_COMPANY에서 가져오거나 기타일때만 직접 저장
+	        
+	        // 여기서는 클라이언트에서 전달된 값을 그대로 사용한다고 가정
+	        if (deliveryCompanyCode != null && !deliveryCompanyCode.isEmpty() && !deliveryCompanyCode.equals("ETC")) {
+	            // TBL_DELIVERY_COMPANY에 해당 코드가 있는지 확인하는 로직이 있으면 더 좋음
+	            pstmt.setString(1, deliveryCompanyCode);
+	        } else {
+	            // "기타"이거나 코드가 없는 경우, 또는 TBL_DELIVERY_COMPANY에 없는 코드 방지
+	            // TBL_PURCHASE.DELIVERY_COMPANY_CODE 컬럼이 NULL을 허용해야 함
+	            pstmt.setNull(1, java.sql.Types.VARCHAR); // 또는 특정 '기타' 코드를 DB에 저장 (예: 'ETC')
+	            // 만약 'ETC' 코드를 사용하고 이름만 저장한다면:
+	            // if ("ETC".equals(deliveryCompanyCode)) { pstmt.setString(1, "ETC"); }
+	            // else { pstmt.setNull(1, java.sql.Types.VARCHAR); }
+	        }
+	        pstmt.setString(2, deliveryCompanyName); // 택배사 명은 항상 저장
+	        pstmt.setString(3, trackingNumber);
+	        pstmt.setString(4, orderNo);
+	        pstmt.setString(5, sellerMemberNo);
+
+	        result = pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace(); // ORA-02291 오류가 여기서 발생할 가능성이 높음
+	    } finally {
+	        JDBCTemplate.close(pstmt);
+	    }
+	    return result;
+	}	
 	
 	
 }
