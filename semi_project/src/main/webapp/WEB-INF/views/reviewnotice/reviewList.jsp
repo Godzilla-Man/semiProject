@@ -202,7 +202,7 @@
     .fixed-register:hover {
         background-color: #0056b3;
     }
-    .fixed-register .material-icons { /* Material Icon 스타일 */
+    .fixed-register .material-icons {
         font-size: 28px; 
         line-height: 1; /* 아이콘 수직 정렬 */
     }
@@ -261,11 +261,30 @@
 
     <section class="category-links">
       <ul>
-        <%-- 서블릿에서 전달된 selectedCategory 값으로 현재 선택된 카테고리 강조 --%>
-        <li class="${(empty selectedCategory || selectedCategory eq 'all') ? 'active' : ''}"><a href="${pageContext.request.contextPath}/review/list?category=all"><img src="${pageContext.request.contextPath}/resources/images/category/all_icon.png" alt="전체 카테고리"><div>전체</div></a></li>
-        <li class="${selectedCategory eq 'A1' ? 'active' : ''}"><a href="${pageContext.request.contextPath}/review/list?category=A1"><img src="${pageContext.request.contextPath}/resources/images/category/male_icon.png" alt="남성 카테고리"><div>남성</div></a></li>
-        <li class="${selectedCategory eq 'A2' ? 'active' : ''}"><a href="${pageContext.request.contextPath}/review/list?category=A2"><img src="${pageContext.request.contextPath}/resources/images/category/female_icon.png" alt="여성 카테고리"><div>여성</div></a></li>
-        <li class="${selectedCategory eq 'A3' ? 'active' : ''}"><a href="${pageContext.request.contextPath}/review/list?category=A3"><img src="${pageContext.request.contextPath}/resources/images/category/unisex_icon.png" alt="공용 카테고리"><div>공용</div></a></li>
+        <li class="${(empty selectedCategory || selectedCategory eq 'all') ? 'active' : ''}">
+	        <a href="${pageContext.request.contextPath}/review/list?category=all">
+		        <img src="${pageContext.request.contextPath}/resources/images/category/all_icon.png" alt="전체 카테고리">
+		        <div>전체</div>
+	        </a>
+        </li>
+        <li class="${selectedCategory eq 'A01' ? 'active' : ''}">
+        	<a href="${pageContext.request.contextPath}/review/list?category=A01">
+        		<img src="${pageContext.request.contextPath}/resources/images/category/male_icon.png" alt="남성 카테고리">
+        		<div>남성</div>
+       		</a>
+      	</li>
+        <li class="${selectedCategory eq 'A02' ? 'active' : ''}">
+	        <a href="${pageContext.request.contextPath}/review/list?category=A02">
+		        <img src="${pageContext.request.contextPath}/resources/images/category/female_icon.png" alt="여성 카테고리">
+		        <div>여성</div>
+	        </a>
+        </li>
+        <li class="${selectedCategory eq 'A03' ? 'active' : ''}">
+	        <a href="${pageContext.request.contextPath}/review/list?category=A03">
+		        <img src="${pageContext.request.contextPath}/resources/images/category/unisex_icon.png" alt="공용 카테고리">
+		        <div>공용</div>
+	        </a>
+        </li>
       </ul>
     </section>
 
@@ -288,8 +307,6 @@
                   </div>
                   <div class="image-info">
                     <span class="image-style"><c:out value="${review.postTitle}"/></span>
-                    <%-- 필요하다면 여기에 작성자 닉네임 등 추가 정보 표시 --%>
-                    <%-- <span class="author-info">by <c:out value="${review.memberNickname}"/></span> --%>
                   </div>
               </a>
             </c:forEach>
@@ -303,9 +320,8 @@
     
     <%-- 로그인한 경우에만 등록 버튼 표시 --%>
     <c:if test="${not empty sessionScope.loginMember}">
-        <%-- 등록 버튼 링크 수정: /review/writeForm (서블릿 매핑과 일치) --%>
         <a href="/review/writeFrm" class="fixed-register" title="스타일 후기 등록">
-            <span class="material-icons">edit</span> <%-- Material Icon 사용 (예: 연필 아이콘) --%>
+            <span class="material-icons">edit</span>
         </a>
     </c:if>
   </main>

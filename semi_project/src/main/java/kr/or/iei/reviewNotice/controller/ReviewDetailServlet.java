@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.reviewNotice.model.service.ReviewNoticeService;
 import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
 
@@ -20,10 +21,12 @@ public class ReviewDetailServlet extends HttpServlet {
 
         ReviewNoticeService service = new ReviewNoticeService();
         ReviewNotice review = service.selectReviewDetail(stylePostNo); // 변수명 review로 사용
-
+        Category category = service.selectCategory(stylePostNo);
+        
         String path;
         if (review != null) {
             request.setAttribute("review", review); // JSP에서 사용할 이름 "review"
+            request.setAttribute("category", category);
             path = "/WEB-INF/views/reviewnotice/reviewDetail.jsp";
         } else {
             request.setAttribute("errorMsg", "게시글을 조회할 수 없습니다.");

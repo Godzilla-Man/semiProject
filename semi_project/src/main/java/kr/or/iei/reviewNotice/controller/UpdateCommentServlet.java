@@ -52,11 +52,6 @@ public class UpdateCommentServlet extends HttpServlet {
         ReviewNoticeService service = new ReviewNoticeService();
         int result = service.updateComment(commentNo, content, loginMember.getMemberNo());
         
-        // String queryResult = "";
-        // if(result == 0) queryResult = "&commentUpdateResult=fail";
-        // else if(result == -1) queryResult = "&commentUpdateResult=authFail";
-        // else queryResult = "&commentUpdateResult=success";
-
         response.sendRedirect(request.getContextPath() + "/review/detail?stylePostNo=" + stylePostNo /*+ queryResult*/);
     }
 }

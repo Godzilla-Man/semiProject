@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
+
+import kr.or.iei.category.model.vo.Category;
 import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.reviewNotice.model.service.ReviewNoticeService;
@@ -21,18 +23,32 @@ import kr.or.iei.reviewNotice.model.vo.ReviewNotice;
 @WebServlet("/review/write")
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024 * 1,
-    maxFileSize = 1024 * 1024 * 10,
+    maxFileSize = 1024 * 1024 * 100,
     maxRequestSize = 1024 * 1024 * 55
 )
 public class ReviewNoticeWriteServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendRedirect(request.getContextPath() + "/review/writeFrm");
+    	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            System.out.println("--- ReviewNoticeWriteServlet doGet() 실행됨: 글쓰기 폼 요청 처리 ---");
+
+            // 1. (구매내역 페이지 등에서) 전달된 주문번호(orderNo) 파라미터 받기
+            String orderNo = request.getParameter("orderNo");
+
+            if (orderNo != null && !orderNo.isEmpty()) {
+                System.out.println("doGet으로 전달받은 orderNo (미리 채울 주문번호): " + orderNo);
+                // 2. 받은 주문번호를 request attribute에 담아 JSP로 전달
+                request.setAttribute("preFilledOrderNo", orderNo);
+            } else {
+                System.out.println("doGet: preFilledOrderNo 없이 일반 글쓰기 폼으로 이동.");
+            }
+
+            // 3. 글쓰기 폼 JSP로 포워딩 (기존 redirect 대신 forward 사용)
+            RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/reviewnotice/reviewWrite.jsp");
+            view.forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loginMember") == null) {
             request.setAttribute("errorMsg", "로그인이 필요한 서비스입니다.");
@@ -62,7 +78,7 @@ public class ReviewNoticeWriteServlet extends HttpServlet {
 
         ArrayList<Files> fileList = new ArrayList<>();
         String root = getServletContext().getRealPath("/"); 
-        String saveDirectory = root + "resources/upload" + File.separator + "reviewnotice"; 
+        String saveDirectory = root + "/resources/upload" + File.separator + "reviewnotice"; 
 
         File directory = new File(saveDirectory);
         if (!directory.exists()) {

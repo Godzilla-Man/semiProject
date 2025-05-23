@@ -11,7 +11,6 @@
 <title>구매 내역</title>
 </head>
 <body>
-<<<<<<< HEAD
     <c:choose>
     
         <c:when test="${empty purchaseList}">
@@ -105,8 +104,7 @@
 
     }
     </script>
-    
-=======
+
 	<c:choose>
 		<c:when test="${empty purchaseList}">
 			<p style="text-align:center; padding: 40px 0;">구매 내역이 없습니다.</p>
@@ -149,6 +147,5 @@
 			</c:forEach>
 		</c:otherwise>
 	</c:choose>
->>>>>>> master
 </body>
 </html>

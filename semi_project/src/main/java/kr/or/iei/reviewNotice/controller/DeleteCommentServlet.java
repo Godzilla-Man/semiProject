@@ -50,11 +50,6 @@ public class DeleteCommentServlet extends HttpServlet {
         ReviewNoticeService service = new ReviewNoticeService();
         int result = service.deleteComment(commentNo, loginMember.getMemberNo());
 
-        // String queryResult = "";
-        // if(result == 0) queryResult = "&commentDeleteResult=fail";
-        // else if(result == -1) queryResult = "&commentDeleteResult=authFail";
-        // else queryResult = "&commentDeleteResult=success";
-        
         response.sendRedirect(request.getContextPath() + "/review/detail?stylePostNo=" + stylePostNo /*+ queryResult*/);
     }
 }

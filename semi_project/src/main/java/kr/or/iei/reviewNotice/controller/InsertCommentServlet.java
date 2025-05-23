@@ -54,8 +54,6 @@ public class InsertCommentServlet extends HttpServlet {
         ReviewNoticeService service = new ReviewNoticeService();
         int result = service.insertComment(comment);
         
-        // 성공/실패 메시지 추가 가능 (예: 쿼리 스트링으로)
-        // String queryResult = (result > 0) ? "&commentResult=success" : "&commentResult=fail";
         response.sendRedirect(request.getContextPath() + "/review/detail?stylePostNo=" + stylePostNo /*+ queryResult*/);
     }
 }
