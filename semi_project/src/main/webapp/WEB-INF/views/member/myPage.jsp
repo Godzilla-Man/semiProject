@@ -38,25 +38,17 @@
 						</div>
 						<div class="list-wrap">
 							<ul class="menu-wrap">
-								<li class="tab-link current" data-tab="tab-wishList">
+								<li class="tab-link current" id="default" data-tab="myPageWishList">
 									<a href="#">관심목록</a>
 								</li>
-								<li class="tab-link" data-tab="tab-salesList">
+								<li class="tab-link" data-tab="myPageSalesList">
 									<a href="#">판매내역</a>
 								</li>
-								<li class="tab-link" data-tab="tab-purchaseList">
+								<li class="tab-link" data-tab="myPagePurchaseList">
 									<a href="#">구매내역</a>
 								</li>
 							</ul>
-							<div class="content on" id="tab-wishList">
-								관심목록입니다.
-							</div>
-							<div class="content" id="tab-salesList">
-								판매내역입니다.
-							</div>
-							<div class="content" id="tab-purchaseList">
-								구매내역입니다.
-							</div>
+							<div class="tab-content"></div>
 						</div>
 					</form>
 			</section>
@@ -66,20 +58,31 @@
 	<script>
 		//관심목록/판매내역/구매내역 탭메뉴 기능
 		const tabLink = $('.tab-link');
-		const content = $('.content');
+		const tabContent = $('.tab-content')
 		
-		$(tabLink).click(function(e) {
-			e.preventDefault();
-			
-			var current = $(this).attr('data-tab');
+		$(tabLink).click(function() {
+			let current = $(this).attr('data-tab');
 			
 			$(tabLink).removeClass('current');
-			$(content).removeClass('on');
-			
-			$(this).addClass('on');
 			$(this).addClass('current');
-			$('#' + current).addClass('on');
+			
+			$.ajax({
+				url : "/member/" + current,
+				type : "get",
+				dataType : "html",
+				success : function(data){					//비동기 통신 성공 시, 호출 함수
+					$(tabContent).html(data);
+				},
+				error : function(){							//비동기 통신 에러 시, 호출 함수
+					console.log("ajax : error");
+				}
+				
+			});
 		});
+		
+		$('#default').click();
+		
+		
 	</script>
 </body>
 </html>

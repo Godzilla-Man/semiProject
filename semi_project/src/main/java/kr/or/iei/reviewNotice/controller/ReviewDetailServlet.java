@@ -1,7 +1,6 @@
 package kr.or.iei.reviewnotice.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,20 +10,25 @@ import javax.servlet.http.HttpServletResponse;
 import kr.or.iei.reviewnotice.model.service.ReviewNoticeService;
 import kr.or.iei.reviewnotice.model.vo.ReviewNotice;
 
-@WebServlet("/review/list")
-public class ReviewListServlet extends HttpServlet {
+@WebServlet("/review/detail")
+public class ReviewDetailServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String categoryCode = request.getParameter("category");
+        String stylePostNo = request.getParameter("stylePostNo");
 
         ReviewNoticeService service = new ReviewNoticeService();
-        ArrayList<ReviewNotice> reviewList = service.selectAllReview(categoryCode);
+        ReviewNotice review = service.selectReviewDetail(stylePostNo); // 변수명 review로 사용
 
-        request.setAttribute("reviewList", reviewList);
-        request.setAttribute("selectedCategory", categoryCode); 
-
-        RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/reviewnotice/reviewList.jsp");
+        String path;
+        if (review != null) {
+            request.setAttribute("review", review); // JSP에서 사용할 이름 "review"
+            path = "/WEB-INF/views/reviewnotice/reviewDetail.jsp";
+        } else {
+            request.setAttribute("errorMsg", "게시글을 조회할 수 없습니다.");
+            path = "/WEB-INF/views/reviewnotice/reviewList.jsp";
+        }
+        RequestDispatcher view = request.getRequestDispatcher(path);
         view.forward(request, response);
     }
 

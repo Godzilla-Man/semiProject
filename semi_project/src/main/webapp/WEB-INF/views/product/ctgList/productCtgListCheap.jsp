@@ -76,7 +76,7 @@
 		<div class="fixed" style="right: 280px;">
 			<%-- 로그인 시에만 판매 글을 올릴 수 있는 등록 버튼 표시 --%>
 			<c:if test="${!empty sessionScope.loginMember}">
-			<div class="post" onclick="productEnroll()">
+			<div class="post" onclick="productEnroll()" title="상품 등록">
 				<span class="material-symbols-outlined">add</span>
 			</div>
 			</c:if>
@@ -179,7 +179,7 @@
 								
 								//클릭시 스타일 변경
 								$(obj).attr("class", "material-symbols-outlined fill");
-								$(obj).attr("onclick", "delWhishList(this, " + memberNo + ", " + productNo + ")");
+								$(obj).attr("onclick", "delWhishList(this, '" + memberNo + "', '" + productNo + "')");
 								
 							}else if(res == 0){ //찜하기 실패
 								swal({
@@ -245,7 +245,7 @@
 								
 								//클릭시 스타일 변경
 								$(obj).attr("class", "material-symbols-outlined");
-								$(obj).attr("onclick", "addWishList(this, " + memberNo + ", " + productNo + ")");
+								$(obj).attr("onclick", "addWishList(this, '" + memberNo + "', '" + productNo + "')");
 								
 							}else{ //찜하기 삭제 실패
 								swal({

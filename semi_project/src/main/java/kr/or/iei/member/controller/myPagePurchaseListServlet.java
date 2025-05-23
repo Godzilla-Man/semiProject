@@ -10,16 +10,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class updateFromServlet
+ * Servlet implementation class MyPageWishListServlet
  */
-@WebServlet("/member/updateFrm")
-public class updateFromServlet extends HttpServlet {
+@WebServlet("/member/myPagePurchaseList")
+public class myPagePurchaseListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public updateFromServlet() {
+    public myPagePurchaseListServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,7 +33,7 @@ public class updateFromServlet extends HttpServlet {
 		//3. 로직 처리
 		//4. 결과 처리
 			//4.1 이동할 JSP 페이지 경로 지정
-		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/member/update.jsp");
+		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/member/myPagePurchaseList.jsp");
 			//4.2 화면 구현에 필요한 데이터 등록
 			//4.3 페이지 이동
 		view.forward(request, response);

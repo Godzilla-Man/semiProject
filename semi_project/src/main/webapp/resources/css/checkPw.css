@@ -1,0 +1,79 @@
+.checkPw-wrap {
+		width : 500px;
+		margin : 0 auto;
+		
+}
+.checkPw-wrap .input-wrap {
+		padding : 7px 30px;
+		display: flex;
+		justify-content: center;
+}
+.checkPw-wrap .checkPw-button-box {
+		padding : 20px 30px;
+}
+.checkPw-wrap .checkPw-button-box>button {
+		width: 100%;
+}
+.page-title {
+		text-align : center;
+}
+.input-msg {
+	text-align: center;
+}
+
+.input-item {
+		width: 70%;
+		height : 44px;
+		padding-right : 13px;
+		padding-left : 13px;
+		margin: 0 auto;
+		border : 1px solid #d9d9d9;
+		border-radius: 5px;
+		display : flex;
+		align-items : center;
+}
+.input-item>input {
+		width : 100%;
+		border : none;
+		font-size : 14px;
+}
+.input-item>input:focus {
+		outline : none;
+}
+
+.input-title {
+	padding-bottom : 5px;
+}
+.input-title>label {
+		font-weight : bold;
+}
+.select-item {
+	border : none;
+	padding : 0;
+	justify-content: space-between;
+}
+.birth-select {
+	width : 30%;
+	height : 100%;
+	border : 1px solid #d9d9d9;
+}
+button {
+	background-color: #0064FF;
+	border : none;
+	border-radius: 5px;
+	font-size : 16px;
+	font-weight : bold;
+	color : white;
+	width : 100%;
+	height : 50px;
+}
+.input-addr {
+	margin-bottom : 10px;
+}
+.button-addr {
+	height : 80%;
+	border-radius : 5px;
+}
+.select-domain {
+	height : 80%;
+}

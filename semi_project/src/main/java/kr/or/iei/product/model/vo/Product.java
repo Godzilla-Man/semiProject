@@ -30,5 +30,8 @@ public class Product {
     private int productQuantity;	   // 상품 수량(1 : 판매 가능/ 0 : 불가)
     
     private String filePath;			//상품의 이미지 파일 경로
+    
+    // 25-05-22 ★동주★ 셀러 닉네임 값 추가 
+    private String sellerNickname; 	    //판매자 셀러 닉네임
 
 }

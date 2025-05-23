@@ -33,8 +33,11 @@
             <div class="summary-group">
                 <h3 class="summary-group-title">배송 방법</h3>                
                 <c:if test="${product.tradeMethodCode  == 'M1'}">
+                	<p>배송비 무료</p>
+                </c:if>
+                <c:if test="${product.tradeMethodCode  == 'M2'}">
                 	<p>선불(일반 택배)</p>
-                </c:if>                
+                </c:if>                  
                 <c:if test="${product.tradeMethodCode  == 'M3'}">
                 	<p>착불(배송 기사님께 직접 결제)</p>
                 </c:if>              
@@ -44,11 +47,11 @@
                 <h3 class="summary-group-title">배송 정보</h3>
                 
                 <!-- 추후 회원 정보 연결하여 불러와야할 영역!!! -->
-                <p>카와키타사이카</p>
-                <p>010-1234-5678</p>
+                <p>${loginMember.memberName}</p>
+                <p>${loginMember.memberPhone}</p>
                 
                 <!-- 회원 정보 불러오고 주소 수정 기능 버튼 추가 삽입 필요! -->
-                <p>(12345) 서울시 줍줍구 줍줍로 123, 101동 101호</p>
+                <p>${loginMember.memberAddr}</p>
             </div>
             
             <div class="summary-group">
@@ -88,7 +91,10 @@
             <div class="summary-item">
                 <span class="summary-label">배송비</span>
                 <span class="summary-value">
-					<c:if test="${product.tradeMethodCode  == 'M1'}">
+                	<c:if test="${product.tradeMethodCode  == 'M1'}">
+	                	<span>배송비 무료</span>
+	                </c:if>                 
+					<c:if test="${product.tradeMethodCode  == 'M2'}">
 	                	<span>5,000 원</span>
 	                </c:if>                
 	                <c:if test="${product.tradeMethodCode  == 'M3'}">

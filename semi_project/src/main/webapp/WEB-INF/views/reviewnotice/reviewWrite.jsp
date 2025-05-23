@@ -1,367 +1,386 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>스타일 올리기</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #fff;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: auto;
-    }
-
-    h2 {
-      text-align: center;
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 10px;
-    }
-
-    label {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    #title, textarea {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
-      border: 1px solid #aaa;
-      border-radius: 4px;
-    }
-
-    textarea {
-      resize: vertical;
-    }
-
-    .image-preview {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .image-box {
-      position: relative;
-      width: 120px;
-      height: 120px;
-      border: 2px dashed #aaa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #aaa;
-      font-size: 14px;
-      cursor: pointer;
-      background-color: #fafafa;
-    }
-
-    .image-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .image-box.add {
-      font-size: 32px;
-      font-weight: bold;
-      color: #555;
-      border-style: solid;
-    }
-
-    .remove-btn, .edit-btn {
-      position: absolute;
-      top: 2px;
-      width: 20px;
-      height: 20px;
-      font-size: 12px;
-      border: none;
-      cursor: pointer;
-      color: white;
-      border-radius: 3px;
-    }
-
-    .remove-btn {
-      right: 2px;
-      background: red;
-    }
-
-    .edit-btn {
-      left: 2px;
-      background: #007bff;
-    }
-
-    .submit-buttons {
-      text-align: right;
-      margin: 20px 0;
-    }
-
-    .submit-buttons > button {
-      padding: 8px 16px;
-      margin-left: 10px;
-      font-size: 14px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    /* 카테고리 선택 관련 스타일 */
-    .form-row.category-row {
-      margin-top: 30px;
-    }
-
-    .form-row.category-row .category-col {
-      width: 150px;
-      height: 200px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      box-sizing: border-box;
-      background-color: #fff;
-      overflow-y: auto;
-    }
-
-    .form-row.category-row .category-col ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    .form-row.category-row .category-col li {
-      cursor: pointer;
-      padding: 6px 0;
-      font-size: 14px;
-      color: #000;
-      transition: color 0.2s;
-    }
-
-    .form-row.category-row .category-col li:hover {
-      text-decoration: underline;
-      color: #007acc;
-    }
-
-    .form-row.category-row .category-col li.active {
-      font-weight: bold;
-      color: #d60000;
-    }
-
-    #selectedCategory {
-      font-size: 14px;
-      color: #d60000;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <title>스타일 후기 작성</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        html { box-sizing: border-box; }
+        *, *:before, *:after { box-sizing: inherit; }
+        body {
+            font-family: "Noto Sans KR", "Arial", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+            color: #333;
+            font-size: 28px;
+        }
+        .review-form-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px 40px;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .review-form-container form {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+        .form-group {
+            /* margin-bottom: 15px; */
+        }
+        .review-form-container label, .form-group .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #222;
+        }
+        .review-form-container input[type="text"],
+        .review-form-container textarea {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1em;
+            font-family: 'Noto Sans KR', sans-serif;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            box-sizing: border-box;
+            resize: vertical;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .review-form-container input[type="text"]:focus,
+        .review-form-container textarea:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        input[type="file"]#files {
+            display: none;
+        }
+        .image-preview {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px dashed #ced4da;
+            border-radius: 5px;
+            min-height: 120px;
+            align-items: center;
+        }
+        .image-preview > div:not(.add-image-btn) {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            overflow: hidden;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        .image-preview button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0,0,0,0.5);
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            line-height: 24px;
+            text-align: center;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+        .image-preview button:hover {
+            background-color: rgba(220, 53, 69, 0.9);
+        }
+        .image-preview .add-image-btn {
+            font-size: 36px;
+            color: #adb5bd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+            border: 2px dashed #adb5bd;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+            transition: border-color 0.2s ease, color 0.2s ease;
+            background-color: #f8f9fa;
+        }
+        .image-preview .add-image-btn:hover {
+            border-color: #007bff;
+            color: #007bff;
+        }
+        .category-col li.selected,
+        .category-col li.active {
+            font-weight: 600;
+            color: #007bff;
+            background-color: #e6f7ff;
+        }
+        #selectedCategoryLabel {
+            display: block;
+            font-size: 0.9em;
+            color: #007bff;
+            font-weight: 500;
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #e6f7ff;
+            border: 1px solid #b3e5fc;
+            border-radius: 4px;
+            min-height: 20px; /* 내용 없을 때도 높이 유지 */
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+            padding: 10px;
+            border: 1px solid red;
+            background-color: #ffebee;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 25px;
+        }
+        button.submit-btn,
+        button.cancel-btn {
+            font-family: 'Noto Sans KR', sans-serif;
+            color: white;
+            font-weight: 500;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            font-size: 1em;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        button.submit-btn {
+            background-color: #007bff;
+        }
+        button.submit-btn:hover {
+            background-color: #0056b3;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+        button.cancel-btn {
+            background-color: #6c757d;
+        }
+        button.cancel-btn:hover {
+            background-color: #545b62;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+        @media (max-width: 768px) {
+            .review-form-container {
+                margin: 20px 15px;
+                padding: 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .category-container {
+                flex-direction: column;
+            }
+            .category-col {
+                width: 100%;
+                margin-bottom: 12px;
+                min-height: 150px;
+                height: auto;
+            }
+            .image-preview > div:not(.add-image-btn),
+            .image-preview .add-image-btn {
+                width: calc(50% - 6px);
+                height: auto;
+                aspect-ratio: 1 / 1;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            button.submit-btn,
+            button.cancel-btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-<!-- 헤더 영역: 상단 로고 및 메뉴 -->
-<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
-	<div class="container">
-  	<h2>스타일 올리기</h2>
+    <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
-  	<form id="uploadForm" action="${pageContext.request.contextPath}/review/write" method="post" enctype="multipart/form-data">
+    <div class="review-form-container">
+        <h1>스타일 후기 작성</h1>
 
-    <label for="title">제목</label>
-    <input type="text" id="title" name="title" maxlength="20" placeholder="최대 20자 가능합니다. / 스타일을 자랑해보세요.">
+        <c:if test="${not empty errorMsg}">
+            <p class="error-message"><c:out value="${errorMsg}"/></p>
+        </c:if>
 
-    <label for="content">내용</label>
-    <textarea id="content" name="content" rows="4" maxlength="200" placeholder="최대 200자 가능합니다. / 스타일을 자랑해보세요."></textarea>
+        <form action="${pageContext.request.contextPath}/review/write" method="post" enctype="multipart/form-data" onsubmit="return validateForm();">
+            <div class="form-group">
+                <label for="orderNo">주문번호</label>
+                <input type="text" id="orderNo" name="orderNo" placeholder="리뷰를 작성할 주문의 주문번호 (예: O2405220001)" value="<c:out value='${reviewNotice.orderNo}'/>" required>
+            </div>
 
-    <label>이미지</label>
-    <div class="image-preview" id="imagePreview">
-      <div class="image-box add" id="addImageBox">+</div>
-    </div>
-    <input type="file" id="imageInput" name="upfile" accept="image/*" multiple hidden>
-    <small>가장 먼저 등록한 이미지가 썸네일입니다. (최대 5장)</small>
+            <div class="form-group">
+                <label for="postTitle">제목</label>
+                <input type="text" id="postTitle" name="postTitle" value="<c:out value='${reviewNotice.postTitle}'/>" required>
+            </div>
 
-    <br><br>
+            <div class="form-group">
+                <label for="postContent">내용</label>
+                <textarea id="postContent" name="postContent" rows="10" required><c:out value='${reviewNotice.postContent}'/></textarea>
+            </div>
 
-    <label>댓글 기능</label>
-    <label style="font-weight : normal;"><input type="radio" name="commentEnabled" value="Y" checked> 댓글기능 활성화</label>
-    <label style="font-weight : normal;"><input type="radio" name="commentEnabled" value="N"> 댓글기능 비활성화</label>
+            <div class="form-group">
+                <label for="files">상품 이미지 (최대 5장)</label>
+                <input type="file" id="files" name="files" multiple accept="image/*">
+                <div class="image-preview" id="imagePreview"></div>
+            </div>
 
-    <br><br>
-
-    <!-- 카테고리 영역 -->
-    <div class="form-row category-row">
-      <label class="form-label">카테고리</label>
-      <div class="category-container" style="display: flex; gap: 20px;">
-        <div class="category-col" id="category-level1">
-          <ul>
-            <li data-value="남성">1. 남성</li>
-            <li data-value="여성">2. 여성</li>
-            <li data-value="공용">3. 공용</li>
-          </ul>
-        </div>
-        <div class="category-col" id="category-level2">
-          <ul id="midCategoryList"></ul>
-        </div>
-        <div class="category-col" id="category-level3">
-          <ul id="subCategoryList"></ul>
-        </div>
-      </div>
-      <div id="selectedCategory">현재 설정한 카테고리:</div>
+            <div class="button-group">
+                <button type="button" class="cancel-btn" onclick="history.back();">취소</button>
+                <button type="submit" class="submit-btn">작성 완료</button>
+            </div>
+        </form>
     </div>
 
-    <input type="hidden" name="categoryCode" id="categoryCode">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 이미지 업로드 JS
+            let selectedFiles = [];
+            const filesInput = document.getElementById('files');
+            const imagePreview = document.getElementById('imagePreview');
 
-    <div class="submit-buttons">
-      <button type="submit">등록하기</button>
-    </div>
-
-  </form>
-</div>
-
-<!-- Footer Include -->
-<jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
-<!-- JavaScript (생략된 부분 없이 완성된 버전 필요시 다시 요청해주세요) -->
-<script>
-  const imageInput = document.getElementById("imageInput");
-  const imagePreview = document.getElementById("imagePreview");
-  const addImageBox = document.getElementById("addImageBox");
-  let imageCount = 0;
-
-  addImageBox.addEventListener("click", () => {
-    if (imageCount >= 5) {
-      alert("이미지는 최대 5개까지 등록 가능합니다.");
-      return;
-    }
-    imageInput.click();
-  });
-
-  imageInput.addEventListener("change", function () {
-    const files = Array.from(this.files);
-    files.forEach(file => {
-      if (imageCount >= 5) return;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const imgBox = document.createElement("div");
-        imgBox.className = "image-box";
-        imgBox.innerHTML = `
-          <img src="${e.target.result}" alt="미리보기">
-          <button class="remove-btn" title="삭제">×</button>
-          <button class="edit-btn" title="변경">✎</button>
-        `;
-        imgBox.querySelector(".remove-btn").addEventListener("click", () => {
-          imgBox.remove();
-          imageCount--;
-        });
-        imgBox.querySelector(".edit-btn").addEventListener("click", () => {
-          const tempInput = document.createElement("input");
-          tempInput.type = "file";
-          tempInput.accept = "image/*";
-          tempInput.onchange = (e) => {
-            const newFile = e.target.files[0];
-            if (newFile) {
-              const newReader = new FileReader();
-              newReader.onload = (ev) => {
-                imgBox.querySelector("img").src = ev.target.result;
-              };
-              newReader.readAsDataURL(newFile);
-            }
-          };
-          tempInput.click();
-        });
-        imagePreview.insertBefore(imgBox, addImageBox);
-        imageCount++;
-      };
-      reader.readAsDataURL(file);
-    });
-    this.value = "";
-  });
-
-  // 카테고리 JS 코드 (동일 유지)
-  document.addEventListener('DOMContentLoaded', () => {
-    const level1Items = document.querySelectorAll('#category-level1 li');
-    const midCategoryList = document.getElementById('midCategoryList');
-    const subCategoryList = document.getElementById('subCategoryList');
-    const selectedCategory = document.getElementById('selectedCategory');
-
-    const midCategories = {
-      '남성': [{code:'B1',name:'남성 아우터'},{code:'B2',name:'남성 상의'},{code:'B3',name:'남성 하의'},{code:'B4',name:'남성 악세사리'}],
-      '여성': [{code:'B5',name:'여성 아우터'},{code:'B6',name:'여성 상의'},{code:'B7',name:'여성 하의'},{code:'B8',name:'여성 악세사리'}],
-      '공용': [{code:'B9',name:'공용 아우터'},{code:'B10',name:'공용 상의'},{code:'B11',name:'공용 하의'},{code:'B12',name:'공용 악세사리'}]
-    };
-
-    const subCategories = {
-      'B1': [{code:'C01',name:'남성 점퍼'},{code:'C02',name:'남성 자켓'},{code:'C03',name:'남성 코트'},{code:'C04',name:'남성 패딩'}],
-      'B2': [{code:'C05',name:'남성 긴팔티'},{code:'C06',name:'남성 반팔티'},{code:'C07',name:'남성 니트'},{code:'C08',name:'남성 후드'},{code:'C09',name:'남성 셔츠'}],
-      'B3': [{code:'C10',name:'남성 데님팬츠'},{code:'C11',name:'남성 정장팬츠'},{code:'C12',name:'남성 반바지'}],
-      'B4': [{code:'C13',name:'남성 신발'},{code:'C14',name:'남성 목걸이'},{code:'C15',name:'남성 반지'},{code:'C16',name:'남성 모자'}],
-      'B5': [{code:'C17',name:'여성 점퍼'},{code:'C18',name:'여성 자켓'},{code:'C19',name:'여성 코트'},{code:'C20',name:'여성 패딩'}],
-      'B6': [{code:'C21',name:'여성 긴팔티'},{code:'C22',name:'여성 반팔티'},{code:'C23',name:'여성 니트'},{code:'C24',name:'여성 후드'},{code:'C25',name:'여성 셔츠'}],
-      'B7': [{code:'C26',name:'여성 데님팬츠'},{code:'C27',name:'여성 정장팬츠'},{code:'C28',name:'여성 반바지'}],
-      'B8': [{code:'C29',name:'여성 신발'},{code:'C30',name:'여성 목걸이'},{code:'C31',name:'여성 반지'},{code:'C32',name:'여성 모자'}],
-      'B9': [{code:'C33',name:'공용 점퍼'},{code:'C34',name:'공용 자켓'},{code:'C35',name:'공용 코트'},{code:'C36',name:'공용 패딩'}],
-      'B10': [{code:'C37',name:'공용 긴팔티'},{code:'C38',name:'공용 반팔티'},{code:'C39',name:'공용 니트'},{code:'C40',name:'공용 후드'},{code:'C41',name:'공용 셔츠'}],
-      'B11': [{code:'C42',name:'공용 데님팬츠'},{code:'C43',name:'공용 정장팬츠'},{code:'C44',name:'공용 반바지'}],
-      'B12': [{code:'C45',name:'공용 신발'},{code:'C46',name:'공용 목걸이'},{code:'C47',name:'공용 반지'},{code:'C48',name:'공용 모자'}]
-    };
-
-    let selectedMain = '', selectedMid = '', selectedSub = '';
-
-    function updateCategoryText() {
-      const categoryParts = [selectedMain, selectedMid, selectedSub].filter(Boolean);
-      selectedCategory.textContent = "현재 설정한 카테고리: " + categoryParts.join(" / ");
-    }
-
-    level1Items.forEach(item => {
-      item.addEventListener('click', () => {
-        level1Items.forEach(li => li.classList.remove('active'));
-        item.classList.add('active');
-        selectedMain = item.dataset.value;
-        selectedMid = '';
-        selectedSub = '';
-        midCategoryList.innerHTML = '';
-        subCategoryList.innerHTML = '';
-
-        const mids = midCategories[selectedMain];
-        mids.forEach(mid => {
-          const li = document.createElement('li');
-          li.textContent = mid.name;
-          li.dataset.code = mid.code;
-          li.dataset.name = mid.name;
-          li.classList.add('mid-category-item');
-          li.addEventListener('click', () => {
-            document.querySelectorAll('.mid-category-item').forEach(el => el.classList.remove('active'));
-            li.classList.add('active');
-            selectedMid = li.dataset.name;
-            selectedSub = '';
-            subCategoryList.innerHTML = '';
-
-            const subs = subCategories[li.dataset.code];
-            subs.forEach(sub => {
-              const subLi = document.createElement('li');
-              subLi.textContent = sub.name;
-              subLi.dataset.name = sub.name;
-              subLi.dataset.code = sub.code;
-              subLi.classList.add('sub-category-item');
-              subLi.addEventListener('click', () => {
-                document.querySelectorAll('.sub-category-item').forEach(el => el.classList.remove('active'));
-                subLi.classList.add('active');
-                selectedSub = subLi.dataset.name;
-                document.getElementById("categoryCode").value = subLi.dataset.code;
-                updateCategoryText();
-              });
-              subCategoryList.appendChild(subLi);
+            filesInput.addEventListener('change', () => {
+                const newFiles = Array.from(filesInput.files);
+                if (newFiles.length + selectedFiles.length > 5) {
+                    alert('이미지는 최대 5장까지 업로드 가능합니다.');
+                    filesInput.value = ''; // Clear the input
+                    return;
+                }
+                selectedFiles = selectedFiles.concat(newFiles);
+                renderPreviews();
+                updateFileInput();
             });
-            updateCategoryText();
-          });
-          midCategoryList.appendChild(li);
+
+            function renderPreviews() {
+                imagePreview.innerHTML = ''; // Clear existing previews
+
+                if (selectedFiles.length < 5) {
+                    const addBtnDiv = document.createElement('div');
+                    addBtnDiv.className = 'add-image-btn';
+                    addBtnDiv.innerHTML = '+';
+                    addBtnDiv.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent event bubbling
+                        filesInput.click(); // Trigger file input click
+                    });
+                    imagePreview.appendChild(addBtnDiv);
+                }
+
+                selectedFiles.forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const previewDiv = document.createElement('div');
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+
+                        const delBtn = document.createElement('button');
+                        delBtn.innerHTML = '&times;';
+                        delBtn.type = 'button'; // Important for not submitting form
+                        delBtn.addEventListener('click', (event) => {
+                            event.stopPropagation(); // Prevent event bubbling
+                            selectedFiles = selectedFiles.filter(f => f !== file);
+                            renderPreviews();
+                            updateFileInput();
+                        });
+
+                        previewDiv.appendChild(img);
+                        previewDiv.appendChild(delBtn);
+
+                        const addButton = imagePreview.querySelector('.add-image-btn');
+                        if (addButton) {
+                            imagePreview.insertBefore(previewDiv, addButton);
+                        } else {
+                            imagePreview.appendChild(previewDiv);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            function updateFileInput() {
+                const dataTransfer = new DataTransfer();
+                selectedFiles.forEach((file) => dataTransfer.items.add(file));
+                filesInput.files = dataTransfer.files;
+            }
+
+            window.validateForm = function() {
+                const title = document.getElementById('postTitle').value.trim();
+                const postContent = document.getElementById('postContent').value.trim();
+                // const finalCategoryCodeVal = document.getElementById('categoryCode').value; // categoryCode element is not in the HTML
+                const orderNoInput = document.getElementById('orderNo');
+                const orderNoVal = orderNoInput ? orderNoInput.value.trim() : "";
+
+                if (!title) {
+                    alert('제목을 입력하세요.');
+                    document.getElementById('postTitle').focus();
+                    return false;
+                }
+                if (!postContent) {
+                    alert('내용을 입력하세요.');
+                    document.getElementById('postContent').focus();
+                    return false;
+                }
+                if (!orderNoVal) {
+                    alert('주문 번호를 입력하세요.');
+                    if (orderNoInput) orderNoInput.focus();
+                    return false;
+                }
+                // Regex for Order Number: Starts with 'O' followed by 10 digits.
+                if (orderNoVal && !/^O\d{10}$/.test(orderNoVal)) {
+                    alert('유효하지 않은 주문 번호 형식입니다. (예: O2405220001)');
+                    if (orderNoInput) orderNoInput.focus();
+                    return false;
+                }
+                if (selectedFiles.length === 0) {
+                    alert('이미지를 1장 이상 업로드해주세요.');
+                    return false;
+                }
+                if (selectedFiles.length > 5) {
+                    alert('최대 5장까지 업로드 가능합니다.');
+                    return false;
+                }
+                return true;
+            };
+
+            renderPreviews(); // Initial call to show the '+' button if no files are pre-selected
         });
-        updateCategoryText();
-      });
-    });
-  });
-</script>
+    </script>
 
-
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
 </body>
 </html>
