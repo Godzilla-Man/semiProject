@@ -31,12 +31,19 @@
 	display : flex;
 	align-items : center;
 }
+.info-item-right>li {
+	font-size: 18px;
+}
 
 .info-item-left {
 	text-align: right;
+	
 }
 .memberNickname {
 	font-size: 48px;
+	font-weight: bold;
+}
+.memberRate {
 	font-weight: bold;
 }
 

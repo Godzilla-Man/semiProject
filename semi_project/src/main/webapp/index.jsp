@@ -130,7 +130,7 @@
 						</c:otherwise>
 					</c:choose>
 				</div>
-			</div>ㅑ
+			</div>
         	<button onclick="styleReview()">+ 더보기</button>
     	</div>
     	
