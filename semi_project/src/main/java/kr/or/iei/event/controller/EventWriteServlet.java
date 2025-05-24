@@ -2,10 +2,7 @@ package kr.or.iei.event.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -17,9 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import com.oreilly.servlet.MultipartRequest;
-
-import kr.or.iei.common.KhRenamePolicy;
 import kr.or.iei.event.model.service.EventService;
 import kr.or.iei.event.model.vo.Event;
 import kr.or.iei.file.model.vo.Files;
@@ -35,7 +29,7 @@ import kr.or.iei.file.model.vo.Files;
 	)
 public class EventWriteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -47,6 +41,7 @@ public class EventWriteServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String eventWriter = request.getParameter("eventWriter"); //회원 번호
 		String eventTitle = request.getParameter("eventTitle"); //게시글 제목
@@ -55,8 +50,10 @@ public class EventWriteServlet extends HttpServlet {
 		 // 파일 저장 경로 (서버 내 실제 경로)
         String uploadPath = getServletContext().getRealPath("/resources/upload/event");
         File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) uploadDir.mkdirs();
-		
+        if (!uploadDir.exists()) {
+			uploadDir.mkdirs();
+		}
+
         // 업로드된 이미지 파일 리스트 수집
         List<Files> fileList = new ArrayList<>();
         for (Part part : request.getParts()) {
@@ -75,20 +72,20 @@ public class EventWriteServlet extends HttpServlet {
                 fileList.add(file);
             }
         }
-		
+
 		//3. 로직
 		Event event = new Event();
 		event.setMemberNo(eventWriter);
 		event.setEventTitle(eventTitle);
 		event.setEventContent(eventContent);
-		
+
 		EventService service = new EventService();
 		int result = service.insertEvent(event, fileList);
-		
+
 		//4. 결과처리
 		//4.1 이동할 페이지 경로
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/common/msg.jsp");
-		
+
 		//4.2 화면 구현에 필요한 데이터 등록
 		if(result > 0) {
 			request.setAttribute("title", "성공");
@@ -99,9 +96,9 @@ public class EventWriteServlet extends HttpServlet {
 			request.setAttribute("msg", "게시글 작성 중 오류가 발생했습니다.");
 			request.setAttribute("icon", "error");
 		}
-		
+
 		request.setAttribute("loc", "/event/list?reqPage=1");
-		
+
 		//4.3 페이지 이동
 		view.forward(request, response);
 	}
@@ -109,6 +106,7 @@ public class EventWriteServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

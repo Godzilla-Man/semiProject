@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/member/checkPw")
 public class CheckPwFrmServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -27,11 +27,12 @@ public class CheckPwFrmServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//1. 인코딩 - 필터에서 처리
 		//2. 클라이언트가 전송한 값 추출 - X
 		//3. 로직 처리 - X
-		
+
 		//4. 결과 처리
 			//4.1 이동할 JSP 페이지 경로 지정
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/member/checkPw.jsp");
@@ -43,6 +44,7 @@ public class CheckPwFrmServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

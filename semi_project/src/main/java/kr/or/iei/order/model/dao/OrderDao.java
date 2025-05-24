@@ -1,7 +1,6 @@
 package kr.or.iei.order.model.dao;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,37 +11,38 @@ import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.order.model.vo.Purchase;
 import kr.or.iei.product.model.vo.Product;
 
+
 public class OrderDao {
 
 	public Product selectOrderProduct(Connection conn, String productId) {
-		
+
 		//자원 반환 객체 선언
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
-		
+
 		//수행할 SQL 작성
 		String query = "SELECT P.*, M.MEMBER_NICKNAME AS SELLER_NICKNAME " +
                 "FROM TBL_PROD P " +
                 "JOIN TBL_MEMBER M ON P.MEMBER_NO = M.MEMBER_NO " +
-                "WHERE P.PRODUCT_NO = ?";		
-		
+                "WHERE P.PRODUCT_NO = ?";
+
 		//결과를 관리할 자바 객체
 		Product p = null;
-		
+
 		//실제 SQL 수행 후 결과를 받아올 객체 생성
 		try {
 			pstmt = conn.prepareStatement(query);
-			
+
 			//위치 홀더에 입력 값 셋팅
 			pstmt.setString(1, productId); //첫번째 위치 홀더 값
-			
-			//SQL 수행하고 결과 받기 
+
+			//SQL 수행하고 결과 받기
 			rset = pstmt.executeQuery();
-			
+
 			//결과 처리
 			if(rset.next()) {
 				p = new Product(); // prodcdut 객체 인스턴스화 > 안하면 p는 null 에러 발생!!
-				
+
 				p.setProductNo(rset.getString("product_no"));
 				p.setMemberNo(rset.getString("member_no"));
 				p.setProductName(rset.getString("product_name"));
@@ -57,18 +57,18 @@ public class OrderDao {
 				//조인시킨 판매자 닉넴!
 				p.setSellerNickname(rset.getString("seller_nickname"));
 			}
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			JDBCTemplate.close(rset);
 			JDBCTemplate.close(pstmt);
-		}		
-		
+		}
+
 		return p;
 	}
-	
+
 	//orderId를 생성하고 반환하는 메소드
 	private String generateOrderId(Connection conn) {
 	    PreparedStatement pstmtSeq = null;
@@ -76,7 +76,7 @@ public class OrderDao {
         // SQL에서 직접 ORDER_NO 형식에 맞게 생성 및 조회
         String querySeq = "SELECT 'O' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD(SEQ_PURCHASE.NEXTVAL, 4, '0') AS ORDER_NO FROM DUAL";
         String newOrderId = null;
-        	
+
     	try {
 			pstmtSeq = conn.prepareStatement(querySeq);
 			rsetSeq = pstmtSeq.executeQuery();
@@ -89,10 +89,10 @@ public class OrderDao {
 		} finally {
 			JDBCTemplate.close(rsetSeq);
 			JDBCTemplate.close(pstmtSeq);
-		}    	
+		}
         return newOrderId;
-	}	
-	
+	}
+
 	public String createOrderId(Connection conn, Purchase readyOrder) {
         PreparedStatement pstmt = null;
         int insertResult = 0;
@@ -113,7 +113,7 @@ public class OrderDao {
 
             // 2. INSERT 실행
             pstmt = conn.prepareStatement(query);
-            
+
             pstmt.setString(1, newOrderId); // 생성된 ORDER_NO
             pstmt.setString(2, readyOrder.getProductNo());
             pstmt.setString(3, readyOrder.getSellerMemberNo());
@@ -123,7 +123,7 @@ public class OrderDao {
             pstmt.setInt(7, readyOrder.getOrderAmount());
             pstmt.setString(8, readyOrder.getPgProvider());
             pstmt.setString(9, readyOrder.getPgTransactionId());
-            pstmt.setString(10, readyOrder.getPurchaseStatusCode());        
+            pstmt.setString(10, readyOrder.getPurchaseStatusCode());
 
             insertResult = pstmt.executeUpdate();
 
@@ -146,14 +146,14 @@ public class OrderDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		Purchase purchase = null;
-		
+
 		String query = "select * from tbl_purchase where order_no = ?"; //주문번호로 구매 정보 조회
-		
+
 		try {
 			pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, orderId);
 			rset = pstmt.executeQuery();
-						
+
 			if (rset.next()) {
 				purchase = new Purchase();
 				purchase.setOrderNo(rset.getString("ORDER_NO"));
@@ -166,28 +166,28 @@ public class OrderDao {
 				purchase.setPgProvider(rset.getString("PG_PROVIDER"));
 				purchase.setPgTransactionId(rset.getString("PG_TRANSACTION_ID"));
 				purchase.setDealDate(rset.getDate("DEAL_DATE"));
-				purchase.setPurchaseStatusCode(rset.getString("PURCHASE_STATUS_CODE"));				
-			}			
-			
+				purchase.setPurchaseStatusCode(rset.getString("PURCHASE_STATUS_CODE"));
+			}
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			JDBCTemplate.close(rset);
 			JDBCTemplate.close(pstmt);
-		}		
-		
+		}
+
 		return purchase;
 	}
 
 	public static int updatePurcahseStatusInfo(Connection conn, String orderId, String pgProvider, String paymentKey,
 			String string, int paidAmount) {
-		
+
 		PreparedStatement pstmt = null;
 		int result = 0;
-		
+
 		String query = "UPDATE TBL_PURCHASE SET PG_PROVIDER = ?, PG_TRANSACTION_ID = ?, PURCHASE_STATUS_CODE = ? WHERE ORDER_NO = ? AND ORDER_AMOUNT = ?";
-		
+
 		try {
 			pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, pgProvider);
@@ -195,16 +195,16 @@ public class OrderDao {
 			pstmt.setString(3, "PS01");
 			pstmt.setString(4, orderId);
 			pstmt.setInt(5, paidAmount);
-			
-			result = pstmt.executeUpdate();		
-			
+
+			result = pstmt.executeUpdate();
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			JDBCTemplate.close(pstmt);
 		}
-		
+
 		return result;
 	}
 
@@ -220,7 +220,7 @@ public class OrderDao {
 	        pstmt.setString(2, memberNo);
 	        rset = pstmt.executeQuery();
 	        if (rset.next()) {
-	            purchase = new Purchase();	            
+	            purchase = new Purchase();
 	            purchase.setOrderNo(rset.getString("ORDER_NO"));
 	            purchase.setProductNo(rset.getString("PRODUCT_NO"));
 	            purchase.setSellerMemberNo(rset.getString("SELLER_MEMBER_NO"));
@@ -258,9 +258,9 @@ public class OrderDao {
 	    }
 	    return result;
 	}
-	
+
 	// 구매내역 정보룰 갖고 오기 위한 DAO!!
-	public List<Purchase> selectPurchaseListByBuyerNo(Connection conn, String buyerMemberNo) {	
+	public List<Purchase> selectPurchaseListByBuyerNo(Connection conn, String buyerMemberNo) {
 	    List<Purchase> list = new ArrayList<>();
 	    PreparedStatement pstmt = null;
 	    ResultSet rset = null;
@@ -272,7 +272,7 @@ public class OrderDao {
 	                   "    PROD.PRODUCT_NAME, PROD.PRODUCT_PRICE, " + // 상품명, 상품 가격
 	                   "    SELLER.MEMBER_NICKNAME AS SELLER_NICKNAME, " + // 판매자 닉네임
 	                   "    PS.STATUS_NAME AS PURCHASE_STATUS_NAME " +   // 주문 상태명
-	                   
+
 	                   "FROM TBL_PURCHASE P " +
 	                   "JOIN TBL_PROD PROD ON P.PRODUCT_NO = PROD.PRODUCT_NO " +
 	                   "JOIN TBL_MEMBER SELLER ON P.SELLER_MEMBER_NO = SELLER.MEMBER_NO " +
@@ -286,8 +286,8 @@ public class OrderDao {
 	        rset = pstmt.executeQuery();
 
 	        while (rset.next()) {
-	            Purchase p = new Purchase(); 
-	            
+	            Purchase p = new Purchase();
+
 	            p.setOrderNo(rset.getString("ORDER_NO"));
 	            p.setProductNo(rset.getString("PRODUCT_NO"));
 	            p.setSellerMemberNo(rset.getString("SELLER_MEMBER_NO"));
@@ -299,14 +299,14 @@ public class OrderDao {
 	            p.setPgTransactionId(rset.getString("PG_TRANSACTION_ID"));
 	            p.setDealDate(rset.getDate("DEAL_DATE"));
 	            p.setPurchaseStatusCode(rset.getString("PURCHASE_STATUS_CODE"));
-	            
-	            // 조인된 추가 정보 설정 
+
+	            // 조인된 추가 정보 설정
 	            p.setProductName(rset.getString("PRODUCT_NAME"));
 	            p.setProductPrice(rset.getInt("PRODUCT_PRICE")); // 상품 원가
 	            p.setSellerNickname(rset.getString("SELLER_NICKNAME"));
-	            p.setPurchaseStatusName(rset.getString("PURCHASE_STATUS_NAME")); 	            
-	            list.add(p);            
-	            
+	            p.setPurchaseStatusName(rset.getString("PURCHASE_STATUS_NAME"));
+	            list.add(p);
+
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
@@ -325,7 +325,7 @@ public class OrderDao {
 	                   "SET DELIVERY_COMPANY_CODE = ?, " + // 택배사 코드 저장
 	                   "    DELIVERY_COMPANY_NAME = ?, " + // 택배사 명 저장
 	                   "    TRACKING_NUMBER = ?, " +
-	                   "    PURCHASE_STATUS_CODE = 'S05', " +
+	                   "    PURCHASE_STATUS_CODE = 'PS05', " +
 	                   "    SHIPMENT_DATE = SYSDATE " +
 	                   "WHERE ORDER_NO = ? " +
 	                   "  AND SELLER_MEMBER_NO = ? " +
@@ -337,7 +337,7 @@ public class OrderDao {
 	        // 택배사 코드가 'ETC'이거나 비어있고, 택배사 명이 있는 경우 (기타 직접 입력)
 	        // 또는 택배사 코드가 있고, 택배사 명도 있는 경우 (선택)
 	        // TBL_DELIVERY_COMPANY와 연동한다면, 코드는 필수, 이름은 TBL_DELIVERY_COMPANY에서 가져오거나 기타일때만 직접 저장
-	        
+
 	        // 여기서는 클라이언트에서 전달된 값을 그대로 사용한다고 가정
 	        if (deliveryCompanyCode != null && !deliveryCompanyCode.isEmpty() && !deliveryCompanyCode.equals("ETC")) {
 	            // TBL_DELIVERY_COMPANY에 해당 코드가 있는지 확인하는 로직이 있으면 더 좋음
@@ -362,7 +362,33 @@ public class OrderDao {
 	        JDBCTemplate.close(pstmt);
 	    }
 	    return result;
-	}	
-	
-	
+	}
+
+	public int updatePurchaseStatusForBuyer(Connection conn, String orderNo, String memberNo, String string) {
+		PreparedStatement pstmt = null;
+	    int result = 0;
+	    // 구매자 본인이고, 현재 상태가 '배송완료'(PS06)일 때만 '거래완료'(newStatusCode)로 변경
+	    String query = "UPDATE TBL_PURCHASE " +
+	                   "SET PURCHASE_STATUS_CODE = ? " +	                   
+	                   "WHERE ORDER_NO = ? " +
+	                   "  AND BUYER_MEMBER_NO = ? " +
+	                   "  AND PURCHASE_STATUS_CODE = 'PS06'"; // 'PS06'배송완료 상태 코드
+
+	    try {
+	        pstmt = conn.prepareStatement(query);
+	        pstmt.setString(1, "PS07"); //PS07 - 거래완료
+	        pstmt.setString(2, orderNo);
+	        pstmt.setString(3, memberNo);
+
+	        result = pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        JDBCTemplate.close(pstmt);
+	    }
+	    return result;
+		
+	}
+
+
 }

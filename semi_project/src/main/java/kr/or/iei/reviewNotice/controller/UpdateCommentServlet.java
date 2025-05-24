@@ -1,12 +1,14 @@
 package kr.or.iei.reviewNotice.controller;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import kr.or.iei.member.model.vo.Member;
 import kr.or.iei.reviewNotice.model.service.ReviewNoticeService;
 
@@ -14,7 +16,8 @@ import kr.or.iei.reviewNotice.model.service.ReviewNoticeService;
 public class UpdateCommentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String stylePostNo = request.getParameter("stylePostNo");
         if (stylePostNo != null && !stylePostNo.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/review/detail?stylePostNo=" + stylePostNo + "&error=잘못된 접근입니다.");
@@ -23,7 +26,8 @@ public class UpdateCommentServlet extends HttpServlet {
         }
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession(false);
         String stylePostNo = request.getParameter("stylePostNo");
@@ -51,11 +55,6 @@ public class UpdateCommentServlet extends HttpServlet {
 
         ReviewNoticeService service = new ReviewNoticeService();
         int result = service.updateComment(commentNo, content, loginMember.getMemberNo());
-        
-        // String queryResult = "";
-        // if(result == 0) queryResult = "&commentUpdateResult=fail";
-        // else if(result == -1) queryResult = "&commentUpdateResult=authFail";
-        // else queryResult = "&commentUpdateResult=success";
 
         response.sendRedirect(request.getContextPath() + "/review/detail?stylePostNo=" + stylePostNo /*+ queryResult*/);
     }

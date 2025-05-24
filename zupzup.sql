@@ -1,0 +1,322 @@
+-- system 계정으로 접속 후 계정 생성
+create user zupzup identified by 1234;
+grant connect, resource to zupzup;
+
+-- zupzup 계정으로 접속
+-- 회원 정보 테이블(TBL_MEMBER)
+CREATE TABLE TBL_MEMBER (
+    MEMBER_NO VARCHAR2(11) PRIMARY KEY,             -- 회원 번호 : M + yymmdd + 0001 형식
+    MEMBER_ID VARCHAR2(30) UNIQUE NOT NULL,         -- 회원 아이디
+    MEMBER_PW VARCHAR2(30) NOT NULL,                -- 회원 비밀번호
+    MEMBER_NICKNAME VARCHAR2(30) UNIQUE NOT NULL,   -- 회원 닉네임
+    MEMBER_NAME VARCHAR2(30) NOT NULL,              -- 회원 이름
+    MEMBER_BIRTH DATE NOT NULL,                     -- 회원 생년월일
+    MEMBER_PHONE CHAR(13) NOT NULL,                 -- 회원 전화번호
+    MEMBER_ADDR VARCHAR2(300) NOT NULL,             -- 회원 주소
+    MEMBER_EMAIL VARCHAR2(300) NOT NULL,            -- 회원 이메일
+    JOIN_DATE DATE DEFAULT SYSDATE NOT NULL,        -- 회원 가입일
+    MEMBER_RATE NUMBER DEFAULT 0 NOT NULL           -- 회원 평점
+);
+
+-- 회원 번호 생성 시 사용할 시퀀스
+CREATE SEQUENCE SEQ_MEMBER
+MAXVALUE 9999
+CYCLE;
+
+-- 상품 카테고리 테이블(TBL_PROD_CATEGORY)
+CREATE TABLE TBL_PROD_CATEGORY (
+    CATEGORY_CODE CHAR(3) PRIMARY KEY,      -- 카테고리 코드
+    CATEGORY_NAME VARCHAR2(30) NOT NULL,    -- 카테고리 이름
+    PAR_CATEGORY_CODE CHAR(3)               -- 상위 카테고리 코드
+);
+
+-- 카테고리 INSERT
+INSERT INTO TBL_PROD_CATEGORY VALUES ('A01', '남성', NULL);
+INSERT INTO TBL_PROD_CATEGORY VALUES ('A02', '여성', NULL);
+INSERT INTO TBL_PROD_CATEGORY VALUES ('A03', '공용', NULL);
+INSERT INTO TBL_PROD_CATEGORY VALUES ('B01', '아우터', 'A01');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('B02', '상의', 'A01');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('B03', '하의', 'A01');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('B04', '악세사리', 'A01');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('B05', '아우터', 'A02');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('B06', '상의', 'A02');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('B07', '하의', 'A02');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('B08', '악세사리', 'A02');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('B09', '아우터', 'A03');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('B10', '상의', 'A03');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('B11', '하의', 'A03');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('B12', '악세사리', 'A03');
+
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C01', '점퍼', 'B01');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C02', '자켓', 'B01');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C03', '코트', 'B01');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C04', '패딩', 'B01');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C05', '긴팔티', 'B02');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C06', '반팔티', 'B02');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C07', '니트', 'B02');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C08', '후드', 'B02');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C09', '셔츠', 'B02');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C10', '데님팬츠', 'B03');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C11', '정장팬츠', 'B03');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C12', '반바지', 'B03');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C13', '신발', 'B04');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C14', '모자', 'B04');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C15', '목걸이', 'B04');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C16', '반지', 'B04');
+
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C17', '점퍼', 'B05');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C18', '자켓', 'B05');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C19', '코트', 'B05');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C20', '패딩', 'B05');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C21', '긴팔티', 'B06');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C22', '반팔티', 'B06');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C23', '니트', 'B06');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C24', '후드', 'B06');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C25', '셔츠', 'B06');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C26', '데님팬츠', 'B07');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C27', '정장팬츠', 'B07');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C28', '반바지', 'B07');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C29', '신발', 'B08');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C30', '모자', 'B08');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C31', '목걸이', 'B08');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C32', '반지', 'B08');
+
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C33', '점퍼', 'B09');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C34', '자켓', 'B09');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C35', '코트', 'B09');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C36', '패딩', 'B09');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C37', '긴팔티', 'B10');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C38', '반팔티', 'B10');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C39', '니트', 'B10');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C40', '후드', 'B10');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C41', '셔츠', 'B10');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C42', '데님팬츠', 'B11');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C43', '정장팬츠', 'B11');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C44', '반바지', 'B11');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C45', '신발', 'B12');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C46', '모자', 'B12');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C47', '목걸이', 'B12');
+INSERT INTO TBL_PROD_CATEGORY VALUES ('C48', '반지', 'B12');
+
+-- 배송방법 테이블(TBL_DELIVERY_FEE)
+CREATE TABLE TBL_DELIVERY_FEE (
+    TRADE_METHOD_CODE CHAR(2) PRIMARY KEY,          -- 배송방법 코드
+    TRADE_METHOD_NAME VARCHAR2(30) UNIQUE NOT NULL  -- 배송방법
+);
+
+-- 배송방법 INSERT
+INSERT INTO TBL_DELIVERY_FEE VALUES ('M1', '배송비 포함');
+INSERT INTO TBL_DELIVERY_FEE VALUES ('M2', '배송비 미포함');
+INSERT INTO TBL_DELIVERY_FEE VALUES ('M3', '배송비 착불');
+
+-- 상품상태 테이블(TBL_PROD_STATUS)
+CREATE TABLE TBL_PROD_STATUS (
+    STATUS_CODE CHAR(3) PRIMARY KEY,            -- 상품상태 코드
+    STATUS_NAME VARCHAR2(20) UNIQUE NOT NULL    -- 상품상태
+);
+
+-- 상품상태 INSERT
+INSERT INTO TBL_PROD_STATUS VALUES ('S01', '판매 중');
+INSERT INTO TBL_PROD_STATUS VALUES ('S02', '결제 완료');
+INSERT INTO TBL_PROD_STATUS VALUES ('S03', '배송 전');
+INSERT INTO TBL_PROD_STATUS VALUES ('S04', '배송 준비');
+INSERT INTO TBL_PROD_STATUS VALUES ('S05', '배송 중');
+INSERT INTO TBL_PROD_STATUS VALUES ('S06', '배송 완료');
+INSERT INTO TBL_PROD_STATUS VALUES ('S07', '거래 완료');
+INSERT INTO TBL_PROD_STATUS VALUES ('S08', '환불 신청');
+INSERT INTO TBL_PROD_STATUS VALUES ('S09', '환불 완료');
+INSERT INTO TBL_PROD_STATUS VALUES ('S10', '거래 실패');
+INSERT INTO TBL_PROD_STATUS VALUES ('S11', '취소 신청');
+INSERT INTO TBL_PROD_STATUS VALUES ('S12', '취소 완료');
+INSERT INTO TBL_PROD_STATUS VALUES ('S99', '삭제됨');
+
+-- 상품 정보 테이블(TBL_PROD)
+CREATE TABLE TBL_PROD (
+    PRODUCT_NO VARCHAR2(11) PRIMARY KEY,                                        -- 상품 번호 : P + yymmdd + 0001 형식
+    MEMBER_NO VARCHAR2(11) REFERENCES TBL_MEMBER(MEMBER_NO) ON DELETE CASCADE,  -- 회원 번호 (회원 정보 테이블, 회원 번호가 삭제되면 상품 정보도 삭제)
+    PRODUCT_NAME VARCHAR2(100) NOT NULL,                                        -- 상품명
+    PRODUCT_INTROD VARCHAR2(3000) NOT NULL,                                     -- 상품 설명
+    PRODUCT_PRICE NUMBER NOT NULL CHECK (PRODUCT_PRICE >= 0 AND PRODUCT_PRICE <= 1000000000),-- 상품 가격 (원)
+    CATEGORY_CODE CHAR(3) REFERENCES TBL_PROD_CATEGORY(CATEGORY_CODE),          -- 카테고리 코드 (카테고리 테이블)
+    TRADE_METHOD_CODE CHAR(2) REFERENCES TBL_DELIVERY_FEE(TRADE_METHOD_CODE),   -- 배송방법 코드 (배송방법 테이블)
+    STATUS_CODE CHAR(3) REFERENCES TBL_PROD_STATUS(STATUS_CODE),                -- 상품상태 코드 (상품상태 테이블)
+    ENROLL_DATE DATE DEFAULT SYSDATE NOT NULL,                                  -- 상품 등록일
+    READ_COUNT NUMBER DEFAULT 0,                                                -- 조회수
+    PRODUCT_QUANTITY NUMBER DEFAULT 1 NOT NULL,                                 -- 상품 판매 가능 여부
+    PRICE_OFFER_YN VARCHAR2(1) DEFAULT 'N' CHECK (PRICE_OFFER_YN IN ('Y', 'N')) -- 가격 제안 받기
+);
+
+COMMENT ON COLUMN TBL_PROD.PRODUCT_QUANTITY IS '상품 재고 수량(1: 재고 있음 / 0:판매 완료)';
+
+-- 상품 번호 생성 시 사용할 시퀀스
+CREATE SEQUENCE SEQ_PROD
+MAXVALUE 9999
+CYCLE;
+
+-- 주문 상태 코드 테이블
+CREATE TABLE TBL_PURCHASE_STATUS (
+    PURCHASE_STATUS_CODE VARCHAR2(4) PRIMARY KEY,
+    STATUS_NAME VARCHAR2(30) NOT NULL
+);
+
+-- 주문 상태 추가
+INSERT INTO TBL_PURCHASE_STATUS (PURCHASE_STATUS_CODE, STATUS_NAME) VALUES ('PS00', '결제대기');
+INSERT INTO TBL_PURCHASE_STATUS (PURCHASE_STATUS_CODE, STATUS_NAME) VALUES ('PS01', '결제완료');
+
+-- 상품 주문 정보 테이블(TBL_PURCHASE)
+CREATE TABLE TBL_PURCHASE (
+    ORDER_NO VARCHAR2(11) PRIMARY KEY,                              -- 주문 번호 : O + yymmdd + 0001 형식
+    PRODUCT_NO VARCHAR2(11) REFERENCES TBL_PROD(PRODUCT_NO),        -- 상품 번호 (상품 정보 테이블)
+    SELLER_MEMBER_NO VARCHAR2(11) REFERENCES TBL_MEMBER(MEMBER_NO), -- 판매자 번호(회원 정보 테이블)
+    BUYER_MEMBER_NO VARCHAR2(11) REFERENCES TBL_MEMBER(MEMBER_NO),  -- 구매자 번호(회원 정보 테이블)
+    DELIVERY_ADDR VARCHAR2(300),                                    -- 배송 주소
+    DELIVERY_FEE NUMBER DEFAULT 0 NOT NULL CHECK (DELIVERY_FEE >= 0),-- 배송비
+    ORDER_AMOUNT NUMBER NOT NULL,                                   -- 총 구매 금액
+    PG_PROVIDER VARCHAR2(20),                                       -- PG사 정보
+    PG_TRANSACTION_ID VARCHAR2(100),                                -- PG사 거래 ID 값    
+    DEAL_DATE DATE DEFAULT SYSDATE NOT NULL,                        -- 거래 일시    
+    PURCHASE_STATUS_CODE VARCHAR2(4) REFERENCES TBL_PURCHASE_STATUS(PURCHASE_STATUS_CODE) -- 주문 상태 코드
+);
+
+-- 주문 번호 생성 시 사용할 시퀀스
+CREATE SEQUENCE SEQ_PURCHASE
+MAXVALUE 9999
+CYCLE;
+
+-- 스타일 후기 게시판 테이블(TBL_STYLE_POST)
+CREATE TABLE TBL_STYLE_POST (
+    STYLE_POST_NO VARCHAR2(11) PRIMARY KEY,                     -- 게시글 번호 : S + yymmdd + 0001 형식
+    POST_TITLE VARCHAR2(100) NOT NULL,                          -- 게시글 제목
+    POST_CONTENT VARCHAR2(3000) NOT NULL,                       -- 게시글 내용
+    ORDER_NO VARCHAR2(11) REFERENCES TBL_PURCHASE(ORDER_NO),    -- 주문 번호 (상품 주문 정보 테이블)
+    POST_DATE DATE DEFAULT SYSDATE NOT NULL,                    -- 게시글 작성일
+    READ_COUNT NUMBER DEFAULT 0                                 -- 조회수
+);
+
+-- 스타일 번호 생성 시 사용할 시퀀스
+CREATE SEQUENCE SEQ_STYLE
+MAXVALUE 9999
+CYCLE;
+
+-- 공지사항 테이블(TBL_NOTICE)
+CREATE TABLE TBL_NOTICE (
+    NOTICE_NO VARCHAR2(11) PRIMARY KEY,                             -- 공지사항 번호 : N + yymmdd + 0001
+    MEMBER_NO VARCHAR2(11) REFERENCES TBL_MEMBER(MEMBER_NO),        -- 관리자 번호 (회원 정보 테이블)
+    NOTICE_TITLE VARCHAR2(100) NOT NULL,                            -- 공지사항 제목
+    NOTICE_CONTENT VARCHAR2(300) NOT NULL,                          -- 공지사항 내용
+    NOTICE_ENROLL_DATE DATE DEFAULT SYSDATE NOT NULL,               -- 게시일
+    READ_COUNT NUMBER DEFAULT 0                                     -- 조회수
+);
+
+-- 공지사항 번호 생성 시 사용할 시퀀스
+CREATE SEQUENCE SEQ_NOTICE
+MAXVALUE 9999
+CYCLE;
+
+-- 이벤트 테이블(TBL_EVENT)
+CREATE TABLE TBL_EVENT (
+    EVENT_NO VARCHAR2(11) PRIMARY KEY,                              -- 이벤트 번호 : E + yymmdd + 0001
+    MEMBER_NO VARCHAR2(11) REFERENCES TBL_MEMBER(MEMBER_NO),        -- 관리자 번호 (회원 정보 테이블)
+    EVENT_TITLE VARCHAR2(100) NOT NULL,                             -- 이벤트 제목
+    EVENT_CONTENT VARCHAR2(300) NOT NULL,                           -- 이벤트 내용
+    EVENT_ENROLL_DATE DATE DEFAULT SYSDATE NOT NULL,                -- 게시일
+    READ_COUNT NUMBER DEFAULT 0                                     -- 조회수
+);
+
+-- 이벤트 번호 생성 시 사용할 시퀀스
+CREATE SEQUENCE SEQ_EVENT
+MAXVALUE 9999
+CYCLE;
+
+-- 파일 테이블(TBL_FILE)
+CREATE TABLE TBL_FILE (
+    FILE_NO NUMBER PRIMARY KEY,                                                             -- 파일 번호
+    PRODUCT_NO VARCHAR2(11) REFERENCES TBL_PROD(PRODUCT_NO) ON DELETE CASCADE,              -- 상품 번호 (상품 정보 테이블)
+    STYLE_POST_NO VARCHAR2(11) REFERENCES TBL_STYLE_POST(STYLE_POST_NO) ON DELETE CASCADE,  -- 스타일 후기 게시글 번호 (스타일 후기 게시판 테이블)
+    NOTICE_NO VARCHAR2(11) REFERENCES TBL_NOTICE(NOTICE_NO) ON DELETE CASCADE,              -- 공지사항 번호 (공지사항 테이블)
+    EVENT_NO VARCHAR2(11) REFERENCES TBL_EVENT(EVENT_NO) ON DELETE CASCADE,                 -- 이벤트 번호 (이벤트 테이블)
+    FILE_NAME VARCHAR2(300),                                                                -- 사용자가 업로드한 파일 명칭
+    FILE_PATH VARCHAR2(300),                                                                -- 서버 내에 중복된 파일명이 존재하지 않도록 생성한 파일 명칭
+    UPLOAD_DATE DATE DEFAULT SYSDATE NOT NULL                                               -- 파일 업로드 일시
+);
+
+-- 파일 번호 생성 시 사용할 시퀀스
+CREATE SEQUENCE SEQ_FILE;
+
+-- 댓글 테이블(TBL_COMMENT)
+CREATE TABLE TBL_COMMENT (
+    COMMENT_NO NUMBER PRIMARY KEY,                                                          -- 댓글 번호
+    MEMBER_NO VARCHAR2(11) REFERENCES TBL_MEMBER(MEMBER_NO) ON DELETE CASCADE,              -- 회원 번호 (회원 정보 테이블)
+    PRODUCT_NO VARCHAR2(11) REFERENCES TBL_PROD(PRODUCT_NO) ON DELETE CASCADE,              -- 상품 번호 (상품 정보 테이블)
+    STYLE_POST_NO VARCHAR2(11) REFERENCES TBL_STYLE_POST(STYLE_POST_NO) ON DELETE CASCADE,  -- 게시글 번호 (스타일 후기 게시판 테이블)
+    CONTENT VARCHAR2(300) NOT NULL,                                                         -- 댓글 내용
+    CREATED_DATE DATE DEFAULT SYSDATE NOT NULL,                                             -- 댓글 작성일
+    PARENT_COMMENT_NO NUMBER REFERENCES TBL_COMMENT(COMMENT_NO)
+);
+
+-- 댓글 번호 생성 시 사용할 시퀀스
+CREATE SEQUENCE SEQ_COMMENT;
+
+-- 평점 테이블(TBL_USER_RATING)
+CREATE TABLE TBL_USER_RATING (
+    RATING_NO NUMBER PRIMARY KEY,                               -- 평점 번호
+    ORDER_NO VARCHAR2(11) REFERENCES TBL_PURCHASE(ORDER_NO),    -- 주문 번호 (상품 주문 정보 테이블)
+    RATING_SCORE NUMBER NOT NULL,                               -- 평점
+    RATING_DATE DATE DEFAULT SYSDATE NOT NULL                   -- 평점 일자
+);
+
+-- 평점 번호 생성 시 사용할 시퀀스
+CREATE SEQUENCE SEQ_RATING;
+
+-- 찜하기 테이블(TBL_WISHLIST)
+CREATE TABLE TBL_WISHLIST (
+    WISHLIST_NO NUMBER PRIMARY KEY,                                             -- 찜 번호
+    PRODUCT_NO VARCHAR2(11) REFERENCES TBL_PROD(PRODUCT_NO) ON DELETE CASCADE,  -- 상품 번호 (상품 정보 테이블)
+    MEMBER_NO VARCHAR2(11) REFERENCES TBL_MEMBER(MEMBER_NO) ON DELETE CASCADE,  -- 찜한 회원 번호 (회원 정보 테이블)
+    WISHLIST_DATE DATE DEFAULT SYSDATE NOT NULL                                 -- 찜한 일자
+);
+-- 회원당 제품 한개에 하나의 찜만 할 수 있도록 UNIQUE 설정
+    ALTER TABLE TBL_WISHLIST
+    ADD CONSTRAINT UQ_WISHLIST_MEMBER_PRODUCT
+    UNIQUE (MEMBER_NO, PRODUCT_NO);    -- UNIQUE 제약 설정
+
+-- 찜 번호 생성 시 사용할 시퀀스
+CREATE SEQUENCE SEQ_WISHLIST;
+
+-- 신고 사유 테이블(TBL_REPORT)
+CREATE TABLE TBL_REPORT (
+    REPORT_CODE VARCHAR2(3) PRIMARY KEY,        -- 신고 사유 코드
+    REPORT_REASON VARCHAR2(100) NOT NULL        -- 신고 사유
+);
+
+-- 신고 사유 코드 INSERT
+INSERT INTO TBL_REPORT VALUES ('RE1', '저작권 침해');
+INSERT INTO TBL_REPORT VALUES ('RE2', '상표권 침해');
+INSERT INTO TBL_REPORT VALUES ('RE3', '거래 금지 품목');
+INSERT INTO TBL_REPORT VALUES ('RE4', '청소년 유해매체물');
+
+
+-- 신고 내역 테이블(TBL_REPORT_POST)
+CREATE TABLE TBL_REPORT_POST (
+    REPORT_NO NUMBER PRIMARY KEY,                                           -- 신고 번호
+    REPORT_CODE VARCHAR2(3) REFERENCES TBL_REPORT(REPORT_CODE),             -- 신고 사유 코드 (신고 사유 테이블)
+    REPORTED_MEMBER_NO VARCHAR2(11) REFERENCES TBL_MEMBER(MEMBER_NO),       -- 신고한 회원 번호 (회원 정보 테이블)
+    PRODUCT_NO VARCHAR2(11) REFERENCES TBL_PROD(PRODUCT_NO),                -- 신고당한 상품 번호 (상품 정보 테이블)
+    REPORT_DATE DATE DEFAULT SYSDATE NOT NULL                               -- 신고 날짜
+);
+
+-- 신고 번호 생성 시 사용할 시퀀스
+CREATE SEQUENCE SEQ_REPORT;
+
+-- 블랙 리스트 테이블(TBL_BLACKLIST)
+CREATE TABLE TBL_BLACKLIST (
+    BLACK_NO NUMBER PRIMARY KEY,                                -- 블랙 번호
+    REPORT_NO NUMBER REFERENCES TBL_REPORT_POST(REPORT_NO),     -- 신고 번호 (신고 내역 테이블)
+    BLACK_REASON VARCHAR2(300) NOT NULL,                        -- 블랙 사유
+    BLACK_DATE DATE DEFAULT SYSDATE NOT NULL                    -- 블랙 등록일
+);
+
+-- 블랙 번호 생성 시 사용할 시퀀스
+CREATE SEQUENCE SEQ_BLACK;
+
+COMMIT;

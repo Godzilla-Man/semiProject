@@ -18,7 +18,7 @@ import kr.or.iei.member.model.vo.Member;
 @WebServlet("/admin/searchMember")
 public class SearchMemberServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -30,22 +30,24 @@ public class SearchMemberServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String memberNo = request.getParameter("memberNo");
-		
+
 		AdminServcie service = new AdminServcie();
 		Member member = service.searchOneMember(memberNo);
-		
+
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/admin/searchMember.jsp");
-		
+
 		request.setAttribute("member", member);
-		
+
 		view.forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

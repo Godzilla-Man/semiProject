@@ -3,21 +3,26 @@ package kr.or.iei.product.controller;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.*;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import kr.or.iei.product.model.service.ProductService;
-import kr.or.iei.product.model.vo.Product;
-import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.admin.model.vo.ReportPost;
 import kr.or.iei.comment.model.vo.Comment;
+import kr.or.iei.file.model.vo.Files;
 import kr.or.iei.member.model.vo.Member;
+import kr.or.iei.product.model.service.ProductService;
+import kr.or.iei.product.model.vo.Product;
 
 @WebServlet("/product/detail")
 public class ProductDetailServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -42,7 +47,7 @@ public class ProductDetailServlet extends HttpServlet {
 		// (1) 상품 기본 정보 조회
 		service.increaseReadCount(productNo);
 	    }
-	    
+
 		Product product = service.selectOneProduct(productNo);
 
 		// 상품이 존재하지 않을 경우 오류 처리
@@ -106,7 +111,7 @@ public class ProductDetailServlet extends HttpServlet {
 		//  (6) 신고 사유 리스트 조회
 		List<ReportPost> reportReasonList = service.getReportReasonList();
 		request.setAttribute("reportReasonList", reportReasonList);
-		
+
 		// 4. 결과 처리
 		product.setProductStatus(statusName);
 		product.setWishlistCount(wishlistCount);

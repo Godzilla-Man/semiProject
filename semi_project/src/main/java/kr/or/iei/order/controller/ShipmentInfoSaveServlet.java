@@ -21,7 +21,7 @@ import kr.or.iei.order.model.service.OrderService;
 @WebServlet("/order/saveShipmentInfo")
 public class ShipmentInfoSaveServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -33,6 +33,7 @@ public class ShipmentInfoSaveServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// 1. 인코딩 (필터에서 처리)
 
@@ -82,7 +83,7 @@ public class ShipmentInfoSaveServlet extends HttpServlet {
             out.flush();
             return;
         }
-        
+
         // "기타" 코드를 받고 이름이 없을 경우, 또는 코드가 없고 이름만 있는 경우 등의 처리
         // 여기서는 deliveryCompanyName을 우선적으로 사용하고, 코드는 참조용으로 사용한다고 가정
         // 또는 TBL_PURCHASE에 code와 name을 둘 다 저장할 수 있음
@@ -115,6 +116,7 @@ public class ShipmentInfoSaveServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

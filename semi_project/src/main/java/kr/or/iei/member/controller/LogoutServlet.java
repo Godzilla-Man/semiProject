@@ -1,6 +1,7 @@
 package kr.or.iei.member.controller;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,7 +15,7 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/member/logout")
 public class LogoutServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -26,12 +27,13 @@ public class LogoutServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//1. 인코딩 - 필터에서 처리
 		//2. 클라이언트가 전송한 값 추출 - X
 		//3. 로직 처리 - 로그아웃
 		HttpSession session = request.getSession(false); //세션이 존재하면 세션 객체 반환, 존재하지 않으면 null 반환
-		
+
 		if(session != null) {
 			session.invalidate();	//세션 정보 파기
 		}
@@ -46,6 +48,7 @@ public class LogoutServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

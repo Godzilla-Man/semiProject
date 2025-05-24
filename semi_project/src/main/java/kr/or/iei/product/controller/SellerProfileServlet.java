@@ -1,7 +1,6 @@
 package kr.or.iei.product.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -24,6 +23,7 @@ public class SellerProfileServlet extends HttpServlet {
 		super();
 	}
 
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	        throws ServletException, IOException {
 
@@ -53,18 +53,18 @@ public class SellerProfileServlet extends HttpServlet {
 	    // 판매 완료(S07) 상품 개수 조회 추가
 	    int salesCount = pService.countCompletedSalesByMember(memberNo);
 	    request.setAttribute("salesCount", salesCount);
-	    
+
 	    // 좋아요 및 싫어요 개수 조회
 	    int likeCount = pService.countReactionsByMember(memberNo, 'L');  // 'L' = Like
 	    int dislikeCount = pService.countReactionsByMember(memberNo, 'D');  // 'D' = Dislike
 	    request.setAttribute("likeCount", likeCount);
 	    request.setAttribute("dislikeCount", dislikeCount);
-	    
+
 	    // 결과 조회
 	    RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/sellerProfile.jsp");
 	    view.forward(request, response);
-	    
 
-	    
+
+
 	}
 }

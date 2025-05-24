@@ -19,7 +19,7 @@ import kr.or.iei.product.model.vo.Product;
 @WebServlet("/order/payFail")
 public class PayFailServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -31,15 +31,16 @@ public class PayFailServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//1. 인코딩 설정 (필터로 처리)
-		
+
 		//2. 값 추출(토스에서 실패 시 전달하는 파라미터)
 		String errorCode = request.getParameter("code"); //오류 코드
 		String errorMessage = request.getParameter("message"); //오류 메시지
 		String orderId = request.getParameter("orderId"); //주문 번호
-		
-		//2.1 
+
+		//2.1
 		if(orderId == null) {
 			request.setAttribute("errorTitle",  "주문 정보 누락");
 			request.setAttribute("errorMessage", "실패한 주문 정보를 특정 불가.");
@@ -47,7 +48,7 @@ public class PayFailServlet extends HttpServlet {
 			errorView.forward(request, response);
             return;
 		}
-		
+
 		// 3. 비즈니스 로직 (주문 정보를 가져와서 화면에 일부 표시 가능)
         // 결제 실패 시, TBL_PURCHASE의 주문 상태는 'PS00'(결제대기)로 남아있게 됩니다.
         // 추가적인 상태 업데이트(예: 'PS99' 결제실패)는 필요에 따라 구현할 수 있습니다.
@@ -72,6 +73,7 @@ public class PayFailServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

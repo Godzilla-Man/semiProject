@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import kr.or.iei.common.JDBCTemplate;
 import kr.or.iei.member.model.vo.Member;
@@ -14,14 +13,14 @@ public class MemberDao {
 	//회원가입
 	public int memberJoin(Connection conn, Member member) {
 		PreparedStatement pstmt = null;
-		
+
 		int result = 0;
-		
+
 		String query = "insert into tbl_member values ('M' || to_char(sysdate, 'yymmdd') || lpad(seq_member.nextval, 4, '0'), ?, ?, ?, ?, ?, ?, ?, ?, sysdate, default)";
-		
+
 		try {
 			pstmt = conn.prepareStatement(query);
-			
+
 			pstmt.setString(1, member.getMemberId());
 			pstmt.setString(2, member.getMemberPw());
 			pstmt.setString(3, member.getMemberNickname());
@@ -30,34 +29,34 @@ public class MemberDao {
 			pstmt.setString(6, member.getMemberPhone());
 			pstmt.setString(7, member.getMemberAddr());
 			pstmt.setString(8, member.getMemberEmail());
-			
+
 			result = pstmt.executeUpdate();
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			JDBCTemplate.close(pstmt);
 		}
-		
+
 		return result;
 	}
-	
+
 	//ID 중복체크
 	public int idDuplChk(Connection conn, String memberId) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		int cnt = 0;
-		
+
 		String query = "select count(*) cnt from tbl_member where member_id = ?";
-		
+
 		try {
 			pstmt = conn.prepareStatement(query);
-			
+
 			pstmt.setString(1, memberId);
-			
+
 			rset = pstmt.executeQuery();
-			
+
 			if(rset.next()) {
 				cnt = rset.getInt("cnt");
 			}
@@ -68,25 +67,25 @@ public class MemberDao {
 			JDBCTemplate.close(rset);
 			JDBCTemplate.close(pstmt);
 		}
-		
+
 		return cnt;
 	}
-	
+
 	//닉네임 중복체크
 	public int nicknameDuplChk(Connection conn, String memberNickname) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		int cnt = 0;
-		
+
 		String query = "select count(*) cnt from tbl_member where member_nickname = ?";
-		
+
 		try {
 			pstmt = conn.prepareStatement(query);
-			
+
 			pstmt.setString(1, memberNickname);
-			
+
 			rset = pstmt.executeQuery();
-			
+
 			if(rset.next()) {
 				cnt = rset.getInt("cnt");
 			}
@@ -97,7 +96,7 @@ public class MemberDao {
 			JDBCTemplate.close(rset);
 			JDBCTemplate.close(pstmt);
 		}
-		
+
 		return cnt;
 	}
 
@@ -105,22 +104,22 @@ public class MemberDao {
 	public Member memberLogin(Connection conn, String loginId, String loginPw) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
-		
+
 		Member loginMember = null;
-		
+
 		String query = "select * from tbl_member where member_id = ? and member_pw = ?";
-		
+
 		try {
 			pstmt = conn.prepareStatement(query);
-			
+
 			pstmt.setString(1, loginId);
 			pstmt.setString(2, loginPw);
-			
+
 			rset = pstmt.executeQuery();
-			
+
 			if(rset.next()) {
 				loginMember = new Member();
-				
+
 				loginMember.setMemberId(loginId);
 				loginMember.setMemberPw(loginPw);
 				loginMember.setMemberNo(rset.getString("member_no"));
@@ -140,7 +139,7 @@ public class MemberDao {
 			JDBCTemplate.close(rset);
 			JDBCTemplate.close(pstmt);
 		}
-		
+
 		return loginMember;
 	}
 
@@ -149,17 +148,17 @@ public class MemberDao {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		String memberId = "";
-		
+
 		String query = "select member_id from tbl_member where member_name = ? and member_phone = ?";
-		
+
 		try {
 			pstmt = conn.prepareStatement(query);
-			
+
 			pstmt.setString(1, memberName);
 			pstmt.setString(2, memberPhone);
-			
+
 			rset = pstmt.executeQuery();
-			
+
 			if(rset.next()) {
 				memberId = rset.getString("member_id");
 			}
@@ -170,25 +169,25 @@ public class MemberDao {
 			JDBCTemplate.close(rset);
 			JDBCTemplate.close(pstmt);
 		}
-		
+
 		return memberId;
 	}
-	
+
 	//이메일로 아이디 찾기
 	public String searchId(Connection conn, String memberEmail) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		String memberId = "";
-		
+
 		String query = "select member_id from tbl_member where member_email = ?";
-		
+
 		try {
 			pstmt = conn.prepareStatement(query);
-			
+
 			pstmt.setString(1, memberEmail);
-			
+
 			rset = pstmt.executeQuery();
-			
+
 			if(rset.next()) {
 				memberId = rset.getString("member_id");
 			}
@@ -199,26 +198,26 @@ public class MemberDao {
 			JDBCTemplate.close(rset);
 			JDBCTemplate.close(pstmt);
 		}
-		
+
 		return memberId;
 	}
-	
+
 	//비밀번호 찾기
 	public String searchPw(Connection conn, String memberId, String memberEmail) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		String memberPw = "";
-		
+
 		String query = "select member_pw from tbl_member where member_id = ? and member_email = ?";
-		
+
 		try {
 			pstmt = conn.prepareStatement(query);
-			
+
 			pstmt.setString(1, memberId);
 			pstmt.setString(2, memberEmail);
-			
+
 			rset = pstmt.executeQuery();
-			
+
 			if(rset.next()) {
 				memberPw = rset.getString("member_pw");
 			}
@@ -229,7 +228,7 @@ public class MemberDao {
 			JDBCTemplate.close(rset);
 			JDBCTemplate.close(pstmt);
 		}
-		
+
 		return memberPw;
 	}
 
@@ -265,7 +264,7 @@ public class MemberDao {
 	            m.setMember_rate(String.valueOf(rset.getInt("MEMBER_RATE"))); // NUMBER 타입을 문자열로 변환
 
 	            // 4. 이하 컬럼은 실제 테이블에 존재하지 않으므로 주석 처리 (※ 존재 시 복구)
-	            // m.setReportedCount(rset.getInt("REPORTED_COUNT")); 
+	            // m.setReportedCount(rset.getInt("REPORTED_COUNT"));
 	            // m.setBlackCount(rset.getInt("BLACK_COUNT"));
 	        }
 
@@ -283,30 +282,30 @@ public class MemberDao {
 	//회원정보 수정
 	public int updateMember(Connection conn, Member updMember) {
 		PreparedStatement pstmt = null;
-		
+
 		int result = 0;
-		
+
 		String query = "update tbl_member set member_pw = ?, member_phone = ?, member_addr = ?, member_email = ? where member_no = ?";
 		String query_noPw = "update tbl_member set member_phone = ?, member_addr = ?, member_email = ? where member_no = ?";
 
 		try {
 			if(updMember.getMemberPw() == "") {
 				pstmt = conn.prepareStatement(query_noPw);
-				
+
 				pstmt.setString(1, updMember.getMemberPhone());
 				pstmt.setString(2, updMember.getMemberAddr());
 				pstmt.setString(3, updMember.getMemberEmail());
 				pstmt.setString(4, updMember.getMemberNo());
 			} else {
 				pstmt = conn.prepareStatement(query);
-				
+
 				pstmt.setString(1, updMember.getMemberPw());
 				pstmt.setString(2, updMember.getMemberPhone());
 				pstmt.setString(3, updMember.getMemberAddr());
 				pstmt.setString(4, updMember.getMemberEmail());
 				pstmt.setString(5, updMember.getMemberNo());
 			}
-			
+
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -314,8 +313,38 @@ public class MemberDao {
 		}finally {
 			JDBCTemplate.close(pstmt);
 		}
-		
+
 		return result;
+	}
+
+	public Member searchBlack(Connection conn, String memberId) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+
+		String query = "select * from tbl_blacklist join tbl_report_post using (report_no) join tbl_prod using (product_no) join tbl_member using (member_no) where member_id = ?";
+
+		Member m = null;
+
+		try {
+			pstmt = conn.prepareStatement(query);
+
+			pstmt.setString(1, memberId);
+
+			rset = pstmt.executeQuery();
+
+			if(rset.next()) {
+				m = new Member();
+				m.setBlackReason(rset.getString("black_reason"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}
+
+		return m;
 	}
 
 }

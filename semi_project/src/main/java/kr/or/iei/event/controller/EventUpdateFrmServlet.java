@@ -18,7 +18,7 @@ import kr.or.iei.event.model.vo.Event;
 @WebServlet("/event/updateFrm")
 public class EventUpdateFrmServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -30,25 +30,27 @@ public class EventUpdateFrmServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//값 추출
 		String eventNo = request.getParameter("eventNo");
-		
+
 		//로직 - 게시글 1개 정보 조회
 		EventService service = new EventService();
 		Event event = service.selectOneEvent(eventNo, false);
-		
+
 		//결과 처리
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/event/updateFrm.jsp");
-		
+
 		request.setAttribute("event", event);
-		
+
 		view.forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

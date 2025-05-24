@@ -70,6 +70,27 @@
 				
 				return false;
 			}
+			
+			
+			$.ajax({
+				url : "/member/searchBlack",
+				data : {"memberId" : $("#loginId").val()},
+				type : "post",
+				success : function(res){
+					if(res != null){
+						swal({
+							title : "실패",
+							text : "회원님은 블랙 처리 되셨습니다.",
+							icon : "error"
+						});
+					}
+					
+				},
+				error : function(){
+					console.log("ajax 통신 오류");
+				}
+			});
+			
 		}
 	</script>
 </body>

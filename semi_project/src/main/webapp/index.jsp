@@ -1,4 +1,5 @@
 
+<%@page import="kr.or.iei.product.model.vo.Product"%>
 <%@page import="kr.or.iei.reviewNotice.model.service.ReviewNoticeService"%>
 <%@page import="kr.or.iei.reviewNotice.model.vo.ReviewNotice"%>
 
@@ -6,7 +7,7 @@
 <%@page import="java.util.List"%>
 <%@page import="kr.or.iei.event.model.service.EventService"%>
 <%@page import="kr.or.iei.member.model.vo.Member"%>
-<%@page import="kr.or.iei.product.model.vo.Product"%>
+
 <%@page import="java.util.ArrayList"%>
 <%@page import="kr.or.iei.product.model.service.ProductService"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"

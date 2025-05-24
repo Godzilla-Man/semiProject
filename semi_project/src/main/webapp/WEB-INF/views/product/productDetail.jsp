@@ -1102,8 +1102,14 @@ textarea::placeholder {
 
 
 					<!-- ★동주 : 바로구매 시 결제 페이지 연동/하단에 해당 스크립트도 추가!!★ 시작 -->
-					<button class="btn-primary"
-						onclick="goToOrderPage('${product.productNo}')">바로구매</button>
+					<c:choose>
+						<c:when test="${product.productQuantity eq 1}"> 
+						<button class="btn-primary" onclick="goToOrderPage('${product.productNo}')">바로구매</button>
+						</c:when>
+						<c:otherwise>
+						<button class="btn-secondary">결제완료</button>
+						</c:otherwise>
+					</c:choose>
 					<!-- ★동주 : 바로구매 시 결제 페이지 연동/하단에 해당 스크립트도 추가!!★  끝 -->
 
 

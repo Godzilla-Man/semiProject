@@ -21,7 +21,7 @@ import kr.or.iei.order.model.vo.Purchase;
 @WebServlet("/member/myPagePurchaseList")
 public class myPagePurchaseListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -33,9 +33,10 @@ public class myPagePurchaseListServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		// 시작 : 로그인 세션 갖고 오는 공통 영역		
+
+		// 시작 : 로그인 세션 갖고 오는 공통 영역
 		HttpSession session = request.getSession(false);
         Member loginMember = null;
 
@@ -48,7 +49,7 @@ public class myPagePurchaseListServlet extends HttpServlet {
             response.setContentType("text/html;charset=utf-8");
             response.getWriter().println("<script>alert('로그인이 필요한 서비스입니다.'); location.href='" + request.getContextPath() + "/member/loginFrm';</script>");
             return;
-        }        
+        }
         // 종료 : 로그인 세션 갖고 오는 공통 영역
 
         // 구매내역 조회
@@ -65,6 +66,7 @@ public class myPagePurchaseListServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

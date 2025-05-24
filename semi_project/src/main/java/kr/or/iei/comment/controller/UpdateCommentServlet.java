@@ -1,9 +1,12 @@
 package kr.or.iei.comment.controller;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import kr.or.iei.comment.model.vo.Comment;
 import kr.or.iei.product.model.service.ProductService;
@@ -40,7 +43,7 @@ public class UpdateCommentServlet extends HttpServlet {
         // 4. 로직 처리
         int result = new ProductService().updateComment(c);
 
-        
+
         // 5. 결과 처리
         if (result > 0) {
             // 수정 성공 → 해당 상품 상세 페이지로 이동
@@ -51,5 +54,5 @@ public class UpdateCommentServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/views/common/error.jsp").forward(request, response);
         }
     }
-    
+
 }

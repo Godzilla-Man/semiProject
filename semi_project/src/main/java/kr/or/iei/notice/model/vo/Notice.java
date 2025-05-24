@@ -19,6 +19,6 @@ public class Notice {
 	private String noticeContent;
 	private String noticeEnrollDate;
 	private int readCount;
-	
+
 	private List<Files> fileList;
 }

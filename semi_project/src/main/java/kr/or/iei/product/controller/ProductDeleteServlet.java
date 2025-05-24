@@ -2,9 +2,11 @@ package kr.or.iei.product.controller;
 
 import java.io.IOException;
 
-import javax.servlet.*;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import kr.or.iei.product.model.service.ProductService;
 
@@ -21,7 +23,7 @@ import kr.or.iei.product.model.service.ProductService;
 
 @WebServlet("/product/delete")
 public class ProductDeleteServlet extends HttpServlet {
-	
+
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     request.setCharacterEncoding("UTF-8");
@@ -38,7 +40,7 @@ public class ProductDeleteServlet extends HttpServlet {
       // 삭제 성공 시 상품 목록 페이지로 리다이렉트
     	String contextPath = request.getContextPath();
     	response.sendRedirect(contextPath + "/");			// 상품 삭제 성공 시 메인 페이지(index.jsp)로 이동, contextPath는 /market 등 프로젝트 루트 경로 보장, "/"는 index.jsp를 의미함
-    } else {	
+    } else {
       // 실패 시 에러 페이지로 이동
       request.setAttribute("msg", "상품 삭제에 실패했습니다.");
       request.getRequestDispatcher("/WEB-INF/views/common/error.jsp").forward(request, response);

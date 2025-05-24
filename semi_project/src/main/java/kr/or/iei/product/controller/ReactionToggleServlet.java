@@ -18,7 +18,7 @@ import kr.or.iei.product.model.service.ProductService;
 @WebServlet("/reaction/toggle")
 public class ReactionToggleServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */

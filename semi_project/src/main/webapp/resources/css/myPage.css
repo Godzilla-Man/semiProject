@@ -184,9 +184,9 @@
 .status-PS01,.status-S02 { background-color: #28a745; color: #fff; } /* 결제완료 */
 .status-PS04,.status-S99 { background-color: #6c757d; color: #fff; } /* 취소완료 */
 .status-S05 { background-color: #17a2b8; color: #fff; } /* 배송중 (JSP 코드에 맞게 수정) */
-.status-S06 { background-color: #007bff; color: #fff; } /* 배송완료 (JSP 코드에 맞게 수정) */
+.status-S06,.status-PS07 { background-color: #007bff; color: #fff; } /* 배송완료 (JSP 코드에 맞게 수정) */
 .status-SC01 { background-color: #dc3545; color: #fff; } /* 거래취소 (예시 코드값, 실제 코드값으로 변경) */
-.status-SC02 { background-color: #6c757d; color: #fff; } /* 거래실패 (예시 코드값, 실제 코드값으로 변경) */
+.status-SC02,.status-PS05 { background-color: #6c757d; color: #fff; } /* 거래실패 (예시 코드값, 실제 코드값으로 변경) */
 /* 필요한 다른 상태 코드에 대한 스타일 추가 */
 
 

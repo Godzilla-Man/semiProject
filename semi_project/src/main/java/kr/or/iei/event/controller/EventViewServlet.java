@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import kr.or.iei.event.model.service.EventService;
 import kr.or.iei.event.model.vo.Event;
 import kr.or.iei.file.model.vo.Files;
-import kr.or.iei.notice.model.service.NoticeService;
-import kr.or.iei.notice.model.vo.Notice;
 
 /**
  * Servlet implementation class EventViewServlet
@@ -22,7 +20,7 @@ import kr.or.iei.notice.model.vo.Notice;
 @WebServlet("/event/view")
 public class EventViewServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -34,25 +32,26 @@ public class EventViewServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//값 추출 - 게시글 번호
 		String eventNo = request.getParameter("eventNo");
 		boolean updChk = Boolean.valueOf(request.getParameter("updChk")); //조회수 업데이트 여부
-		
+
 		//로직
 		EventService service = new EventService();
 		//상세 정보
 		Event event = service.selectOneEvent(eventNo, updChk);
 		//파일 정보
 		List<Files> fileList = service.selectEventFileList(eventNo);
-		
+
 		//결과 처리
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/event/view.jsp");
-		
+
 		//4.2 화면 구현에 필요한 데이터 등록
 		request.setAttribute("event", event);
 		request.setAttribute("fileList", fileList);
-		
+
 		//4.3 페이지 이동
 		view.forward(request, response);
 	}
@@ -60,6 +59,7 @@ public class EventViewServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

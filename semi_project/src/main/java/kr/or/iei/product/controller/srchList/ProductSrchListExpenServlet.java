@@ -21,7 +21,7 @@ import kr.or.iei.product.model.vo.Product;
 @WebServlet("/product/searchListExpen")
 public class ProductSrchListExpenServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -33,42 +33,44 @@ public class ProductSrchListExpenServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//값 추출
 		String searchOption = request.getParameter("searchOption");
 		String search = request.getParameter("search");
-		
+
 		String memberNo = null;
 		Member loginMember = null;
 		HttpSession session = request.getSession(false); //세션 있으면 존재, 없으면 null (로그인 되어 있으면 존재, 비로그인 시 null)
 		if(session != null) {
 			loginMember = (Member) session.getAttribute("loginMember");
 			if(loginMember != null) {
-				memberNo = loginMember.getMemberNo();				
+				memberNo = loginMember.getMemberNo();
 			}
 		}
-		
+
 		//로직 - 검색한 상품명 또는 작성자와 같은지
 		ProductService service = new ProductService();
-		ArrayList<Product> productList = new ArrayList<Product>();
+		ArrayList<Product> productList = new ArrayList<>();
 		if(searchOption.equals("productName")) { //상품명으로 검색시
 			productList = service.searchProdcutNameExpen(search, memberNo);
 		}else { //작성자로 검색 시
 			productList = service.searchMemberNicknameExpen(search, memberNo);
 		}
-		
+
 		RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/product/srchList/productSrchListExpen.jsp");
-		
+
 		request.setAttribute("productList", productList);
 		request.setAttribute("searchOption", searchOption);
 		request.setAttribute("search", search);
-		
+
 		view.forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

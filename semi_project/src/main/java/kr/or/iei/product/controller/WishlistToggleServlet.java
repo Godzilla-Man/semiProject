@@ -1,18 +1,23 @@
 package kr.or.iei.product.controller;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import kr.or.iei.product.model.service.ProductService;
 import kr.or.iei.member.model.vo.Member;
+import kr.or.iei.product.model.service.ProductService;
 
 @WebServlet("/wishlist/toggle")
 public class WishlistToggleServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	// 찜하기 토글 처리 (로그인 필수)
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
