@@ -717,12 +717,45 @@ public class ProductService {
 	    return list;
 	}
 
+	/*
+	 * 문택 작업
+	 */
+	// 관심목록 - 찜하기한 상품 리스트 조회
 	public ArrayList<Product> selectMemberWishList(String memberNo) {
 		Connection conn = JDBCTemplate.getConnection();
 		ArrayList<Product> productList = dao.selectMemberWishList(conn, memberNo);
 		JDBCTemplate.close(conn);
 
 		return productList;
+	}
+	
+	// 마이페이지 - 관심 받은 개수 조회
+	public int selectGetWishCount(String memberNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		int result = dao.selectGetWishCount(conn, memberNo);
+		JDBCTemplate.close(conn);
+		
+		return result;
+	}
+	
+	// 마이페이지 - 내가 찜한 개수
+	public int selectWishCount(String memberNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		int result = dao.selectWishCount(conn, memberNo);
+		JDBCTemplate.close(conn);
+		
+		return result;
+	}
+	
+	// 마이페이지 - 내가 판매한 상품 개수
+	public int selectSalesCount(String memberNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		List<SalesProduct> salesList = dao.getMySaleList(conn, memberNo);
+		int cnt = salesList.size();
+		
+		JDBCTemplate.close(conn);
+		
+		return cnt;
 	}
 
 }

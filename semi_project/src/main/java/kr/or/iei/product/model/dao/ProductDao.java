@@ -2500,6 +2500,12 @@ public class ProductDao {
 	    return list;
 	}
 
+	
+	/*
+	 * 문택 작업
+	 */
+	// 관심목록 - 찜하기한 상품 리스트 조회
+
 	public ArrayList<Product> selectMemberWishList(Connection conn, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
@@ -2535,6 +2541,70 @@ public class ProductDao {
 		}
 
 		return productList;
+	}
+	
+	// 마이페이지 - 관심 받은 개수 조회
+	public int selectGetWishCount(Connection conn, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		int cnt = 0;
+		
+		String query = "select count(p.member_no) cnt"
+				+ "  from tbl_prod p, tbl_wishlist w"
+				+ " where p.product_no = w.product_no"
+				+ " group by p.member_no "
+				+ "having p.member_no = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				cnt = rset.getInt("cnt");		
+			} else {
+				cnt = -1;
+			}
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return cnt;
+	}
+	
+	// 마이페이지 - 내가 찜한 개수
+	public int selectWishCount(Connection conn, String memberNo) {
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		int cnt = 0;
+		
+		String query = "select count(member_no) cnt from tbl_wishlist where member_no = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+			
+			pstmt.setString(1, memberNo);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				cnt = rset.getInt("cnt");		
+			} else {
+				cnt = -1;
+			}
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return cnt;
 	}
 }
 

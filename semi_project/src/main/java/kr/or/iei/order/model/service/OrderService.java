@@ -184,6 +184,18 @@ public class OrderService {
 	    return success;
 	}
 
+	// 마이페이지 - 내가 구매한 상품 개수
+	public int selectPurchaseCount(String buyerMemberNo) {
+		Connection conn = JDBCTemplate.getConnection();	    
+	    List<Purchase> purchaseList = dao.selectPurchaseListByBuyerNo(conn, buyerMemberNo);
+	    
+	    int cnt = purchaseList.size();
+	    
+	    JDBCTemplate.close(conn);
+		
+		return cnt;
+	}
+	
 	public boolean confirmPurchase(String orderNo, String memberNo, String string) {
 		Connection conn = JDBCTemplate.getConnection();
 	    
@@ -223,7 +235,6 @@ public class OrderService {
             return false;
         }		
 	}
-
 
 
 }

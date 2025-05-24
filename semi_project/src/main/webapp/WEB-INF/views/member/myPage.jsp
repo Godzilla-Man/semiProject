@@ -1,4 +1,5 @@
 <%@page import="kr.or.iei.product.model.service.ProductService"%>
+<%@page import="kr.or.iei.order.model.service.OrderService"%>
 <%@page import="kr.or.iei.member.model.vo.Member"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -16,10 +17,11 @@
 	}
 
 	ProductService pService = new ProductService();
-	int getWishCount = 0;
-	int wishCount = 0;
-	int salesCount = 0;
-	int purchaseCount = 0;
+	OrderService oService = new OrderService();
+	int getWishCount = pService.selectGetWishCount(memberNo);
+	int wishCount = pService.selectWishCount(memberNo);
+	int salesCount = pService.selectSalesCount(memberNo);
+	int purchaseCount = oService.selectPurchaseCount(memberNo);
 	
 	request.setAttribute("getWishCount", getWishCount);
 	request.setAttribute("wishCount", wishCount);
@@ -48,7 +50,8 @@
 								<ul class="info-item info-item-left">
 									<li class="memberNickname">${loginMember.memberNickname } 님</li>
 									<li class="memberEamil">${loginMember.memberEmail }</li>
-									<li class="memberRate">${loginMember.member_rate }</li>
+									<li>&nbsp;</li>
+									<li class="memberRate">받은관심 ${getWishCount }</li>
 								</ul>
 							</div>
 							<div class="info-wrap-center">
@@ -56,9 +59,9 @@
 							</div>
 							<div class="info-wrap-right">
 								<ul class="info-item info-item-right">
-									<li>관심목록 0</li>
-									<li>판매내역 0</li>
-									<li>구매내역 0</li>
+									<li>관심목록 ${wishCount }</li>
+									<li>판매내역 ${salesCount }</li>
+									<li>구매내역 ${purchaseCount }</li>
 								</ul>
 							</div>
 						</div>
