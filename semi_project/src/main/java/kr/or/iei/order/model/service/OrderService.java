@@ -200,6 +200,30 @@ public class OrderService {
 	    return success;		
 	}
 
+	public Purchase getDeliveryInfo(String orderNo) {
+		Connection conn = JDBCTemplate.getConnection();
+		Purchase purchaseInfo = OrderDao.selectDeliverInfo(conn, orderNo); 
+		JDBCTemplate.close(conn);	
+		
+		return purchaseInfo;
+	}
+
+	public boolean cancelOtherPendingOrders(String buyerMemberNo, String productNo, String orderId) {
+		Connection conn = JDBCTemplate.getConnection();
+        // 'PS04'는 '취소완료' 상태라고 가정합니다. zupzup.sql의 TBL_PURCHASE_STATUS 확인 필요
+        int result = OrderDao.updateOtherPendingOrders(conn, buyerMemberNo, productNo, "PS04", orderId);
+        
+        if (result > 0) { // 하나라도 업데이트 되었다면
+            JDBCTemplate.commit(conn);
+            JDBCTemplate.close(conn);
+            return true;
+        } else { // 업데이트된 것이 없거나 (원래 다른 PS00이 없었거나), 오류 발생 시
+            JDBCTemplate.rollback(conn); // 롤백해도 되지만, select 후 update가 아니므로 필수는 아님.
+            JDBCTemplate.close(conn);
+            return false;
+        }		
+	}
+
 
 
 }

@@ -48,12 +48,29 @@ public class PaySuccessServlet extends HttpServlet {
         Purchase purchase = orderService.processSuccessPay(orderId, paymentKey, "TossPayments", amount);
 
         if (purchase != null) {
-            // 결제 및 주문 처리 성공
-        	System.out.println("PaySuccessServlet - purchase.getProductNo(): " + purchase.getProductNo());
-
+        	
+        	// ✨ --- 다른 '결제대기' 주문 취소 로직 추가 --- ✨
+            if (purchase.getBuyerMemberNo() != null && !purchase.getBuyerMemberNo().isEmpty() &&
+                purchase.getProductNo() != null && !purchase.getProductNo().isEmpty()) {
+                
+                boolean cancelResult = orderService.cancelOtherPendingOrders(
+                                            purchase.getBuyerMemberNo(),
+                                            purchase.getProductNo(),
+                                            orderId // 현재 성공한 주문 번호 (이 주문은 취소 대상에서 제외)
+                                        );
+                if (cancelResult) {
+                    System.out.println("PaySuccessServlet: 주문[" + orderId + "] 외 상품[" + purchase.getProductNo() + "]의 다른 결제대기 주문 정리 완료.");
+                } else {
+                    System.out.println("PaySuccessServlet: 주문[" + orderId + "] 외 상품[" + purchase.getProductNo() + "]의 다른 결제대기 주문이 없거나 정리 중 오류 발생.");
+                }
+            } else {
+                System.out.println("PaySuccessServlet: 다른 결제대기 주문 정리를 위한 정보(구매자번호 또는 상품번호)가 부족합니다.");
+            }
+            // ✨ --- 로직 추가 완료 --- ✨   	
+        	
+            // 결제 및 주문 처리 성공 
             Product product = orderService.selectOrderProduct(purchase.getProductNo()); // 상품 정보 조회
-            System.out.println("PaySuccessServlet - product 객체: " + product); //
-
+            
             request.setAttribute("purchase", purchase); // 처리된 구매 정보
             request.setAttribute("product", product);   // 관련 상품 정보
 
@@ -66,7 +83,7 @@ public class PaySuccessServlet extends HttpServlet {
             request.setAttribute("orderId", orderId);
             request.setAttribute("errorTitle", "결제 처리 오류");
             request.setAttribute("errorMessage", "결제는 승인되었으나 주문 처리 중 오류가 발생했습니다. 관리자에게 문의하거나 잠시 후 주문 내역을 확인해주세요. (주문번호: " + orderId + ")");
-            // 이 경우 사용자는 혼란을 겪을 수 있으므로, 실제 서비스에서는 더욱 상세한 오류 처리 및 안내가 필요합니다.
+            
             RequestDispatcher view = request.getRequestDispatcher("/WEB-INF/views/order/orderFail.jsp"); // 실패 페이지로 안내
             view.forward(request, response);
         }
