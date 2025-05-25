@@ -32,7 +32,7 @@
 				      	  <div class="input-title">
 				      	  	<label for="memberPw">비밀번호</label>
 				      	  </div>
-				      	  <div class="input-item">
+				      	  <div class="input-item input-memberPw">
 				      	  	<input type="password" id="memberPw" name="memberPw" placeholder="미입력시 변경되지 않습니다." maxlength="20">
 				      	  </div>
 				      </div>
@@ -41,7 +41,7 @@
 				      	  <div class="input-title">
 				      	  	<label for="memberPwRe">비밀번호 확인</label>
 				      	  </div>
-				      	  <div class="input-item">
+				      	  <div class="input-item input-memberPwRe">
 				      	  	<input type="password" id="memberPwRe" placeholder="영어, 숫자, 특수문자(!,@,#,$) 8~20글자" maxlength="20">
 				      	  </div>
 				      	  <p id="pwMessage" class="input-msg"></p>
@@ -81,7 +81,7 @@
 				      	  <div class="input-title">
 				      	  	<label for="memberPhone">전화번호</label>
 				      	  </div>
-				      	  <div class="input-item">
+				      	  <div class="input-item input-memberPhone">
 				      	  	<input type="text" id="memberPhone" name="memberPhone" value="${loginMember.memberPhone }" maxlength="13">
 				      	  </div>
 				      	  <p id="phoneMessage" class="input-msg"></p>
@@ -111,7 +111,7 @@
 				      	  <div class="input-title">
 				      	  	<label for="memberEmail">이메일</label>
 				      	  </div>
-				      	  <div class="input-item">
+				      	  <div class="input-item input-email">
 				      	  	<input type="text" id="memberEmailId" name="memberEmailId">&nbsp;@&nbsp;
 				      	  	<input type="text" id="memberEmailDomain" name="memberEmailDomain">
 				      	  	<select class="select-domain" id="selectDomain">
@@ -284,11 +284,15 @@
 	const memberPw = $('#memberPw');
 	const pwMessage = $('#pwMessage');
 	const memberPwRe = $('#memberPwRe');
+	const inputMemberPw = $('.input-memberPw');
+	const inputMemberPwRe = $('.input-memberPwRe');
 	
 	$(memberPw).on('input', function(){
 		checkObj.memberPw = false;
 		$(pwMessage).removeClass('invalid');
 		$(pwMessage).removeClass('valid');
+		$(inputMemberPw).removeClass('valid');
+		$(inputMemberPw).removeClass('invalid');
 		
 		const regExp = /^[a-zA-Z0-9!@#$]{8,20}$/; //영어, 숫자, 특수문자 (!@#$) 8~20글자
 		
@@ -304,12 +308,14 @@
 				}else{				
 					$(pwMessage).text('');
 					$(pwMessage).addClass('valid');
+					$(inputMemberPw).addClass('valid');
 				}
 				
 			}else{
 				checkObj.memberPw = false;
 				$(pwMessage).text('비밀번호 형식이 유효하지 않습니다.');
 				$(pwMessage).addClass('invalid');
+				$(inputMemberPw).addClass('invalid');
 			}
 		}
 	});
@@ -327,15 +333,21 @@
 	function checkPw(){
 		$(pwMessage).removeClass('invalid');
 		$(pwMessage).removeClass('valid');
+		$(inputMemberPwRe).removeClass('valid');
+		$(inputMemberPwRe).removeClass('invalid');
 		
 		//입력한 비밀번호와 값이 같은지만 검증
 		if($(memberPw).val() == $(memberPwRe).val()){
 			$(pwMessage).text('');
 			$(pwMessage).addClass('valid');
+			$(inputMemberPwRe).addClass('valid');
+			
 			checkObj.memberPwRe = true;
 		}else{
 			$(pwMessage).text('비밀번호가 일치하지 않습니다.');
 			$(pwMessage).addClass('invalid');
+			$(inputMemberPwRe).addClass('invalid');
+			
 			checkObj.memberPwRe = false;
 		}
 	}
@@ -366,9 +378,10 @@
 	
 	/*
 		생년월일 검사
-		 - 기본값인 현재시간과 동일하면 형식에 맞지 않다고 판단
 	*/
 	const birthSelect = $('.birth-select');
+	$(birthSelect).css("border", "1px solid #d9d9d9");	
+	/*
 	const birthYear = $('#birthYear');
 	const birthMonth = $('#birthMonth');
 	const birthDay = $('#birthDay');
@@ -394,28 +407,33 @@
 		}
 		
 	});
-	
+	*/
 	/*
 		전화번호 검사
 	*/
 	//전화번호 유효성 검사
 	const memberPhone = $('#memberPhone');
 	const phoneMessage = $('#phoneMessage');
+	const inputMemberPhone = $('.input-memberPhone');
 	
 	$(memberPhone).on('input', function(){
 		checkObj.memberPhone = false;
 		$(phoneMessage).removeClass('invalid');
 		$(phoneMessage).removeClass('valid');
+		$(inputMemberPhone).removeClass('valid');
+		$(inputMemberPhone).removeClass('invalid');
 		
 		const regExp = /^010-\d{3,4}-\d{4}/;
 		
 		if(regExp.test($(this).val())){
 			$(phoneMessage).text('');
 			$(phoneMessage).addClass('valid');
+			$(inputMemberPhone).addClass('valid');
 			checkObj.memberPhone = true;
 		}else{
 			$(phoneMessage).text('전화번호 형식이 올바르지 않습니다.');
 			$(phoneMessage).addClass('invalid');
+			$(inputMemberPhone).addClass('invalid');
 			checkObj.memberPhone = false;
 		}
 	});
@@ -426,19 +444,24 @@
 	const addrPostcode = $('#addr_postcode');
 	const addrDetailAddress = $('#addr_detailAddress');
 	const addrMessage = $('#addrMessage');
+	const inputAddr = $('.input-addr');
 	
 	$(addrDetailAddress).on('input', function(){
 		checkObj.memberAddress = false;
 		$(addrMessage).removeClass('invalid');
 		$(addrMessage).removeClass('valid');
+		$(inputAddr).removeClass('valid');
+		$(inputAddr).removeClass('invalid');
 		
 		if($(addrPostcode).val() == '' || $(addrDetailAddress).val() == '') {
 			$(addrMessage).text('주소 형식이 올바르지 않습니다.');
 			$(addrMessage).addClass('invalid');
+			$(inputAddr).addClass('invalid');
 			checkObj.memberAddress = false;	
 		} else {
 			$(addrMessage).text('');
 			$(addrMessage).addClass('valid');
+			$(inputAddr).addClass('valid');
 			checkObj.memberAddress = true;	
 		}
 	});
@@ -447,22 +470,27 @@
 		이메일 검사
 	*/
 	const emailMessage = $('#emailMessage');
+	const inputEmail = $('.input-email');
 	
 	//이메일ID 유효성 검사
 	$(memberEmailId).on('input', function(){
 		checkObj.memberEmail = false;
 		$(emailMessage).removeClass('invalid');
 		$(emailMessage).removeClass('valid');
+		$(inputEmail).removeClass('invalid');
+		$(inputEmail).removeClass('valid');
 		
 		const regExp = /^[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*$/;
 		
 		if(regExp.test($(this).val())){
 			$(emailMessage).text('');
 			$(emailMessage).addClass('valid');
+			$(inputEmail).addClass('valid');
 			checkObj.memberEmail = true;
 		}else{
 			$(emailMessage).text('이메일 형식이 올바르지 않습니다.');
 			$(emailMessage).addClass('invalid');
+			$(inputEmail).addClass('invalid');
 			checkObj.memberEmail = false;		
 		}
 	});
@@ -472,16 +500,20 @@
 		checkObj.memberEmail = false;
 		$(emailMessage).removeClass('invalid');
 		$(emailMessage).removeClass('valid');
+		$(inputEmail).removeClass('invalid');
+		$(inputEmail).removeClass('valid');
 		
 		const regExp = /^[a-zA-Z]([-_.]?[0-9a-zA-Z])+(\.[a-z]{2,3})$/;
 		
 		if(regExp.test($(this).val())){
 			$(emailMessage).text('');
 			$(emailMessage).addClass('valid');
+			$(inputEmail).addClass('valid');
 			checkObj.memberEmail = true;
 		}else{
 			$(emailMessage).text('이메일 형식이 올바르지 않습니다.');
 			$(emailMessage).addClass('invalid');
+			$(inputEmail).addClass('invalid');
 			checkObj.memberEmail = false;		
 		}
 	});
