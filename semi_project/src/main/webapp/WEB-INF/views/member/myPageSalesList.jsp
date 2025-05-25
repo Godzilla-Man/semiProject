@@ -38,34 +38,65 @@
                         
                         <div class="purchase-product-details">                        	
                             <div class="purchase-status-wrapper">
-                                <%-- 상품 자체의 상태를 표시합니다. (예: 판매중, 판매완료) --%>
-                                <span class="purchase-status status-${item.productStatusCode}"> 
-                                    ${item.productStatusName} 
-                                </span>
-                                <%-- 판매된 상품에 대한 실제 거래의 상태 --%>
-                                <c:if test="${not empty item.transactionStatusName}">
-                                    <span class="purchase-status status-${item.transactionStatusCode}" style="margin-left: 5px; background-color: #6c757d;"> 
-                                        ${item.transactionStatusName}
-                                    </span>
-                                </c:if>
+                                 <%--
+							        상품 자체의 상태를 표시할 조건:
+							        1. 거래 상태(transactionStatusCode)가 없거나 (판매자가 올린 '판매중' 상품)
+							        2. 또는 거래 상태가 '결제대기'(PS00)이거나
+							        3. 또는 거래 상태가 '결제완료'(PS01)이거나 (요청하신 대로 '결제완료'시에는 상품 상태 노출)
+							        4. 또는 거래 상태가 '취소완료'(PS04)일 때 (취소일 때는 상품 상태보다 거래 상태가 중요하므로, 아래에서 거래 상태만 표시)
+							        위 경우가 아니라면 (즉, '배송중', '배송완료', '거래완료' 등) 상품 자체의 상태는 표시하지 않음.
+							    --%>
+							    <c:if test="${empty item.transactionStatusCode ||							    
+							                   item.transactionStatusCode == 'PS00' ||
+							                   item.transactionStatusCode == 'PS01' ||
+							                   item.transactionStatusCode == 'PS04'}">
+							        <%-- '취소완료'가 아닐 때만 상품 자체의 상태를 표시 (취소완료 시에는 아래 거래 상태만 표시) --%>
+							        <c:if test="${item.transactionStatusCode != 'PS04'}">
+							            <span class="purchase-status status-${item.productStatusCode}">
+							                ${item.productStatusName}
+							            </span>
+							        </c:if>
+							    </c:if>
+								    
+								<%-- 판매된 상품에 대한 실제 거래의 상태 --%>
+								<c:if test="${not empty item.transactionStatusName}">
+								
+								    <%-- "취소완료" (PS04) 상태일 경우 --%>
+								    <c:if test="${item.transactionStatusCode == 'PS04'}">
+								        <span class="purchase-status status-cancelled" style="background-color: #dc3545; color:white;">
+								            ${item.transactionStatusName} <%-- "취소완료" --%>
+								        </span>
+								    </c:if>
+								
+								    <%-- "결제완료" (PS01)가 아니고 "취소완료" (PS04)도 아닌 다른 거래 상태들만 표시 --%>
+								    <c:if test="${item.transactionStatusCode != 'PS01' && item.transactionStatusCode != 'PS04'}">
+								        <span class="purchase-status status-${item.transactionStatusCode}" style="margin-left: 5px; background-color: #6c757d;">
+								            ${item.transactionStatusName} <%-- 예: 배송중, 배송완료, 거래완료, 결제대기 등 --%>
+								        </span>
+								    </c:if>
+								
+								</c:if>
                             </div>                        	
                             <div class="purchase-product-price"><fmt:formatNumber value="${item.productPrice}"/> 원</div> <%-- item.orderAmount -> item.productPrice (상품 원가) --%>
                             <div class="purchase-product-name">${item.productName}</div>
                             
-                            <%-- 구매자 정보 숨김!! (구매자가 있는 경우(판매된 경우)에만 표시)
+                            <!-- 구매자 정보 숨김!! (구매자가 있는 경우(판매된 경우)에만 표시)   
                             <c:if test="${not empty item.buyerNickname}">  
                                 <div class="purchase-seller-info">구매자: ${item.buyerNickname}</div>
                             </c:if>
-                            --%>
+                            -->
+                            
                         </div>
 
                         <div class="purchase-actions">
                             <%-- 판매 내역에 맞는 버튼들로 변경 --%>
                             <%-- 예시: 상품 상태에 따른 버튼들 --%>
                             
-                            <c:if test="${item.transactionStatusCode == 'PS01' || item.transactionStatusCode == 'PS02'}"> <%-- 실제 거래 상태 코드 기준 --%>
-							<button type="button" class="btn-action btn-enter-shipping" onclick="openShippingForm('${item.orderNo}', '${item.productNo}')">발송 정보 입력</button>
-							</c:if>
+                             <%-- 판매 내역에 맞는 버튼들로 변경 --%>
+						    <%-- 발송 정보 입력 버튼: '결제완료'(PS01) 또는 '배송전'(PS03 - TBL_PROD_STATUS의 S03과 혼동 주의, 여기서는 거래상태 PS02가 있다면 그것으로) 이면서 '취소완료'(PS04)가 아닐 때 노출 --%>
+						    <c:if test="${(item.transactionStatusCode == 'PS01' || item.transactionStatusCode == 'PS02' || item.transactionStatusCode == 'S03') && item.transactionStatusCode != 'PS04'}">
+						        <button type="button" class="btn-action btn-enter-shipping" onclick="openShippingForm('${item.orderNo}', '${item.productNo}')">발송 정보 입력</button>
+						    </c:if>
                             
                             <%-- S01: 판매중 상태일때 '상품 수정' 버튼 및 '판매 완료로 변경' 버튼 노출 기능 
                             <c:if test="${item.productStatusCode == 'S01'}"> 

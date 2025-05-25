@@ -180,7 +180,7 @@
 }
 
 /* 주문 상태별 색상 (기존 스타일 유지 및 필요시 보강) */
-.status-PS00,.status-S01,.status-PS05 { background-color: #ffc107; color: #343a40; border: 1px solid rgba(0,0,0,0.1); } /* 결제대기 */
+.status-PS00,.status-S01,.status-PS05,.status-S05 { background-color: #ffc107; color: #343a40; border: 1px solid rgba(0,0,0,0.1); } /* 결제대기 */
 .status-PS01,.status-S02,.status-PS06 { background-color: #28a745; color: #fff; } /* 결제완료 */
 .status-PS04,.status-S99,.status-PS07 { background-color: #6c757d; color: #fff; } /* 취소완료,거래완료 */ 
 
