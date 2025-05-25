@@ -23,7 +23,7 @@
 					      <div class="input-title">
 					      	<label for="memberId">아이디</label>
 					      </div>
-					      <div class="input-item">
+					      <div class="input-item input-memberId">
 					      	<input type="text" id="memberId" name="memberId" placeholder="영어, 숫자 6~12글자" maxlength="12">
 					      </div>
 					      <p id="idMessage" class="input-msg"></p>
@@ -33,7 +33,7 @@
 				      	  <div class="input-title">
 				      	  	<label for="memberPw">비밀번호</label>
 				      	  </div>
-				      	  <div class="input-item">
+				      	  <div class="input-item input-memberPw">
 				      	  	<input type="password" id="memberPw" name="memberPw" placeholder="영어, 숫자, 특수문자(!,@,#,$) 8~20글자" maxlength="20">
 				      	  </div>
 				      </div>
@@ -42,7 +42,7 @@
 				      	  <div class="input-title">
 				      	  	<label for="memberPwRe">비밀번호 확인</label>
 				      	  </div>
-				      	  <div class="input-item">
+				      	  <div class="input-item input-memberPwRe">
 				      	  	<input type="password" id="memberPwRe" maxlength="20">
 				      	  </div>
 				      	  <p id="pwMessage" class="input-msg"></p>
@@ -52,7 +52,7 @@
 					      <div class="input-title">
 					      	<label for="memberNickname">닉네임</label>
 					      </div>
-					      <div class="input-item">
+					      <div class="input-item input-memberNickname">
 					      	<input type="text" id="memberNickname" name="memberNickname" placeholder="한글 2~12글자" maxlength="12">
 					      </div>
 					      <p id="nicknameMessage" class="input-msg"></p>
@@ -62,7 +62,7 @@
 				      	  <div class="input-title">
 				      	  	<label for="memberName">이름</label>
 				      	  </div>
-				      	  <div class="input-item">
+				      	  <div class="input-item input-memberName">
 				      	  	<input type="text" id="memberName" name="memberName" placeholder="한글 2~5글자" maxlength="5">
 				      	  </div>
 				      	  <p id="nameMessage" class="input-msg"></p>
@@ -84,7 +84,7 @@
 				      	  <div class="input-title">
 				      	  	<label for="memberPhone">전화번호</label>
 				      	  </div>
-				      	  <div class="input-item">
+				      	  <div class="input-item input-memberPhone">
 				      	  	<input type="text" id="memberPhone" name="memberPhone" placeholder="전화번호 (010-0000-0000)" maxlength="13">
 				      	  </div>
 				      	  <p id="phoneMessage" class="input-msg"></p>
@@ -114,7 +114,7 @@
 				      	  <div class="input-title">
 				      	  	<label for="memberEmail">이메일</label>
 				      	  </div>
-				      	  <div class="input-item">
+				      	  <div class="input-item input-email">
 				      	  	<input type="text" id="memberEmailId" name="memberEmailId">&nbsp;@&nbsp;
 				      	  	<input type="text" id="memberEmailDomain" name="memberEmailDomain">
 				      	  	<select class="select-domain" id="selectDomain">
@@ -269,6 +269,7 @@
 	*/
 	const memberId = $('#memberId'); //jquery 방식으로 HTML 요소 선택 (id 속성 값이 'memberId'인 요소)
 	const idMessage = $('#idMessage'); //입력 ID 유효성 검증 결과 메시지를 보여줄 요소
+	const inputMemberId = $('.input-memberId');
 	
 	//아이디 유효성 체크 - 입력되는동안(keyin) 체크
 	//id를 입력할 수 있는 요소에, input (key 관련, mouse 관련, 붙여넣기) 이벤트 발생 시 동작할 핸들러 함수 작성
@@ -278,6 +279,8 @@
 		//아래 코드 작성하지 않으면, 클래스를 추가해주기만 하기 때문에 두 클래스가 공존할 수 있음.
 		$(idMessage).removeClass('valid');
 		$(idMessage).removeClass('invalid');
+		$(inputMemberId).removeClass('valid');
+		$(inputMemberId).removeClass('invalid');
 		
 		
 		//아이디 정규표현식 = 영어, 숫자 6~12글자
@@ -287,13 +290,15 @@
 		if(regExp.test($(this).val())){
 			//사용자가 입력한 ID가 정규표현식에 만족하는 경우
 			$(idMessage).text('');
-			checkObj.memberId = true;
 			$(idMessage).addClass('valid');
+			$(inputMemberId).addClass('valid');
+			checkObj.memberId = true;
 		}else{
 			//사용자가 입력한 ID가 정규표현식에 만족하지 않는 경우
 			$(idMessage).text("영어, 숫자 6~12글자 사이로 입력하세요.");
-			checkObj.memberId = false;
 			$(idMessage).addClass('invalid');
+			$(inputMemberId).addClass('invalid');
+			checkObj.memberId = false;
 		}
 	});
 	
@@ -301,6 +306,8 @@
 	$(memberId).on('blur', function(){
 		$(idMessage).removeClass('valid');
 		$(idMessage).removeClass('invalid');
+		$(inputMemberId).removeClass('valid');
+		$(inputMemberId).removeClass('invalid');
 		
 		if(checkObj.memberId){
 			//유효성 검사 결과 true인 경우
@@ -312,10 +319,12 @@
 					if(res == 0){ //중복 X  == 회원가입 가능
 						$(idMessage).text('');
 						$(idMessage).addClass('valid');
+						$(inputMemberId).addClass('valid');
 						checkObj.idDuplChk = true;
 					}else{
 						$(idMessage).text('이미 사용중인 ID입니다.');
 						$(idMessage).addClass('invalid');
+						$(inputMemberId).addClass('invalid');
 						checkObj.idDuplChk = false;
 					}
 				},
@@ -332,11 +341,15 @@
 	//비밀번호 유효성 검사
 	const memberPw = $('#memberPw');
 	const pwMessage = $('#pwMessage');
+	const inputMemberPw = $('.input-memberPw');
 	const memberPwRe = $('#memberPwRe');
+	const inputMemberPwRe = $('.input-memberPwRe');
 	
 	$(memberPw).on('input', function(){
 		$(pwMessage).removeClass('invalid');
 		$(pwMessage).removeClass('valid');
+		$(inputMemberPw).removeClass('valid');
+		$(inputMemberPw).removeClass('invalid');
 		
 		const regExp = /^[a-zA-Z0-9!@#$]{8,20}$/; //영어, 숫자, 특수문자 (!@#$) 8~20글자
 		
@@ -349,12 +362,15 @@
 			}else{				
 				$(pwMessage).text('');
 				$(pwMessage).addClass('valid');
+				$(inputMemberPw).addClass('valid');
 			}
 			
 		}else{
 			checkObj.memberPw = false;
 			$(pwMessage).text('비밀번호 형식이 유효하지 않습니다.');
 			$(pwMessage).addClass('invalid');
+			$(inputMemberPw).addClass('invalid');
+			
 		}
 	});
 	
@@ -364,15 +380,21 @@
 	function checkPw(){
 		$(pwMessage).removeClass('invalid');
 		$(pwMessage).removeClass('valid');
+		$(inputMemberPwRe).removeClass('valid');
+		$(inputMemberPwRe).removeClass('invalid');
 		
 		//입력한 비밀번호와 값이 같은지만 검증
 		if($(memberPw).val() == $(memberPwRe).val()){
 			$(pwMessage).text('');
 			$(pwMessage).addClass('valid');
+			$(inputMemberPwRe).addClass('valid');
+			
 			checkObj.memberPwRe = true;
 		}else{
 			$(pwMessage).text('비밀번호가 일치하지 않습니다.');
 			$(pwMessage).addClass('invalid');
+			$(inputMemberPwRe).addClass('invalid');
+			
 			checkObj.memberPwRe = false;
 		}
 	}
@@ -382,21 +404,26 @@
 	*/
 	const memberNickname = $('#memberNickname');
 	const nicknameMessage = $('#nicknameMessage');
+	const inputMemberNickname = $('.input-memberNickname');
 	
 	//닉네임 유효성 검사
 	$(memberNickname).on('input', function(){
 		$(nicknameMessage).removeClass('invalid');
 		$(nicknameMessage).removeClass('valid');
+		$(inputMemberNickname).removeClass('valid');
+		$(inputMemberNickname).removeClass('invalid');
 		
 		const regExp = /^[가-힣]{2,12}$/;  
 		
 		if(regExp.test($(this).val())){
 			$(nicknameMessage).text('');
 			$(nicknameMessage).addClass('valid');
+			$(inputMemberNickname).addClass('valid');
 			checkObj.memberNickname = true;
 		}else{
 			$(nicknameMessage).text('이름 형식이 유효하지 않습니다.');
 			$(nicknameMessage).addClass('invalid');
+			$(inputMemberNickname).addClass('invalid');
 			checkObj.memberNickname = false;
 		}
 	});
@@ -405,6 +432,8 @@
 	$(memberNickname).on('blur', function(){
 		$(nicknameMessage).removeClass('valid');
 		$(nicknameMessage).removeClass('invalid');
+		$(inputMemberNickname).removeClass('valid');
+		$(inputMemberNickname).removeClass('invalid');
 		
 		if(checkObj.memberNickname){
 			//유효성 검사 결과 true인 경우
@@ -416,10 +445,12 @@
 					if(res == 0){ //중복 X  == 회원가입 가능
 						$(nicknameMessage).text('');
 						$(nicknameMessage).addClass('valid');
+						$(inputMemberNickname).addClass('valid');
 						checkObj.nicknameDuplChk = true;
 					}else{
 						$(nicknameMessage).text('이미 사용중인 닉네임입니다.');
 						$(nicknameMessage).addClass('invalid');
+						$(inputMemberNickname).addClass('invalid');
 						checkObj.nicknameDuplChk = false;
 					}
 				},
@@ -435,20 +466,25 @@
 	//이름 유효성 검사
 	const memberName = $('#memberName');
 	const nameMessage = $('#nameMessage');
+	const inputMemberName = $('.input-memberName');
 	
 	$(memberName).on('input', function(){
 		$(nameMessage).removeClass('invalid');
 		$(nameMessage).removeClass('valid');
+		$(inputMemberName).removeClass('valid');
+		$(inputMemberName).removeClass('invalid');
 		
 		const regExp = /^[가-힣]{2,10}$/;  
 		
 		if(regExp.test($(this).val())){
 			$(nameMessage).text('');
 			$(nameMessage).addClass('valid');
+			$(inputMemberName).addClass('valid');
 			checkObj.memberName = true;
 		}else{
 			$(nameMessage).text('이름 형식이 유효하지 않습니다.');
 			$(nameMessage).addClass('invalid');
+			$(inputMemberName).addClass('invalid');
 			checkObj.memberName = false;
 		}
 	});
@@ -466,6 +502,8 @@
 	$(birthSelect).on('change', function(){
 		$(birthMessage).removeClass('invalid');
 		$(birthMessage).removeClass('valid');
+		$(birthSelect).removeClass('valid');
+		$(birthSelect).removeClass('invalid');
 		
 		var now = new Date();
 	    var year = now.getFullYear();
@@ -475,10 +513,12 @@
 		if($(birthYear).val() == year && $(birthMonth).val() == month && $(birthDay).val() == day) {
 			$(birthMessage).text('생년월일 형식이 올바르지 않습니다.');
 			$(birthMessage).addClass('invalid');
+			$(birthSelect).addClass('invalid');
 			checkObj.memberBirth = false;
 		} else {
 			$(birthMessage).text('');
 			$(birthMessage).addClass('valid');
+			$(birthSelect).addClass('valid');
 			checkObj.memberBirth = true;
 		}
 		
@@ -490,20 +530,25 @@
 	//전화번호 유효성 검사
 	const memberPhone = $('#memberPhone');
 	const phoneMessage = $('#phoneMessage');
+	const inputMemberPhone = $('.input-memberPhone');
 	
 	$(memberPhone).on('input', function(){
 		$(phoneMessage).removeClass('invalid');
 		$(phoneMessage).removeClass('valid');
+		$(inputMemberPhone).removeClass('valid');
+		$(inputMemberPhone).removeClass('invalid');
 		
 		const regExp = /^010-\d{3,4}-\d{4}/;
 		
 		if(regExp.test($(this).val())){
 			$(phoneMessage).text('');
 			$(phoneMessage).addClass('valid');
+			$(inputMemberPhone).addClass('valid');
 			checkObj.memberPhone = true;
 		}else{
 			$(phoneMessage).text('전화번호 형식이 올바르지 않습니다.');
 			$(phoneMessage).addClass('invalid');
+			$(inputMemberPhone).addClass('invalid');
 			checkObj.memberPhone = false;
 		}
 	});
@@ -514,18 +559,23 @@
 	const addrPostcode = $('#addr_postcode');
 	const addrDetailAddress = $('#addr_detailAddress');
 	const addrMessage = $('#addrMessage');
+	const inputAddr = $('.input-addr');
 	
 	$(addrDetailAddress).on('input', function(){
 		$(addrMessage).removeClass('invalid');
 		$(addrMessage).removeClass('valid');
+		$(inputAddr).removeClass('valid');
+		$(inputAddr).removeClass('invalid');
 		
 		if($(addrPostcode).val() == '' || $(addrDetailAddress).val() == '') {
 			$(addrMessage).text('주소 형식이 올바르지 않습니다.');
 			$(addrMessage).addClass('invalid');
+			$(inputAddr).addClass('invalid');
 			checkObj.memberAddress = false;	
 		} else {
 			$(addrMessage).text('');
 			$(addrMessage).addClass('valid');
+			$(inputAddr).addClass('valid');
 			checkObj.memberAddress = true;	
 		}
 	});
@@ -535,21 +585,26 @@
 	*/
 	const memberEmailId = $('#memberEmailId');
 	const emailMessage = $('#emailMessage');
+	const inputEmail = $('.input-email');
 	
 	//이메일ID 유효성 검사
 	$(memberEmailId).on('input', function(){
 		$(emailMessage).removeClass('invalid');
 		$(emailMessage).removeClass('valid');
+		$(inputEmail).removeClass('invalid');
+		$(inputEmail).removeClass('valid');
 		
 		const regExp = /^[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*$/;
 		
 		if(regExp.test($(this).val())){
 			$(emailMessage).text('');
 			$(emailMessage).addClass('valid');
+			$(inputEmail).addClass('valid');
 			checkObj.memberEmail = true;
 		}else{
 			$(emailMessage).text('이메일 형식이 올바르지 않습니다.');
 			$(emailMessage).addClass('invalid');
+			$(inputEmail).addClass('invalid');
 			checkObj.memberEmail = false;		
 		}
 	});
@@ -558,17 +613,21 @@
 	$(memberEmailDomain).on('input', function(){
 		$(emailMessage).removeClass('invalid');
 		$(emailMessage).removeClass('valid');
+		$(inputEmail).removeClass('invalid');
+		$(inputEmail).removeClass('valid');
 		
 		const regExp = /^[a-zA-Z]([-_.]?[0-9a-zA-Z])+(\.[a-z]{2,3})$/;
 		
 		if(regExp.test($(this).val())){
 			$(emailMessage).text('');
 			$(emailMessage).addClass('valid');
+			$(inputEmail).addClass('valid');
 			checkObj.memberEmail = true;
 		}else{
 			$(emailMessage).text('이메일 형식이 올바르지 않습니다.');
 			$(emailMessage).addClass('invalid');
-			checkObj.memberEmail = false;		
+			$(inputEmail).addClass('invalid');
+			checkObj.memberEmail = false;
 		}
 	});
 	
