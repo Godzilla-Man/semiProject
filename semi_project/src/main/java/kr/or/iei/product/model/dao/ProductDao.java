@@ -2509,6 +2509,7 @@ public class ProductDao {
 	public ArrayList<Product> selectMemberWishList(Connection conn, String memberNo) {
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
+		String exProductNo = "";
 
 		String query = "select p.product_no, p.product_name, p.product_price, 'Y' as wish_yn, f.file_path"
 				+ "  from tbl_prod p, tbl_wishlist w, tbl_file f"
@@ -2526,14 +2527,18 @@ public class ProductDao {
 			rset = pstmt.executeQuery();
 
 			while(rset.next()) {
-				Product p = new Product();
-				p.setProductNo(rset.getString("product_no"));
-				p.setProductName(rset.getString("product_name"));
-				p.setProductPrice(rset.getInt("product_price"));
-				p.setWishYn(rset.getString("wish_yn"));
-				p.setFilePath(rset.getString("file_path"));
-
-				productList.add(p);
+				if(!exProductNo.equals(rset.getString("product_no"))) {
+					Product p = new Product();
+					p.setProductNo(rset.getString("product_no"));
+					p.setProductName(rset.getString("product_name"));
+					p.setProductPrice(rset.getInt("product_price"));
+					p.setWishYn(rset.getString("wish_yn"));
+					p.setFilePath(rset.getString("file_path"));
+					
+					productList.add(p);
+					
+					exProductNo = rset.getString("product_no");
+				}
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -2564,8 +2569,6 @@ public class ProductDao {
 			
 			if(rset.next()) {
 				cnt = rset.getInt("cnt");		
-			} else {
-				cnt = -1;
 			}
 			
 			
