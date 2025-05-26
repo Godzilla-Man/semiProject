@@ -1,5 +1,5 @@
-<%@page import="kr.or.iei.order.model.service.OrderService"%>
 <%@page import="kr.or.iei.product.model.service.ProductService"%>
+<%@page import="kr.or.iei.order.model.service.OrderService"%>
 <%@page import="kr.or.iei.member.model.vo.Member"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>

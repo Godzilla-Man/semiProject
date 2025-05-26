@@ -28,4 +28,9 @@ public class Purchase {
     private String sellerNickname;
     private String purchaseStatusName; // 주문 상태명 (예: "배송전", "배송중")
     private String thumbnailPath;      // 상품 대표 이미지 경로
+    
+    private String deliveryCompanyCode; // 택배사 코드
+    private String deliveryCompanyName; // 택배사 명
+    private String trackingNumber;      // 송장 번호
+    private Date shipmentDate;          // 발송일
 }

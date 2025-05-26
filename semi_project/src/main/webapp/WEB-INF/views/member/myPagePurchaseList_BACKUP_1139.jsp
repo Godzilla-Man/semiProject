@@ -114,6 +114,7 @@
         
         location.href = "${pageContext.request.contextPath}/order/orderPay?orderId=" + orderId;
 
+<<<<<<< HEAD
     }
     
     <!-- 배송 조회 -->
@@ -170,9 +171,12 @@
 	    .catch(error => {
 	        console.error('🚫 배송 조회 오류:', error); // ◀️ 오류 로그 강화
 	        Swal.fire({ /* ... */ });
-	    });	
+	    });
 	}
-	    
+=======
+    }    
+>>>>>>> master
+    
  	<!-- 구매 확정 버튼 JS -->
     function confirmPurchase(orderNo) {
 	    Swal.fire({

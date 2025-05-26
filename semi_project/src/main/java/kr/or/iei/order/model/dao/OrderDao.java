@@ -266,19 +266,30 @@ public class OrderDao {
 	    ResultSet rset = null;
 	    // TBL_PURCHASE를 기준으로 TBL_PROD, TBL_MEMBER(판매자), TBL_FILE(대표이미지), TBL_PURCHASE_STATUS 조인
 	    String query = "SELECT " +
-	                   "    P.ORDER_NO, P.PRODUCT_NO, P.SELLER_MEMBER_NO, P.BUYER_MEMBER_NO, " +
-	                   "    P.DELIVERY_ADDR, P.DELIVERY_FEE, P.ORDER_AMOUNT, " +
-	                   "    P.PG_PROVIDER, P.PG_TRANSACTION_ID, P.DEAL_DATE, P.PURCHASE_STATUS_CODE, " +
-	                   "    PROD.PRODUCT_NAME, PROD.PRODUCT_PRICE, " + // 상품명, 상품 가격
-	                   "    SELLER.MEMBER_NICKNAME AS SELLER_NICKNAME, " + // 판매자 닉네임
-	                   "    PS.STATUS_NAME AS PURCHASE_STATUS_NAME " +   // 주문 상태명
-
-	                   "FROM TBL_PURCHASE P " +
-	                   "JOIN TBL_PROD PROD ON P.PRODUCT_NO = PROD.PRODUCT_NO " +
-	                   "JOIN TBL_MEMBER SELLER ON P.SELLER_MEMBER_NO = SELLER.MEMBER_NO " +
-	                   "JOIN TBL_PURCHASE_STATUS PS ON P.PURCHASE_STATUS_CODE = PS.PURCHASE_STATUS_CODE " +
-	                   "WHERE P.BUYER_MEMBER_NO = ? " +
-	                   "ORDER BY P.DEAL_DATE DESC"; // 최근 구매 순으로 정렬
+                "    ORDER_NO, PRODUCT_NO, SELLER_MEMBER_NO, BUYER_MEMBER_NO, " +
+                "    DELIVERY_ADDR, DELIVERY_FEE, ORDER_AMOUNT, " +
+                "    PG_PROVIDER, PG_TRANSACTION_ID, DEAL_DATE, PURCHASE_STATUS_CODE, " +
+                "    DELIVERY_COMPANY_NAME, TRACKING_NUMBER, SHIPMENT_DATE, " +
+                "    PRODUCT_NAME, PRODUCT_PRICE, " +
+                "    SELLER_NICKNAME, PURCHASE_STATUS_NAME " +
+                "FROM ( " +
+                "    SELECT " +
+                "        P.ORDER_NO, P.PRODUCT_NO, P.SELLER_MEMBER_NO, P.BUYER_MEMBER_NO, " +
+                "        P.DELIVERY_ADDR, P.DELIVERY_FEE, P.ORDER_AMOUNT, " +
+                "        P.PG_PROVIDER, P.PG_TRANSACTION_ID, P.DEAL_DATE, P.PURCHASE_STATUS_CODE, " +
+                "        P.DELIVERY_COMPANY_NAME, P.TRACKING_NUMBER, P.SHIPMENT_DATE, " +
+                "        PROD.PRODUCT_NAME, PROD.PRODUCT_PRICE, " +
+                "        SELLER.MEMBER_NICKNAME AS SELLER_NICKNAME, " +
+                "        PS.STATUS_NAME AS PURCHASE_STATUS_NAME, " +
+                "        ROW_NUMBER() OVER(PARTITION BY P.PRODUCT_NO, P.PURCHASE_STATUS_CODE ORDER BY P.DEAL_DATE DESC) as RN " +
+                "    FROM TBL_PURCHASE P " +
+                "    JOIN TBL_PROD PROD ON P.PRODUCT_NO = PROD.PRODUCT_NO " +
+                "    JOIN TBL_MEMBER SELLER ON P.SELLER_MEMBER_NO = SELLER.MEMBER_NO " +
+                "    JOIN TBL_PURCHASE_STATUS PS ON P.PURCHASE_STATUS_CODE = PS.PURCHASE_STATUS_CODE " +
+                "    WHERE P.BUYER_MEMBER_NO = ? " +
+                ") SUB " +
+                "WHERE SUB.PURCHASE_STATUS_CODE != 'PS00' OR (SUB.PURCHASE_STATUS_CODE = 'PS00' AND SUB.RN = 1) " +
+                "ORDER BY SUB.DEAL_DATE DESC";
 
 	    try {
 	        pstmt = conn.prepareStatement(query);
@@ -388,6 +399,63 @@ public class OrderDao {
 	    }
 	    return result;
 		
+	}
+
+	public static Purchase selectDeliverInfo(Connection conn, String orderNo) {
+		
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		Purchase p = null;
+		String qeury = "SELECT DELIVERy_COMPANY_NAME, TRACKING_NUMBER FROM TBL_PURCHASE WHERE ORDER_NO = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(qeury);
+			pstmt.setString(1, orderNo);
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				p = new Purchase();
+				p.setDeliveryCompanyName(rset.getString("DELIVERY_COMPANY_NAME"));
+				p.setTrackingNumber(rset.getString("tracking_number"));		
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			JDBCTemplate.close(rset);
+			JDBCTemplate.close(pstmt);
+		}		
+				
+		return p;
+	}
+
+	public static int updateOtherPendingOrders(Connection conn, String buyerMemberNo, String productNo, String string, String orderId) {
+		PreparedStatement pstmt = null;
+        int result = 0;
+        // 성공한 주문(excludeOrderNo)을 제외하고, 특정 구매자의 특정 상품에 대한 'PS00'(결제대기) 상태의 주문들을
+        // newStatusCode로 변경하는 쿼리
+        String query = "UPDATE TBL_PURCHASE " +
+                       "SET PURCHASE_STATUS_CODE = ? " +
+                       "WHERE BUYER_MEMBER_NO = ? " +
+                       "  AND PRODUCT_NO = ? " +
+                       "  AND PURCHASE_STATUS_CODE = 'PS00' " + // '결제대기' 상태인 것만
+                       "  AND ORDER_NO != ?";                 // 현재 성공한 주문은 제외
+
+        try {
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, string);
+            pstmt.setString(2, buyerMemberNo);
+            pstmt.setString(3, productNo);
+            pstmt.setString(4, orderId);
+            result = pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(pstmt);
+        }
+        return result;
 	}
 
 

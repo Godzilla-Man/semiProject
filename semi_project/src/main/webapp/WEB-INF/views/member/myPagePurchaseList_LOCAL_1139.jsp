@@ -170,9 +170,9 @@
 	    .catch(error => {
 	        console.error('🚫 배송 조회 오류:', error); // ◀️ 오류 로그 강화
 	        Swal.fire({ /* ... */ });
-	    });	
+	    });
 	}
-	    
+    
  	<!-- 구매 확정 버튼 JS -->
     function confirmPurchase(orderNo) {
 	    Swal.fire({
@@ -240,6 +240,6 @@
     
 
     </script>
-
+	
 </body>
 </html>

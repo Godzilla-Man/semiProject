@@ -66,16 +66,14 @@
                                 <button type="button" class="btn-action btn-goToPay" onclick="goToPay('${item.orderNo}')">결제하기</button>
                             </c:if>                          
                             
-                            <c:if test="${item.purchaseStatusCode == 'PS05' || item.purchaseStatusCode == 'S06'}"> <%-- 배송중 또는 배송완료 --%>
-                                <button type="button" class="btn-action" onclick="trackDelivery('${item.orderNo}')">배송조회</button>
+                            <c:if test="${item.purchaseStatusCode == 'S05' || item.purchaseStatusCode == 'S06'}"> <%-- 배송중 또는 배송완료 --%>
+                                <button type="button" class="btn-action dotted">배송 조회</button>
                             </c:if>
-                            
                             <c:if test="${item.purchaseStatusCode == 'PS06'}"> <%-- 배송완료 --%>
-                                <button type="button" class="btn-action" onclick="confirmPurchase('${item.orderNo}')">구매확정</button>                                
+                                <button type="button" class="btn-action" onclick="confirmPurchase('${item.orderNo}')">구매 확정</button>                                
                             </c:if>
-                            
                             <c:if test="${item.purchaseStatusCode == 'PS07'}"> <%-- 거래완료 --%>
-    						<button type="button" class="btn-action" onclick="goToWriteReview('${item.orderNo}')">리뷰작성</button>
+    						<button type="button" class="btn-action" onclick="goToWriteReview('${item.orderNo}')">리뷰 작성</button>
 							</c:if>
                         </div>
                                                 
@@ -114,65 +112,8 @@
         
         location.href = "${pageContext.request.contextPath}/order/orderPay?orderId=" + orderId;
 
-    }
+    }    
     
-    <!-- 배송 조회 -->
-	// 1. 서버에 배송 정보 요청 (새로운 서블릿 /order/trackDelivery 호출)
-	function trackDelivery(orderNo) {
-	    console.log("1. 요청 시작, OrderNo:", orderNo); // ◀️ 로그 추가
-	
-	    fetch("${pageContext.request.contextPath}/order/trackDelivery?orderNo=" + orderNo)
-	    .then(response => {
-	        if (!response.ok) {
-	            throw new Error('서버 응답 오류: ' + response.status);
-	        }
-	        return response.text();
-	    })
-	    .then(data => {
-	        console.log("2. 서버 응답 수신 (Raw):", "'" + data + "'"); // ◀️ 로그 추가 (따옴표로 감싸서 공백 확인)
-	
-	        const trimmedData = data.trim();
-	        console.log("3. 양쪽 공백 제거 후:", "'" + trimmedData + "'"); // ◀️ 로그 추가
-	
-	        if (trimmedData && trimmedData.includes('/')) {
-	            console.log("4. '/' 포함 확인: True"); // ◀️ 로그 추가
-	
-	            // ⬇️ 여기를 집중적으로 확인!
-	            const parts = trimmedData.split(' / ');
-	            console.log("5. ' / '로 분리 후 (배열):", parts); // ◀️ 로그 추가
-	
-	            const [company, trackingNumber] = parts.map(s => s.trim());
-	            console.log("6. 최종 company:", "'" + company + "'"); // ◀️ 로그 추가
-	            console.log("7. 최종 trackingNumber:", "'" + trackingNumber + "'"); // ◀️ 로그 추가				
-	            
-	            const swalHtml = '<div style="text-align: left; padding: 10px;">' +
-				                 '<p><strong>택배사:</strong> ' + company + '</p>' +
-				                 '<p><strong>송장번호:</strong> ' + trackingNumber + '</p>' +
-				                 '<p style="font-size:0.8em; color:gray; margin-top:15px;">* 상세 조회는 택배사 홈페이지를 이용해주세요.</p>' +
-				                 '</div>';
-	            
-	            Swal.fire({
-	                title: '배송 정보',
-	                html: swalHtml,         
-	                icon: 'info',
-	                confirmButtonText: '확인',
-	                confirmButtonColor: '#0064FF'
-	            });
-	
-	        } else if (trimmedData) {
-	             console.log("4. '/' 포함 확인: False, trimmedData 있음"); // ◀️ 로그 추가
-	             Swal.fire({ /* ... */ });
-	        } else {
-	             console.log("4. '/' 포함 확인: False, trimmedData 없음"); // ◀️ 로그 추가
-	             Swal.fire({ /* ... */ });
-	        }
-	    })
-	    .catch(error => {
-	        console.error('🚫 배송 조회 오류:', error); // ◀️ 오류 로그 강화
-	        Swal.fire({ /* ... */ });
-	    });	
-	}
-	    
  	<!-- 구매 확정 버튼 JS -->
     function confirmPurchase(orderNo) {
 	    Swal.fire({
@@ -237,8 +178,6 @@
     function goToWriteReview(orderNo) {
         location.href = "${pageContext.request.contextPath}/review/write?orderNo=" + orderNo;
     }
-    
-
     </script>
 
 </body>
