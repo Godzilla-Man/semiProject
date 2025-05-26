@@ -656,15 +656,13 @@
 				}
 				
 				if(key != 'idDuplChk'){
-					str += "이 유효하지 않습니다.";					
+					if(key != 'nicknameDuplChk'){
+						str += "이 유효하지 않습니다.";					
+					} else {
+						str = "이미 사용중인 닉네임입니다.";
+					}
 				}else{
 					str = "이미 사용중인 ID입니다.";
-				}
-				
-				if(key != 'nicknameDuplChk'){
-					str += "이 유효하지 않습니다.";					
-				}else{
-					str = "이미 사용중인 닉네임입니다.";
 				}
 				
 				swal({
