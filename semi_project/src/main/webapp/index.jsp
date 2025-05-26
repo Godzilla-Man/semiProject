@@ -70,7 +70,7 @@
 					<!-- reviewList가 request scope에 있는 경우 반복문으로 카드 출력 -->
 					<c:choose>
 						<c:when test="${empty productList}">
-							<span style="display: block; width: 250px;">해당하는 상품이 존재하지 않습니다.</span>
+							<span style="display: block; width: 250px;">등록된 상품이 없습니다.</span>
 						</c:when>
 						<c:otherwise>
 							<c:forEach var="prod" items="${productList}" begin="0" end="7">
@@ -113,7 +113,7 @@
 					<!-- reviewList가 request scope에 있는 경우 반복문으로 카드 출력 -->
 					<c:choose>
 						<c:when test="${empty reviewList}">
-							<span style="display: block; width: 250px;">해당하는 상품이 존재하지 않습니다.</span>
+							<span style="display: block; width: 250px;">등록된 스타일 후기가 없습니다.</span>
 						</c:when>
 						<c:otherwise>
 							<c:forEach var="review" items="${reviewList}" begin="0" end="7">
