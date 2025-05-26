@@ -5,6 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <title>스타일 후기 게시판</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> <%-- Material Icons CSS --%>
   <style>
@@ -248,6 +249,7 @@
         margin-bottom: 20px;
         border-radius: 4px;
     }
+
   </style>
 </head>
 <body>
@@ -263,25 +265,25 @@
       <ul>
         <li class="${(empty selectedCategory || selectedCategory eq 'all') ? 'active' : ''}">
 	        <a href="${pageContext.request.contextPath}/review/list?category=all">
-		        <img src="${pageContext.request.contextPath}/resources/images/category/all_icon.png" alt="전체 카테고리">
+		        <span class="material-symbols-outlined" style="font-size: 50px;">person</span>
 		        <div>전체</div>
 	        </a>
         </li>
         <li class="${selectedCategory eq 'A01' ? 'active' : ''}">
         	<a href="${pageContext.request.contextPath}/review/list?category=A01">
-        		<img src="${pageContext.request.contextPath}/resources/images/category/male_icon.png" alt="남성 카테고리">
+        		<span class="material-symbols-outlined" style="font-size: 50px;">man</span>
         		<div>남성</div>
        		</a>
       	</li>
         <li class="${selectedCategory eq 'A02' ? 'active' : ''}">
 	        <a href="${pageContext.request.contextPath}/review/list?category=A02">
-		        <img src="${pageContext.request.contextPath}/resources/images/category/female_icon.png" alt="여성 카테고리">
+		        <span class="material-symbols-outlined" style="font-size: 50px;">woman</span>
 		        <div>여성</div>
 	        </a>
         </li>
         <li class="${selectedCategory eq 'A03' ? 'active' : ''}">
 	        <a href="${pageContext.request.contextPath}/review/list?category=A03">
-		        <img src="${pageContext.request.contextPath}/resources/images/category/unisex_icon.png" alt="공용 카테고리">
+		        <span class="material-symbols-outlined" style="font-size: 50px;">wc</span>
 		        <div>공용</div>
 	        </a>
         </li>
@@ -317,13 +319,14 @@
         </c:choose>
       </div>
     </div>
-    
-    <%-- 로그인한 경우에만 등록 버튼 표시 --%>
+    <%-- 마이페이지에서 거래완료가 되면 후기작성 버튼이 나타나지므로 등록버튼 삭제
+    <%-- 로그인한 경우에만 등록 버튼 표시
     <c:if test="${not empty sessionScope.loginMember}">
         <a href="/review/writeFrm" class="fixed-register" title="스타일 후기 등록">
             <span class="material-icons">edit</span>
         </a>
     </c:if>
+    --%>
   </main>
 
   <jsp:include page="/WEB-INF/views/common/footer.jsp" />

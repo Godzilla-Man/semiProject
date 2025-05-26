@@ -12,7 +12,7 @@
 		<jsp:include page="/WEB-INF/views/common/header.jsp"></jsp:include>
 		<div class="admin-page">
 			<div class="admin-menu">
-				<a href="/admin/adminPage">관리자 페이지</a>
+				<a href="/admin/adminPage">관리 페이지</a>
 				<a href="/admin/allMember">전체 회원 조회</a>
 				<a href="/admin/report">신고 내역 조회</a>
 				<a href="/admin/blackList">블랙 리스트 조회</a>

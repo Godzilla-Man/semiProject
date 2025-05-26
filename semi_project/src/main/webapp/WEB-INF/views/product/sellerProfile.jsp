@@ -278,7 +278,7 @@
 </head>
 <body>
         <jsp:include page="/WEB-INF/views/common/header.jsp" />
-            <div class="wrap">
+            <div class="wrap" style="width: 1200px; margin: 0 auto;">
         <main class="content">
             <!-- 판매자 프로필 상단 -->
             <section class="seller-profile-wrap">
