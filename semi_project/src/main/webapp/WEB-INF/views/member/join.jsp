@@ -306,10 +306,11 @@
 	$(memberId).on('blur', function(){
 		$(idMessage).removeClass('valid');
 		$(idMessage).removeClass('invalid');
-		$(inputMemberId).removeClass('valid');
-		$(inputMemberId).removeClass('invalid');
 		
 		if(checkObj.memberId){
+			$(inputMemberId).removeClass('valid');
+			$(inputMemberId).removeClass('invalid');
+			
 			//유효성 검사 결과 true인 경우
 			$.ajax({
 				url : "/idDuplChk",							//요청 URL
@@ -432,10 +433,10 @@
 	$(memberNickname).on('blur', function(){
 		$(nicknameMessage).removeClass('valid');
 		$(nicknameMessage).removeClass('invalid');
-		$(inputMemberNickname).removeClass('valid');
-		$(inputMemberNickname).removeClass('invalid');
 		
 		if(checkObj.memberNickname){
+			$(inputMemberNickname).removeClass('valid');
+			$(inputMemberNickname).removeClass('invalid');
 			//유효성 검사 결과 true인 경우
 			$.ajax({
 				url : "/nicknameDuplChk",								//요청 URL
